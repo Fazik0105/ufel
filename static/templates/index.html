@@ -1,0 +1,354 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFEL</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/app.js' %}"></script>
+    
+    <!-- App -->
+    <script src="{% static 'JavaScripts/tournaments.js' %}"></script>
+
+</head>
+
+<body>
+
+  <div class="background-stack">
+        <img src="{% static 'images/UFEL.png' %}" alt="UFEL background">
+    </div>
+    
+<div class="panel">
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+
+  <img src="{% static 'images/UFEL.png' %}" alt="UFEL logo" class="panel-logo">
+  
+
+<nav class="navbar">
+    <a href="#" data-page="home" class="active">HOME</a>
+    <a href="#" data-page="tournaments">TOURNAMENTS</a>
+    <a href="#" data-page="champions">UFEL CHAMPIONS</a>
+    <a href="#" data-page="ratings">RATINGS</a>
+    
+    {% if user.is_authenticated %}
+        {% if user.is_admin %}
+            <a href="{% url 'admin_dashboard' %}" style="color: gold;">ADMIN PANEL</a>
+        {% endif %}
+        <a href="{% url 'logout' %}" class="login-link">LOGOUT ({{ user.username }})</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="login-link">LOGIN</a>
+    {% endif %}
+</nav>
+
+  <a href="#" class="lang-btn">UZ</a>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="#" data-page="home">HOME</a>
+    <a href="#" data-page="tournaments">TOURNAMENTS</a>
+    <a href="#" data-page="champions">UFEL CHAMPIONS</a>
+    <a href="#" data-page="ratings">RATINGS</a>
+
+        {% if user.is_authenticated %}
+            {% if user.role == 'ADMIN' %}
+                <a href="{% url 'admin_dashboard' %}" style="color: gold;">ADMIN PANEL</a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="login-link">LOGOUT ({{ user.username }})</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="login-link">LOGIN</a>
+        {% endif %}
+</div>
+
+
+<!-- HOME PAGE -->
+<section id="home" class="page active">
+  <div class="home-hero">
+    <p class="home-badge">Uzbekistan Football e-League</p>
+    <h1 class="home-title">OFFICIAL UFEL<br>PLATFORM</h1>
+    <p class="home-text">
+      The Only professional eFootball<br>League in Uzbekistan
+    </p>
+
+    <div class="home-buttons">
+      <a href="#" class="home-btn" data-page="tournaments">
+        TOURNAMENTS<br>
+        <span class="home-btn-sub">TURNIR JADVALI</span>
+      </a>
+      
+      <a href="#" class="home-btn" data-page="champions">
+        CHAMPIONS<br>
+        <span class="home-btn-sub">UFEL CHEMPIONLARI</span>
+      </a>
+      
+      <a href="#" class="home-btn" data-page="ratings">
+        RATINGS<br>
+        <span class="home-btn-sub">O'YINCHILAR YILLIK REYTINGI</span>
+      </a>
+
+      <a href="https://t.me/ufel_uz" class="join-group">JOIN GROUP</a>
+    </div>
+    
+    <div class="social-btns">
+      <a href="https://t.me/ufel_uz" class="telegram">
+        <img src="https://cdn.pixabay.com/photo/2021/12/27/10/50/telegram-6896827_1280.png" alt="Telegram">
+      </a>
+      <a href="https://www.instagram.com/ufel.uz?igsh=MW5oN2JmcW9pcHVqcQ==" class="instagram">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+      </a>
+      <a href="http://www.youtube.com/@ufel_uz" class="youtube">
+        <img src="https://cdn-icons-png.freepik.com/512/2496/2496113.png" alt="YouTube">
+      </a>
+    </div>
+
+    <h6 class="end-text">© 2026 UFeL | All Rights Reserved</h6>
+
+  </div>
+</section>
+
+<!-- TOURNAMENTS PAGE -->
+<section id="tournaments" class="page">
+    
+    <div class="tournaments-liga">
+      {% for champ in championships %}
+      <a href="#"
+        class="liga-tab {% if latest_champ and champ.id == latest_champ.id %}active{% endif %}"
+        data-liga="{{ champ.id }}"
+        data-url="{% url 'get_championship_data' champ.id %}">
+      <h1 class="liga-tab-text">{{ champ.name }}</h1>
+          <div class="liga-line"></div>
+      </a>
+      {% endfor %}
+    </div>
+
+    {% if user.is_authenticated and user.is_admin and latest_champ %}
+
+
+{% endif %}
+
+
+<div class="tournaments-container">
+    <div class="table-header">
+        <h3 class="table-title">Turnir Jadvali</h3>
+        <div class="table-badge">{{ latest_champ.name }}</div>
+    </div>
+    
+    <div class="modern-table-wrapper">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th class="col-rank">#</th>
+                    <th class="col-player">O'yinchi / Jamoa</th>
+                    <th class="col-stat">PLD</th>
+                    <th class="col-stat">GD</th>
+                    <th class="col-stat highlight">PTS</th>
+                </tr>
+            </thead>
+            <tbody id="tournament-table-body">
+            {% include 'tournament_table_rows.html' %}
+        </tbody>
+        </table>
+    </div>
+
+    <div class="table-header">
+        <h3 class="table-title">O'yinlar Taqvimi</h3>
+    </div>
+    <div class="matches-list" style="display: flex; flex-direction: column; gap: 10px; padding: 15px;">
+        {% for match in matches %}
+        <div class="match-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;">
+            <div style="text-align: left; font-weight: 500;">{{ match.home_user.first_name }}</div>
+            <div style="background: #22d3ee; color: #000; padding: 5px 15px; border-radius: 6px; font-weight: bold; min-width: 60px; text-align: center;">
+                {{ match.home_score }} - {{ match.away_score }}
+            </div>
+            <div style="text-align: right; font-weight: 500;">{{ match.away_user.first_name }}</div>
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: #94a3b8;">O'yinlar mavjud emas.</p>
+        {% endfor %}
+    </div>
+</div>
+</section>
+
+<!--CHAMPIONS PAGE-->
+<section id="champions" class="page">
+  <div class="ratings-header">
+    <h2 class="champions-title">UFEL CHAMPIONS</h2>
+    <div class="champions-line"></div>
+  </div>
+
+  <div class="champions-list">
+
+    <div class="champion-card">
+      <div class="champion-poster">
+        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
+        <div class="champion-poster-mask"></div>
+      </div>
+      <div class="champion-content">
+        <h2>Farrux<br> Sattorov</h2>
+        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
+      </div>
+    </div>
+
+    <div class="champion-card">
+      <div class="champion-poster">
+        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
+        <div class="champion-poster-mask"></div>
+      </div>
+      <div class="champion-content">
+        <h2>Farrux<br> Sattorov</h2>
+        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
+      </div>
+    </div>
+
+    <div class="champion-card">
+      <div class="champion-poster">
+        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
+        <div class="champion-poster-mask"></div>
+      </div>
+      <div class="champion-content">
+        <h2>Farrux<br> Sattorov</h2>
+        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
+      </div>
+    </div>
+
+    <div class="champion-card">
+      <div class="champion-poster">
+        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
+        <div class="champion-poster-mask"></div>
+      </div>
+      <div class="champion-content">
+        <h2>Farrux<br> Sattorov</h2>
+        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
+      </div>
+    </div>
+
+    <div class="champion-card">
+      <div class="champion-poster">
+        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
+        <div class="champion-poster-mask"></div>
+      </div>
+      <div class="champion-content">
+        <h2>Farrux<br> Sattorov</h2>
+        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
+      </div>
+    </div>
+
+        <!-- MODAL -->
+    <div class="modal" id="modal">
+      <div class="modal-backdrop"></div>
+    
+      <div class="modal-box">
+        <button class="modal-close" aria-label="Close">×</button>
+
+        <h2 class="champion-year">2024</h2>
+        <div class="liga-container">
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+        </div>
+
+        <h2 class="champion-year">2025</h2>
+        <div class="liga-container">
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+        </div>
+
+        <h2 class="champion-year">2026</h2>
+        <div class="liga-container">
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+          <div class="champions-liga">
+            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
+            <h2>Premier<br>ligasi</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'JavaScripts/champions-modal.js' %}"></script>
+
+  </div>
+</div>
+
+
+  </div>
+
+</section>
+
+<!--RATINGS PAGE-->
+<section id="ratings" class="page ratings">
+  <div class="ratings-header">
+    <h2 class="ratings-title">RATINGS</h2>
+    <div class="ratings-line"></div>
+  </div>
+
+  <div class="rating-list">
+    <div class="rating-panel">
+      <div class="r-pos">TOP</div>
+      <div class="r-avatar"></div>
+      <div class="r-name">PLAYERS</div>
+      <div class="r-nation">NAT</div>
+      <div class="r-games">GAMES</div>
+      <div class="r-points">POINTS</div>
+    </div>
+
+    {% for r in ratings %}
+    <div class="rating-row">
+      <div class="rating-pos">{{ forloop.counter }}</div>
+
+      <div class="rating-avatar">
+          {% if r.user.avatar %}
+              <img src="{{ r.user.avatar.url }}" alt="{{ r.user.username }}">
+          {% else %}
+              <img src="{% static 'images/UFEL.png' %}" alt="UFEL Logo">
+          {% endif %}
+      </div>
+      <div class="rating-name">{{ r.user.first_name }} {{ r.user.last_name|default:r.user.username }}</div>
+      <div class="rating-nation">🇺🇿</div>
+      <div class="rating-games">{{ r.pld }}</div>
+      <div class="rating-points">{{ r.pts }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+
+    <script src="{% static 'JavaScripts/navigation-page.js' %}"></script>
+    <script src="{% static 'JavaScripts/hamburger-menu.js' %}"></script>
+    <script src="{% static 'JavaScripts/champions-modal.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!-- templates/championship_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Championships</title>
+</head>
+<body>
+    <h1>Championship List</h1>
+    <a href="{% url 'create_championship' %}">Create New Championship</a>
+    <ul>
+        {% for championship in championships %}
+            <li>
+                {{ championship.name }} ({{ championship.type }})
+                - <a href="{% url 'generate_matches' championship.id %}">Generate Matches</a>
+                - <a href="{% url 'add_participant' championship.id %}">Add Participant</a>
+                - <a href="{% url 'championship_matches' championship.id %}">Matches</a>
+                - <a href="{% url 'championship_table' championship.id %}">Table</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'index' %}">Back to Home</a>
+</body>
+</html>

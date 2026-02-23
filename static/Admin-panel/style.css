@@ -1,0 +1,862 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #1b1b1b;
+    box-sizing: border-box;
+}
+
+.panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 110px;
+    padding: 0;
+
+    background-color: #121212;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.panel-a {
+    width: 100%;
+    height: 60px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.settings-btn {
+    margin-left: 15px;
+
+    color: #FFC400;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+
+.title {
+    color: white;
+    margin-left: auto;
+    margin-right: 25px;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+.panel-b {
+    width: 100%;
+    height: 40px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.nav a {
+    padding: 14px 26px;
+    color: #bababa;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+.nav a:hover {
+    color: #FFC400;
+}
+
+/*TURNIRS PAGE*/
+.turnirs-container {
+    width: auto;
+    height: auto;
+    margin-top: 110px;
+    padding-bottom: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.create-turnir {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    width: 65px;
+    height: 65px;
+    
+    margin-top: 20px;
+    
+    background-color: #dc8400;
+    border-radius: 25px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.create-turnir {    /*text*/
+    color: #1c1c1c;
+    font-size: 40px;
+    font-weight: 900;
+
+    text-align: center;
+    text-decoration: none;
+}
+
+.create-turnir:hover {
+    background-color: #ff9d00;
+    transform: scale(1.1);
+}
+
+.tournir-card {
+    width: 100%;
+    height: auto;
+    
+    margin-top: 20px;
+    
+    background-color: #101010;
+    border: 1px solid #303030;
+    border-radius: 15px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.league-card {
+    width: 95%;
+    margin-top: 7px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.league-card img {
+    width: 60px;
+    height: 60px;
+}
+
+.league-card h2 {
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-left: 15px;
+}
+
+.tournir-btns {
+    width: 95%;
+    height: auto;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.delete-tournir {
+    width: 50%;
+    height: auto;
+    padding: 12px 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    border-radius: 10px;
+    background-color: #9e1717;
+    color: #ffffffcf;
+
+    text-align: center;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+}
+
+.edit-tournir {
+    width: 50%;
+    height: auto;
+    padding: 12px 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    border-radius: 10px;
+    background-color: #175b9e;
+    color: #ffffffcf;
+
+    text-align: center;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+}
+
+.delete-league a:hover {
+    background-color: #c01a1a;
+}
+
+/* CREATE TOURNIR MODAL */
+.create-tournir-body {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #1b1b1b;
+    z-index: 2000;
+
+    transform: translateX(100%);
+    transition: transform 0.35s ease;
+}
+
+.create-tournir-body.active {
+    transform: translateX(0);
+}
+
+/* back / close button */
+.modal-close {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.create-tournir-content {
+    width: auto;
+    height: 500px;
+
+    margin-top: 50px;
+    margin-left: 20px;
+    margin-right: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.select-logo {
+    width: 100px;
+    height: 100px;
+
+    border: 5px solid gray;
+    border-radius: 100px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: gray;
+    text-decoration: none;
+
+    font-size: 70px;
+    
+    font-weight: bold;
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* input */
+.input-group input {
+    width: 100%;
+    height: 44px;
+    padding: 10px 0 8px;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: #fff;
+    font-size: 22px;
+}
+
+/* placeholder ko‘rinmasin (placeholder=" " bo‘lgani uchun) */
+.input-group input::placeholder {
+    color: transparent;
+}
+
+/* label */
+.input-group label {
+    position: absolute;
+    left: 0;
+    top: 10px;
+
+    color: #888;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    pointer-events: none;
+
+    transition: 0.25s ease;
+}
+
+/* pastidagi line */
+.input-group .input-line {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 3px;
+    background: #555;
+
+    transition: background 0.25s ease;
+}
+
+/* focus bo‘lganda line */
+.input-group input:focus ~ .input-line {
+    background: gray;
+}
+
+/* focus yoki value bo‘lsa label tepaga chiqadi */
+.input-group input:focus ~ label,
+.input-group input:not(:placeholder-shown) ~ label {
+    top: -12px;
+    font-size: 15px;
+    color: gray;
+}
+
+.save-tournir {
+    width: 100%;
+    height: 50px;
+
+    background-color: #ffb300;
+    color: #1b1b1b;
+    border-radius: 15px;
+
+    text-align: center;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 23px;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .save-tournir {
+        width: 400px;
+    }
+}
+
+/* EDIT TOURNIR MODAL */
+.edit-tournir-body {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #1b1b1b;
+  z-index: 2000;
+
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+
+.edit-tournir-body.active {
+  transform: translateX(0);
+}
+
+.edit-tournir-content {
+    width: auto;
+    height: auto;
+
+    margin-top: 50px;
+    margin-left: 20px;
+    margin-right: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.edit-logo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 25px;
+
+  border: 5px solid gray;
+  border-radius: 100px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: gray;
+  text-decoration: none;
+
+  font-size: 70px;
+  font-weight: bold;
+}
+
+/* Settings rows */
+.edit-settings {
+  width: 100%;
+}
+
+.edit-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.edit-row-label {
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+}
+
+.edit-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.stepper-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #000;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.stepper-value {
+  width: 56px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  -moz-appearance: textfield;
+}
+
+.stepper-value::-webkit-outer-spin-button,
+.stepper-value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.save-edit-tournir {
+    width: 100%;
+    height: 50px;
+    margin-top: 25px;
+
+    background-color: #ffb300;
+    color: #1b1b1b;
+    border-radius: 15px;
+
+    text-align: center;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 23px;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* DELETE TOURNIR MODAL WRAPPER */
+.delete-tournir-body{
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  /* yopiq holat */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+/* ochiq holat */
+.delete-tournir-body.active{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* BACKDROP (blur kechikib chiqadi) */
+.delete-tournir-backdrop{
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0,0,0,0.0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+
+  transition:
+    background 0.35s ease 0.2s,
+    backdrop-filter 0.35s ease 0.2s,
+    -webkit-backdrop-filter 0.35s ease 0.2s;
+}
+
+/* active bo‘lsa blur asta chiqadi */
+.delete-tournir-body.active .delete-tournir-backdrop{
+  background: #00000033;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+/* PANEL (modal o‘zi) — markazda, kichikroq, otsup bilan */
+.delete-tournir-panel{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  /* chekkalarda otsup bo‘lsin */
+  width: min(520px, calc(100vw - 40px)); /* 20px+20px */
+  height: auto;
+
+  background-color: #101010ea;
+  border: 1px solid #303030;
+  border-radius: 25px;
+
+  /* yopiq holat anim */
+  transform: translate(-50%, -50%) scale(0.92);
+  opacity: 0;
+
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* active bo‘lganda panel chiqadi */
+.delete-tournir-body.active .delete-tournir-panel{
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* desktopda sal kichikroq width */
+@media (min-width: 768px){
+  .delete-tournir-panel{
+    width: 40vw;
+    max-width: 520px;
+  }
+}
+
+/* close — faqat delete modal uchun */
+#deleteTournirModal .modal-close{
+  position: absolute;
+  top: 14px;
+  right: 14px;
+
+  width: 40px;
+  height: 40px;
+
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* content */
+.delete-tournir-content{
+  width: 90%;
+  margin: 70px auto 25px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.delete-tournir-text{
+  width: 100%;
+  margin: 0;
+
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 170%;
+  text-align: center;
+}
+
+/* buttons */
+.delete-tournir-delete,
+.delete-tournir-canel{
+  width: 100%;
+  height: 55px;
+  border-radius: 12px;
+
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-tournir-delete{
+  background-color: #9e1717;
+  margin-top: 80px;
+}
+.delete-tournir-canel{
+  background-color: #175b9e;
+  margin-top: 15px;
+}
+
+.delete-tournir-delete:hover{ background-color: #bc2a2a; }
+.delete-tournir-canel:hover{ background-color: #2a73bc; }
+
+/* ====== ADDED: PAGE SWITCH + PC NAV ACTIVE + PC TITLE CENTER ====== */
+
+/* PAGE SWITCH (sections) */
+.page{
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.page.active{
+  display: block;
+  opacity: 1;
+}
+
+/* PC: active underline + title center */
+@media (min-width: 768px){
+  .nav a.active{
+    text-decoration: underline;
+    text-decoration-color: #FFC400;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 12px;
+  }
+  .title{
+    margin: 0 auto;
+  }
+}
+
+
+/* COMANDS PAGE */
+.teams-container {
+    width: auto;
+    height: auto;
+
+    margin-top: 130px;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-bottom: 50px;
+}
+
+.team-card {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 15px;
+
+    background-color: #222222;
+    border-radius: 12px;
+    box-shadow: 0px 5px 10px #0b0b0b44;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+
+    transition: all 0.4s ease-out;
+}
+
+.team-card:hover {
+    background-color: #2a2a2a;
+}
+
+.team-card img {
+    width: 40px;
+    height: 40px;
+
+    margin-left: 15px;
+    margin-right: 20px;
+
+    filter: brightness(0) invert(1) opacity(0.9);
+}
+
+.team-card h2 {
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+.delete-team-btn {
+    margin-left: auto;
+}
+
+.delete-team-btn img {
+    width: 30px;
+    height: 30px;
+    filter: brightness(0) invert(1) opacity(0.8);
+}
+
+.create-team {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    width: 65px;
+    height: 65px;
+    
+    margin-top: 20px;
+    
+    background-color: #dc8400;
+    border-radius: 25px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.create-team {    /*text*/
+    color: #1c1c1c;
+    font-size: 40px;
+    font-weight: 900;
+
+    text-align: center;
+    text-decoration: none;
+}
+
+.create-team:hover {
+    background-color: #ff9d00;
+    transform: scale(1.1);
+}
+
+.create-team-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2000;
+
+    background-color: #00000033;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    transform: translateX(0%); /*100%*/
+    transition: transform 0.35s ease;
+}
+
+.create-team-modal.active {
+    transform: translateX(0);
+}
+
+.create-team-content {
+    position: fixed;
+    top: 150px;
+    bottom: 200px;
+    left: 35px;
+    right: 35px;
+
+    width: auto;
+    height: auto;
+
+    background-color: #101010ea;
+    border: 0.7px solid #303030;
+    border-radius: 25px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.select-logo-team {
+    width: 75px;
+    height: 75px;
+    margin-top: 50px;
+
+    border: 2.5px solid gray;
+    border-radius: 100px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: gray;
+    text-decoration: none;
+
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.input-group-team {
+    width: 100%;
+    margin-top: 35px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group-team label {
+    color: gray;
+    margin-left: 15px;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+.input-group-team input  {
+    width: auto;
+    height: 40px;
+
+    margin-left: 10px;
+    margin-right: 10px;
+
+    border: none;
+    border-radius: 10px;
+    background-color: #2b2b2b82;
+
+    color: #ffffffbd;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.save-team {
+    width: 94%;
+    height: 45px;
+
+    margin-top: auto;
+    margin-bottom: 10px;
+
+    border-radius: 14px;
+    background-color: #ff9d00;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #101010;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+}

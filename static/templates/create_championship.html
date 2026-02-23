@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Turnir yaratish</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e, #000);
+            color: #fff;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        .card {
+            max-width: 700px;
+            background: rgba(20,20,20,0.9);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,196,0,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.4);
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #FFC400;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .setting-row span {
+            flex: 1;
+        }
+
+        .setting-row input {
+            width: 80px;
+            text-align: center;
+        }
+
+        .setting-row button {
+            background: #FFC400;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .logo-upload input {
+            display: none;
+        }
+
+        .logo-upload label {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,196,0,0.1);
+            border: 1px solid #FFC400;
+            border-radius: 12px;
+            cursor: pointer;
+            color: #FFC400;
+            font-weight: 600;
+        }
+
+        .users-box {
+            max-height: 250px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 15px;
+        }
+
+        .user-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .counter {
+            font-size: 13px;
+            margin-bottom: 10px;
+            color: #FFC400;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: #FFC400;
+            border: none;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255,196,0,0.4);
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #FFC400;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Turnir yaratish</h1>
+
+<div class="card">
+<form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+{% csrf_token %}
+
+<div class="logo-upload">
+    <input type="file" name="logo" id="logo-input">
+    <label for="logo-input">Logotip yuklash</label>
+</div>
+
+<input type="text" name="name" placeholder="Turnir nomi" required>
+
+<select name="type" required>
+    <option value="LEAGUE">League</option>
+    <option value="PLAYOFF">Playoff</option>
+    <option value="GROUP_PLAYOFF">Group + Playoff</option>
+</select>
+
+<select name="status">
+    <option value="DRAFT">Draft</option>
+    <option value="STARTED">Started</option>
+    <option value="FINISHED">Finished</option>
+</select>
+
+<div class="setting-row">
+    <span>Jamoalar soni</span>
+    <button type="button" onclick="dec('teams_count')">-</button>
+    <input type="number" name="teams_count" id="teams_count" value="8" min="2">
+    <button type="button" onclick="inc('teams_count')">+</button>
+</div>
+
+<div class="setting-row">
+    <span>Har jamoa uchun o'yin</span>
+    <input type="number" name="matches_per_team" value="2" min="1">
+</div>
+
+<div class="setting-row">
+    <span>G'alaba ochko</span>
+    <input type="number" name="win_points" value="3">
+</div>
+
+<div class="setting-row">
+    <span>Durrang ochko</span>
+    <input type="number" name="draw_points" value="1">
+</div>
+
+<div class="setting-row">
+    <span>Mag'lubiyat ochko</span>
+    <input type="number" name="loss_points" value="0">
+</div>
+
+<hr style="margin:25px 0; border-color:rgba(255,255,255,0.1);">
+
+<h3>O'yinchilarni tanlash</h3>
+<div class="counter">
+    Tanlandi: <span id="selectedCount">0</span> / <span id="maxCount">8</span>
+</div>
+
+<div class="users-box">
+{% for user in users %}
+    <label class="user-item">
+        <input type="checkbox" name="users" value="{{ user.id }}" onchange="updateSelection()">
+        {{ user.first_name }} {{ user.last_name }}
+    </label>
+{% empty %}
+    <p>Foydalanuvchilar yo‘q</p>
+{% endfor %}
+</div>
+
+<button type="submit">SAQLASH</button>
+
+</form>
+</div>
+
+<a href="{% url 'championship_list' %}">← Turnirlar ro'yxati</a>
+
+<script>
+function inc(id) {
+    let el = document.getElementById(id);
+    el.value = parseInt(el.value) + 1;
+    document.getElementById("maxCount").innerText = el.value;
+    updateSelection();
+}
+
+function dec(id) {
+    let el = document.getElementById(id);
+    if (parseInt(el.value) > 1) {
+        el.value = parseInt(el.value) - 1;
+        document.getElementById("maxCount").innerText = el.value;
+        updateSelection();
+    }
+}
+
+function updateSelection() {
+    let max = parseInt(document.getElementById("teams_count").value);
+    let checkboxes = document.querySelectorAll('input[name="users"]');
+    let checked = document.querySelectorAll('input[name="users"]:checked');
+
+    document.getElementById("selectedCount").innerText = checked.length;
+    document.getElementById("maxCount").innerText = max;
+
+    if (checked.length >= max) {
+        checkboxes.forEach(cb => {
+            if (!cb.checked) cb.disabled = true;
+        });
+    } else {
+        checkboxes.forEach(cb => cb.disabled = false);
+    }
+}
+
+function validateForm() {
+    let max = parseInt(document.getElementById("teams_count").value);
+    let checked = document.querySelectorAll('input[name="users"]:checked').length;
+
+    if (checked !== max) {
+        alert("Jamoalar soni va tanlangan o'yinchilar soni teng bo'lishi kerak!");
+        return false;
+    }
+
+    return true;
+}
+</script>
+
+</body>
+</html>

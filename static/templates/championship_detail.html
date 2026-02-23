@@ -1,0 +1,26 @@
+<!-- templates/championship_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Championship Detail</title>
+</head>
+<body>
+    <h1>{{ championship.name }} ({{ championship.type }})</h1>
+    {% if status %}
+        <p>{{ status }}</p>
+    {% endif %}
+
+    <h2>Add Participant</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label>User ID: <input type="number" name="user_id" required></label><br>
+        <label>Team Name: <input type="text" name="team_name"></label><br>
+        <button type="submit">Add</button>
+    </form>
+
+    <a href="{% url 'championship_matches' championship.id %}">View Matches</a><br>
+    <a href="{% url 'championship_table' championship.id %}">View Table</a><br>
+    <a href="{% url 'championship_list' %}">Back to Championships</a>
+</body>
+</html>

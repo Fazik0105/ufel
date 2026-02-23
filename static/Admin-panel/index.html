@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>UFEL_AdninPanel</title>
+    <link rel="icon" href="images/UFEL.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2026">
+    <script src="app.js?v=2026"></script>
+</head>
+
+<body>
+    
+<div class="panel">
+    <div class="panel-a">
+        <a href="#" class="settings-btn">Settings</a>
+        <h3 class="title">Admin Panel</h3>
+    </div>
+    <div class="panel-b">
+        <div class="nav">
+            <a href="#" data-page="turnirs" class="active">TURNIRS</a>
+            <a href="#" data-page="comands">TEAMS</a>
+            <a href="#" data-page="players">PLAYERS</a>
+        </div>
+    </div>
+</div>
+
+
+<section id="turnirs" class="page">
+    <div class="turnirs-container">
+
+        <div class="tournir-card">
+            <div class="league-card">
+                <img src="data:image/png;base64,..." alt="league-logo" class="league-logo">
+                <h2 class="league-name">Anglia league</h2>
+            </div>
+           <div class="tournir-btns">
+            <a href="" class="edit-tournir">EDIT</a>
+            <a href="#" class="delete-tournir">DELETE</a>
+           </div> 
+        </div>
+
+        <div class="tournir-card">
+            <div class="league-card">
+                <img src="data:image/png;base64,..." alt="league-logo" class="league-logo">
+                <h2 class="league-name">Ispaniya league</h2>
+            </div>
+           <div class="tournir-btns">
+            <a href="#" class="edit-tournir">EDIT</a>
+            <a href="#" class="delete-tournir">DELETE</a>
+           </div> 
+        </div>
+
+
+        <a href="#" class="create-turnir">+</a>
+
+        <!-- CREATE TURNIR MODAL -->
+        <div class="create-tournir-body" id="createTournirModal">
+            <button class="modal-close" type="button">← Back</button>
+             <div class="create-tournir-content">
+
+                <a href="#" class="select-logo" id="selectLogoBtn">+</a>
+                <input type="file" id="logoInput" accept="image/*" hidden>
+                <script src="JavaScripts/select-logo.js"></script>
+
+                <div class="input-group">
+                    <input type="text" id="tournirName" placeholder=" " required>
+                    <label for="tournirName">Tournament name</label>
+                    <span class="input-line"></span>
+                </div>
+
+                <a href="#" class="save-tournir">SAVE</a>
+             </div>
+        </div>
+
+        <!-- EDIT TOURNIR MODAL -->
+<div class="edit-tournir-body" id="editTournirModal">
+  <button class="modal-close" type="button">← Back</button>
+
+  <div class="edit-tournir-content">
+    <a href="#" class="edit-logo" id="editLogoBtn">+</a>
+    <input type="file" id="logoInput" accept="image/*" hidden>
+    <script src="JavaScripts/edit-logo.js"></script>
+
+    <div class="input-group">
+      <input type="text" id="tournirName" placeholder=" " required>
+      <label for="tournirName">Edit Tournament Name</label>
+      <span class="input-line"></span>
+    </div>
+
+    <div class="edit-settings">
+      <div class="edit-row">
+        <span class="edit-row-label">Matches</span>
+        <div class="edit-row-controls">
+          <button type="button" class="stepper-btn" data-step="-1">−</button>
+          <input class="stepper-value" type="number" value="2" min="0" inputmode="numeric">
+          <button type="button" class="stepper-btn" data-step="1">+</button>
+        </div>
+      </div>
+
+      <div class="edit-row">
+        <span class="edit-row-label">Points for Win</span>
+        <div class="edit-row-controls">
+          <button type="button" class="stepper-btn" data-step="-1">−</button>
+          <input class="stepper-value" type="number" value="3" min="0" inputmode="numeric">
+          <button type="button" class="stepper-btn" data-step="1">+</button>
+        </div>
+      </div>
+
+      <div class="edit-row">
+        <span class="edit-row-label">Points for Draw</span>
+        <div class="edit-row-controls">
+          <button type="button" class="stepper-btn" data-step="-1">−</button>
+          <input class="stepper-value" type="number" value="1" min="0" inputmode="numeric">
+          <button type="button" class="stepper-btn" data-step="1">+</button>
+        </div>
+      </div>
+
+      <div class="edit-row">
+        <span class="edit-row-label">Points for Loss</span>
+        <div class="edit-row-controls">
+          <button type="button" class="stepper-btn" data-step="-1">−</button>
+          <input class="stepper-value" type="number" value="0" min="0" inputmode="numeric">
+          <button type="button" class="stepper-btn" data-step="1">+</button>
+        </div>
+      </div>
+    </div>
+
+    <a href="#" class="save-edit-tournir">SAVE</a>
+
+  </div>
+</div>
+
+<script>
+  // Stepper (+ / -) for Edit Tournament modal
+  (function () {
+    const modal = document.getElementById("editTournirModal");
+    if (!modal) return;
+
+    modal.addEventListener("click", (e) => {
+      const btn = e.target.closest(".stepper-btn");
+      if (!btn) return;
+
+      e.preventDefault();
+
+      const controls = btn.closest(".edit-row-controls");
+      const input = controls && controls.querySelector(".stepper-value");
+      if (!input) return;
+
+      const step = Number(btn.dataset.step || 0);
+      const min = input.min === "" ? -Infinity : Number(input.min);
+      const max = input.max === "" ? Infinity : Number(input.max);
+      const cur = input.value === "" ? 0 : Number(input.value);
+
+      let next = cur + step;
+      if (Number.isFinite(min)) next = Math.max(min, next);
+      if (Number.isFinite(max)) next = Math.min(max, next);
+
+      input.value = String(next);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  })();
+</script>
+
+
+
+
+        <!-- DELETE TOURNIR MODAL -->
+        <div class="delete-tournir-body" id="deleteTournirModal">
+            <div class="delete-tournir-backdrop"></div>
+
+            <div class="delete-tournir-panel" role="dialog" aria-modal="true">
+                <button class="modal-close" type="button" aria-label="Close">✕</button>
+
+                <div class="delete-tournir-content">
+                    <h2 class="delete-tournir-text">Confirm to delete the tournament</h2>
+                    <a href="#" class="delete-tournir-delete" id="deleteConfirmBtn">Delete</a>
+                    <a href="#" class="delete-tournir-canel" id="deleteCancelBtn">Cancel</a>
+                </div>
+            </div>
+        </div>
+
+        <script src="JavaScripts/delete-tournir-modal.js"></script>
+        <script src="JavaScripts/create-tournir-modal.js"></script>
+        <script src="JavaScripts/edit-tournir-modal.js"></script>
+    </div>
+</section>
+
+<section id="comands" class="page">
+    <div class="teams-container">
+
+        <div class="team-card">
+            <img src="images/team-icon.png" alt="team-icon">
+            <h2>Team 1</h2>
+            <a href="#" class="delete-team-btn">
+                <img src="images/delete-icon.png" alt="delete-team">
+            </a>
+        </div>
+
+        <div class="team-card">
+            <img src="images/team-icon.png" alt="team-icon">
+            <h2>Team 2</h2>
+            <a href="#" class="delete-team-btn">
+                <img src="images/delete-icon.png" alt="delete-team">
+            </a>
+        </div>
+
+        <div class="team-card">
+            <img src="images/team-icon.png" alt="team-icon">
+            <h2>Team 3</h2>
+            <a href="#" class="delete-team-btn">
+                <img src="images/delete-icon.png" alt="delete-team">
+            </a>
+        </div>
+
+        <a href="#" class="create-team">+</a>
+
+        <!-- CREATE TEAM MODAL -->
+         <div class="create-team-modal">
+            <div class="create-team-content">
+                <button class="modal-close" type="button">x</button>
+
+                <a href="#" class="select-logo-team">+</a>
+
+                <div class="input-group-team">
+                    <label for="tournirName">Team Name</label>
+                    <input type="text" id="tournirName" placeholder="NAME TEAM" required>
+                    <span class="input-line"></span>
+                </div>
+
+                <a href="#" class="save-team">SAVE</a>
+
+            </div>
+         </div>
+
+    </div>
+</section>
+
+<section id="players" class="page"></section>
+
+</body>
+</html>

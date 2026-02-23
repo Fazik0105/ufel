@@ -1,0 +1,89 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Users | UFEL</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+
+</head>
+<body>
+
+<header>
+    <a href="{% url 'index' %}">← Asosiy sahifa</a>
+</header>
+
+<div class="container">
+    <h1>O'YINCHILARNI BOSHQARISH</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="status
+                {% if message.tags == 'error' %} error {% endif %}
+            ">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <div class="card">
+        <h2>Yangi o'yinchi qo'shish</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="field">
+                <label>Username (@login)</label>
+                <input type="text" name="username" placeholder="Masalan: ronaldo7" required>
+            </div>
+
+            <div class="field">
+                <label>Ismi</label>
+                <input type="text" name="first_name" placeholder="Ismini kiriting" required>
+            </div>
+
+            <div class="field">
+                <label>Familiyasi</label>
+                <input type="text" name="last_name" placeholder="Familiyasini kiriting" required>
+            </div>
+
+            <div class="field">
+                <label>Rasm (ixtiyoriy)</label>
+                <input type="file" name="avatar" accept="image/*">
+            </div>
+
+            <button type="submit">O'YINCHINI YARATISH</button>
+        </form>
+    </div>
+
+    <h2>Ro'yxatdan o'tgan o'yinchilar</h2>
+
+    <ul class="users-list">
+        {% for user in users %}
+            <li>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover;">
+                        {% else %}
+                            <div class="avatar-placeholder">
+                                {{ user.first_name|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="user-details">
+                        <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                        <p>@{{ user.username }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'admin_user_detail' user.id %}">Tahrirlash</a>
+            </li>
+        {% empty %}
+            <li style="justify-content: center; color: #64748b;">Hozircha o'yinchilar yo'q</li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>

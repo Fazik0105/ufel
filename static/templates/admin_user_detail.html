@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Tahrirlash: {{ target_user.first_name }} | UFEL</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e, #000);
+            color: #fff;
+        }
+
+        header {
+            padding: 18px 40px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        header a {
+            color: #22d3ee;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 0 20px;
+            animation: fadeInUp 0.7s ease;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 40px rgba(124, 58, 237, 0.15), inset 0 0 0 1px rgba(255,255,255,0.08);
+            text-align: center;
+        }
+
+        .edit-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #7c3aed;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            color: #cbd5f5;
+        }
+
+        input {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            outline: none;
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.6);
+        }
+
+        .btn-save {
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #7c3aed, #22d3ee);
+            margin-top: 10px;
+        }
+
+        .btn-cancel {
+            text-align: center;
+            margin-top: 15px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="{% url 'admin_dashboard' %}">← Orqaga qaytish</a>
+</header>
+
+<div class="container">
+    <div class="card">
+        {% if target_user.avatar %}
+            <img src="{{ target_user.avatar.url }}" class="edit-avatar" alt="avatar">
+        {% else %}
+            <div style="width:100px; height:100px; background:#2a2a40; border-radius:50%; margin: 0 auto 20px; display:flex; align-items:center; justify-content:center;">No IMG</div>
+        {% endif %}
+
+        <h2>O'yinchi ma'lumotlarini tahrirlash</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="field">
+                <label>Username</label>
+                <input type="text" name="username" value="{{ target_user.username }}" required>
+            </div>
+
+            <div class="field">
+                <label>Ismi</label>
+                <input type="text" name="first_name" value="{{ target_user.first_name }}" required>
+            </div>
+
+            <div class="field">
+                <label>Familiyasi</label>
+                <input type="text" name="last_name" value="{{ target_user.last_name }}" required>
+            </div>
+
+            <div class="field">
+                <label>Yangi rasm yuklash (Ixtiyoriy)</label>
+                <input type="file" name="avatar" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn-save">O'ZGARISHLARNI SAQLASH</button>
+            <a href="{% url 'admin_dashboard' %}" class="btn-cancel">Bekor qilish</a>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

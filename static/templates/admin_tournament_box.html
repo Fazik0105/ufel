@@ -1,0 +1,35 @@
+{% load static %}
+<div class="admin-box">
+    <h4 class="admin-title">
+        Admin: {{ latest_champ.name }} boshqaruvi
+    </h4>
+
+    <form method="POST" action="{% url 'bulk_add_participants' latest_champ.id %}">
+        {% csrf_token %}
+        <p class="admin-subtext">Turnirga qo'shish uchun o'yinchilarni tanlang:</p>
+
+        <div class="admin-users">
+            {% for u in available_users %}
+            <label class="admin-user-item">
+                <input type="checkbox" name="user_ids" value="{{ u.id }}">
+                <div class="avatar-wrapper">
+                    <img src="{% if u.avatar %}{{ u.avatar.url }}{% else %}{% static 'images/UFEL.png' %}{% endif %}" alt="Avatar">
+                </div>
+                <span>{{ u.first_name }} {{ u.last_name }} (@{{ u.username }})</span>
+            </label>
+            {% empty %}
+            <p style="color:white; text-align:center;">Hamma foydalanuvchilar qo'shib bo'lingan.</p>
+            {% endfor %}
+        </div>
+
+        <div class="admin-actions">
+            <button type="submit" class="admin-btn">TANLANGANLARNI QO'SHISH</button>
+            <a href="{% url 'generate_matches' latest_champ.id %}"
+               onclick="return confirm('Qur\'a tashlashni tasdiqlaysizmi?')"
+               class="admin-link">QUR'A TASHLASH</a>
+        </div>
+    </form>
+    <div class="admin-count" style="color:white; text-align:center;">
+        Hozirgi ishtirokchilar soni: <b>{{ participants.count }}</b>
+    </div>
+</div>
