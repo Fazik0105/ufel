@@ -769,12 +769,14 @@
 
                         <div style="display: flex; align-items: center; gap: 10px; padding: 0 20px; min-width: 140px; justify-content: center;">
                             <input type="number" name="home_score" value="{{ match.home_score|default:0 }}" min="0" class="score-input" 
+                                data-user-id="{{ match.home_user.id }}"
                                 style="width: 45px; height: 40px; font-size: 18px; font-weight: bold; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; text-align: center;"
                                 {% if not match.home_user or not match.away_user %}disabled style="opacity:0.3;"{% endif %}>
                             
                             <span style="color: #94a3b8; font-weight: bold; font-size: 20px;">:</span>
                             
-                            <input type="number" name="away_score" value="{{ match.away_score|default:0 }}" min="0" class="score-input"
+                            <input type="number" name="away_score" value="{{ match.away_score|default:0 }}" min="0" class="score-input" 
+                                data-user-id="{{ match.away_user.id }}"
                                 style="width: 45px; height: 40px; font-size: 18px; font-weight: bold; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; text-align: center;"
                                 {% if not match.home_user or not match.away_user %}disabled style="opacity:0.3;"{% endif %}>
                         </div>
@@ -831,99 +833,513 @@
     {% endif %}
 </div>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. AJAX orqali saqlash (Sahifa yangilanmaydi!)
-    document.querySelectorAll('.ajax-match-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            
-            // Yuklanish holati
-            submitBtn.innerText = "⏳...";
-            submitBtn.disabled = true;
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all forms
+    initMatchForms();
+    
+    // Handle hash scroll
+    handleHashScroll();
+});
 
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
-                    'X-Requested-With': 'XMLHttpRequest', // Server AJAX ekanini bilishi uchun
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                // Agar status 200 bo'lmasa ham JSON qaytishi mumkin (masalan 400 xatolik)
-                return response.json();
-            })
-            .then(data => {
-                if(data.status === 'success') {
-                    // MUVAFFAQIYAT
-                    submitBtn.innerText = "SAQLANDI ✅";
-                    submitBtn.style.background = "#10b981";
-                    
-                    // Status matnini "TUGAGAN"ga o'zgartirish
-                    const statusText = this.querySelector('span[style*="font-size: 11px"]');
-                    if(statusText) {
-                        statusText.innerText = "TUGAGAN";
-                        statusText.style.color = "#10b981";
-                    }
-
-                    // Score inputlarining rangini yashil qilib qo'yish (vizual effekt)
-                    this.querySelectorAll('.score-input').forEach(input => {
-                        input.style.borderColor = "rgba(16, 185, 129, 0.5)";
-                    });
-
-                    setTimeout(() => {
-                        submitBtn.innerText = originalText;
-                        submitBtn.style.background = "";
-                        submitBtn.disabled = false;
-                    }, 2000);
-
-                } else {
-                    // SERVER TOMONDAN XATOLIK (data.message)
-                    alert("Xato: " + (data.message || "Noma'lum xatolik"));
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = originalText;
-                }
-            })
-            .catch(error => {
-                // TARMOQ YOKI BRAUZER XATOLIGI
-                console.error('Error:', error);
-                alert("Server bilan bog'lanishda xatolik!");
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalText;
-            });
-        });
+function initMatchForms() {
+    const forms = document.querySelectorAll('.ajax-match-form');
+    
+    forms.forEach(form => {
+        // Remove any existing listeners to prevent duplicates
+        form.removeEventListener('submit', handleFormSubmit);
+        form.addEventListener('submit', handleFormSubmit);
     });
+}
 
-    // 2. Skroll qilish (Faqat sahifa birinchi marta yuklanganda)
+// TEKST: handleFormSubmit funksiyasi (faqat 1 marta)
+function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    const url = form.action;
+    const matchId = form.id.replace('match-', '');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳...';
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.message || 'Server xatoligi');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            // Update current match UI
+            updateMatchUI(matchId, data);
+            
+            // Update next match UI if exists (for playoff)
+            if (data.next_match_data) {
+                updateNextMatchUI(data.next_match_data);
+            }
+            
+            // Update bracket if playoff tournament
+            if (data.bracket_data) {
+                updateBracketUI(data.bracket_data);
+            }
+            
+            // Update table if league tournament
+            if (data.table_data) {
+                updateTableUI(data.table_data);
+            }
+            
+            // Show success message
+            showNotification(data.message, 'success');
+            
+            // Visual feedback on button
+            submitBtn.textContent = 'SAQLANDI';
+            submitBtn.style.background = '#10b981';
+            
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.style.background = '';
+                submitBtn.disabled = false;
+            }, 2000);
+        } else {
+            showNotification(data.message || 'Xatolik yuz berdi', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification(error.message || 'Server bilan bog\'lanishda xatolik!', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    });
+}
+
+function updateMatchUI(matchId, data) {
+    const matchForm = document.getElementById(`match-${matchId}`);
+    if (!matchForm) return;
+    
+    // Update scores
+    const homeScoreInput = matchForm.querySelector('input[name="home_score"]');
+    const awayScoreInput = matchForm.querySelector('input[name="away_score"]');
+    
+    if (homeScoreInput) homeScoreInput.value = data.home_score;
+    if (awayScoreInput) awayScoreInput.value = data.away_score;
+    
+    // Update border color based on finished status
+    matchForm.style.borderLeft = data.is_finished ? '5px solid #10b981' : '5px solid #f59e0b';
+    
+    // Update status text
+    const statusSpan = matchForm.querySelector('div[style*="text-align: center"] span');
+    if (statusSpan) {
+        statusSpan.textContent = data.is_finished ? 'TUGAGAN' : 'KUTILMOQDA';
+        statusSpan.style.color = data.is_finished ? '#10b981' : '#f59e0b';
+    }
+    
+    // Update winner highlighting
+    const homeTeamDiv = matchForm.querySelector('div[style*="justify-content: flex-end"]');
+    const awayTeamDiv = matchForm.querySelector('div[style*="justify-content: flex-start"]');
+    
+    if (homeTeamDiv) {
+        const homeNameSpan = homeTeamDiv.querySelector('span[style*="font-size: 15px"]');
+        const homeAvatarDiv = matchForm.querySelector('.user-select-avatar:first-of-type');
+        
+        if (homeNameSpan) {
+            if (data.winner_id && data.winner_id === parseInt(matchForm.querySelector('input[name="home_score"]').dataset.userId)) {
+                homeNameSpan.style.color = '#22d3ee';
+                if (homeAvatarDiv) homeAvatarDiv.style.borderColor = '#22d3ee';
+            } else {
+                homeNameSpan.style.color = '#f8fafc';
+                if (homeAvatarDiv) homeAvatarDiv.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
+        }
+    }
+    
+    if (awayTeamDiv) {
+        const awayNameSpan = awayTeamDiv.querySelector('span[style*="font-size: 15px"]');
+        const awayAvatarDiv = matchForm.querySelectorAll('.user-select-avatar')[1];
+        
+        if (awayNameSpan) {
+            if (data.winner_id && data.winner_id === parseInt(matchForm.querySelector('input[name="away_score"]').dataset.userId)) {
+                awayNameSpan.style.color = '#22d3ee';
+                if (awayAvatarDiv) awayAvatarDiv.style.borderColor = '#22d3ee';
+            } else {
+                awayNameSpan.style.color = '#f8fafc';
+                if (awayAvatarDiv) awayAvatarDiv.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
+        }
+    }
+    
+    // Visual effect on score inputs
+    matchForm.querySelectorAll('.score-input').forEach(input => {
+        input.style.borderColor = data.is_finished ? 'rgba(16, 185, 129, 0.5)' : 'rgba(255,255,255,0.1)';
+    });
+}
+
+function updateNextMatchUI(nextMatchData) {
+    if (!nextMatchData) return;
+    
+    console.log("Next match data:", nextMatchData); // Debug uchun
+    
+    // Find the next match form
+    const nextMatchForm = document.querySelector(`form[id^="match-${nextMatchData.id}"]`);
+    if (!nextMatchForm) {
+        console.log("Next match form not found for ID:", nextMatchData.id);
+        return;
+    }
+    
+    // Update home user if exists
+    if (nextMatchData.home_user) {
+        const homeTeamDiv = nextMatchForm.querySelector('div[style*="justify-content: flex-end"]');
+        if (homeTeamDiv) {
+            const homeNameSpan = homeTeamDiv.querySelector('span[style*="font-size: 15px"]');
+            const homeUsernameSpan = homeTeamDiv.querySelector('span[style*="color: #64748b"]');
+            const homeAvatarDiv = nextMatchForm.querySelector('.user-select-avatar:first-of-type');
+            
+            if (homeNameSpan) {
+                // FIRST_NAME ni ko'rsatish, agar bo'lmasa USERNAME ni ko'rsatish
+                const displayName = nextMatchData.home_user.first_name || nextMatchData.home_user.username;
+                homeNameSpan.textContent = displayName;
+                homeNameSpan.style.color = '#f8fafc';
+                console.log("Setting home name to:", displayName); // Debug uchun
+            }
+            
+            if (homeUsernameSpan) {
+                homeUsernameSpan.textContent = nextMatchData.home_user.username;
+            }
+            
+            if (homeAvatarDiv) {
+                if (nextMatchData.home_user.avatar_url) {
+                    homeAvatarDiv.innerHTML = `<img src="${nextMatchData.home_user.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                } else {
+                    // FIRST_NAME dan birinchi harf, agar bo'lmasa USERNAME dan
+                    const initial = (nextMatchData.home_user.first_name || nextMatchData.home_user.username).charAt(0).toUpperCase();
+                    homeAvatarDiv.innerHTML = `<span>${initial}</span>`;
+                }
+                homeAvatarDiv.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
+        }
+    }
+    
+    // Update away user if exists
+    if (nextMatchData.away_user) {
+        const awayTeamDiv = nextMatchForm.querySelector('div[style*="justify-content: flex-start"]');
+        if (awayTeamDiv) {
+            const awayNameSpan = awayTeamDiv.querySelector('span[style*="font-size: 15px"]');
+            const awayUsernameSpan = awayTeamDiv.querySelector('span[style*="color: #64748b"]');
+            const awayAvatarDiv = nextMatchForm.querySelectorAll('.user-select-avatar')[1];
+            
+            if (awayNameSpan) {
+                // FIRST_NAME ni ko'rsatish, agar bo'lmasa USERNAME ni ko'rsatish
+                const displayName = nextMatchData.away_user.first_name || nextMatchData.away_user.username;
+                awayNameSpan.textContent = displayName;
+                awayNameSpan.style.color = '#f8fafc';
+                console.log("Setting away name to:", displayName); // Debug uchun
+            }
+            
+            if (awayUsernameSpan) {
+                awayUsernameSpan.textContent = nextMatchData.away_user.username;
+            }
+            
+            if (awayAvatarDiv) {
+                if (nextMatchData.away_user.avatar_url) {
+                    awayAvatarDiv.innerHTML = `<img src="${nextMatchData.away_user.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                } else {
+                    // FIRST_NAME dan birinchi harf, agar bo'lmasa USERNAME dan
+                    const initial = (nextMatchData.away_user.first_name || nextMatchData.away_user.username).charAt(0).toUpperCase();
+                    awayAvatarDiv.innerHTML = `<span>${initial}</span>`;
+                }
+                awayAvatarDiv.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
+        }
+    }
+    
+    // Enable/disable inputs based on both users exist
+    const homeScoreInput = nextMatchForm.querySelector('input[name="home_score"]');
+    const awayScoreInput = nextMatchForm.querySelector('input[name="away_score"]');
+    const saveBtn = nextMatchForm.querySelector('button[type="submit"]');
+    
+    if (nextMatchData.home_user && nextMatchData.away_user) {
+        homeScoreInput.disabled = false;
+        awayScoreInput.disabled = false;
+        saveBtn.disabled = false;
+        homeScoreInput.style.opacity = '1';
+        awayScoreInput.style.opacity = '1';
+        saveBtn.style.opacity = '1';
+        saveBtn.style.cursor = 'pointer';
+    } else {
+        // Agar ikkala user ham mavjud bo'lmasa, inputlarni disabled qilish
+        homeScoreInput.disabled = true;
+        awayScoreInput.disabled = true;
+        saveBtn.disabled = true;
+        homeScoreInput.style.opacity = '0.3';
+        awayScoreInput.style.opacity = '0.3';
+        saveBtn.style.opacity = '0.3';
+        saveBtn.style.cursor = 'not-allowed';
+    }
+    
+    // Update match status text
+    const statusSpan = nextMatchForm.querySelector('div[style*="text-align: center"] span');
+    if (statusSpan) {
+        statusSpan.textContent = 'KUTILMOQDA';
+        statusSpan.style.color = '#f59e0b';
+    }
+    
+    // Update border color
+    nextMatchForm.style.borderLeft = '5px solid #f59e0b';
+}
+
+function updateBracketUI(bracketData) {
+    const bracketContainer = document.querySelector('.bracket-container');
+    if (!bracketContainer) return;
+    
+    // Clear existing bracket
+    bracketContainer.innerHTML = '';
+    
+    // Rebuild bracket with new data
+    bracketData.forEach(round => {
+        const roundDiv = document.createElement('div');
+        roundDiv.className = 'bracket-round';
+        
+        // Round title
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'bracket-title';
+        titleDiv.textContent = round.name;
+        roundDiv.appendChild(titleDiv);
+        
+        // Matches container
+        const matchesContainer = document.createElement('div');
+        matchesContainer.style.display = 'flex';
+        matchesContainer.style.flexDirection = 'column';
+        matchesContainer.style.gap = '24px';
+        
+        // Create each match
+        round.matches.forEach(match => {
+            const matchCard = document.createElement('div');
+            matchCard.className = 'bracket-card';
+            
+            // Helper function to get user display
+            const getUserDisplay = (user) => {
+                if (!user) return { avatar: '?', name: 'TBD' };
+                return {
+                    avatar: user.avatar_url ? 
+                        `<img src="${user.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` :
+                        (user.first_name ? user.first_name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()),
+                    name: user.first_name || user.username
+                };
+            };
+            
+            const homeUser = getUserDisplay(match.home_user);
+            const awayUser = getUserDisplay(match.away_user);
+            
+            // Home team
+            const homeTeamDiv = document.createElement('div');
+            homeTeamDiv.className = `bracket-team ${match.winner_id && match.home_user && match.winner_id === match.home_user.id ? 'winner' : ''}`;
+            homeTeamDiv.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="bracket-avatar">${homeUser.avatar}</div>
+                    <span style="font-weight:600; color:#f8fafc;">${homeUser.name}</span>
+                </div>
+                <div class="bracket-score">${match.home_score}</div>
+            `;
+            
+            // VS
+            const vsDiv = document.createElement('div');
+            vsDiv.className = 'bracket-vs';
+            vsDiv.innerHTML = '<span>VS</span>';
+            
+            // Away team
+            const awayTeamDiv = document.createElement('div');
+            awayTeamDiv.className = `bracket-team ${match.winner_id && match.away_user && match.winner_id === match.away_user.id ? 'winner' : ''}`;
+            awayTeamDiv.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="bracket-avatar">${awayUser.avatar}</div>
+                    <span style="font-weight:600; color:#f8fafc;">${awayUser.name}</span>
+                </div>
+                <div class="bracket-score">${match.away_score}</div>
+            `;
+            
+            matchCard.appendChild(homeTeamDiv);
+            matchCard.appendChild(vsDiv);
+            matchCard.appendChild(awayTeamDiv);
+            matchesContainer.appendChild(matchCard);
+        });
+        
+        roundDiv.appendChild(matchesContainer);
+        bracketContainer.appendChild(roundDiv);
+    });
+}
+
+function updateTableUI(tableData) {
+    const tableBody = document.querySelector('.modern-table tbody');
+    if (!tableBody) return;
+    
+    // Clear existing table
+    tableBody.innerHTML = '';
+    
+    // Rebuild table with new data
+    tableData.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        
+        // Add rank class
+        if (index === 0) row.className = 'rank-1';
+        else if (index === 1) row.className = 'rank-2';
+        else if (index === 2) row.className = 'rank-3';
+        
+        // Rank column
+        const rankCell = document.createElement('td');
+        rankCell.className = 'rank-num';
+        rankCell.style.textAlign = 'center';
+        rankCell.style.fontWeight = 'bold';
+        
+        if (index === 0) rankCell.innerHTML = '<span class="medal">🥇</span>';
+        else if (index === 1) rankCell.innerHTML = '<span class="medal">🥈</span>';
+        else if (index === 2) rankCell.innerHTML = '<span class="medal">🥉</span>';
+        else rankCell.textContent = index + 1;
+        
+        row.appendChild(rankCell);
+        
+        // User column
+        const userCell = document.createElement('td');
+        const borderColor = index === 0 ? '#ffd700' : (index === 1 ? '#c0c0c0' : (index === 2 ? '#cd7f32' : 'rgba(255,255,255,0.1)'));
+        const textColor = index === 0 ? '#ffd700' : (index === 1 ? '#e2e8f0' : (index === 2 ? '#cd7f32' : '#fff'));
+        
+        userCell.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="user-avatar" style="width: 35px; height: 35px; font-size: 12px; border: 2px solid ${borderColor}; position: relative;">
+                    ${entry.user.avatar_url ? 
+                        `<img src="${entry.user.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` :
+                        (entry.user.first_name ? entry.user.first_name.charAt(0).toUpperCase() : entry.user.username.charAt(0).toUpperCase())
+                    }
+                    ${index <= 2 ? '<div style="position: absolute; bottom: -5px; right: -5px; width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid #1a1a2e;"></div>' : ''}
+                </div>
+                <span style="font-weight: ${index <= 2 ? '700' : '400'}; color: ${textColor};">
+                    ${entry.user.first_name || entry.user.username}
+                </span>
+            </div>
+        `;
+        row.appendChild(userCell);
+        
+        // Stats columns
+        const stats = [
+            { key: 'pld', color: '#94a3b8' },
+            { key: 'w', color: '#10b981' },
+            { key: 'd', color: '#94a3b8' },
+            { key: 'l', color: '#ef4444' },
+            { key: 'gd', color: entry.gd > 0 ? '#22d3ee' : '#94a3b8' },
+        ];
+        
+        stats.forEach(stat => {
+            const cell = document.createElement('td');
+            cell.style.textAlign = 'center';
+            cell.style.color = stat.color;
+            if (stat.key === 'w') cell.style.fontWeight = '600';
+            cell.textContent = entry[stat.key];
+            row.appendChild(cell);
+        });
+        
+        // Points column
+        const ptsCell = document.createElement('td');
+        ptsCell.style.textAlign = 'center';
+        ptsCell.className = 'highlight';
+        ptsCell.innerHTML = `<span style="background: rgba(34, 211, 238, 0.1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(34, 211, 238, 0.2);">${entry.pts}</span>`;
+        row.appendChild(ptsCell);
+        
+        tableBody.appendChild(row);
+    });
+}
+
+function showNotification(message, type) {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.custom-notification');
+    if (existingNotification) existingNotification.remove();
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'custom-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+        ${type === 'success' ? 'background: #10b981;' : 'background: #ef4444;'}
+    `;
+    notification.textContent = message;
+    
+    // Add animation keyframes if not exists
+    if (!document.querySelector('#notification-keyframes')) {
+        const style = document.createElement('style');
+        style.id = 'notification-keyframes';
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+function handleHashScroll() {
     const hash = window.location.hash;
     if (hash && hash.startsWith('#match-')) {
-        window.addEventListener("load", function() {
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    const element = document.querySelector(hash);
-                    if (element) {
-                        element.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-
-                        element.style.outline = "2px solid #22d3ee";
-                        element.style.outlineOffset = "4px";
-                        setTimeout(() => {
-                            element.style.transition = "outline 1s ease";
-                            element.style.outline = "none";
-                        }, 2500);
-                    }
-                }, 300); 
-            });
+        // Wait for page to fully load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const element = document.querySelector(hash);
+                if (element) {
+                    element.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    
+                    // Highlight effect
+                    element.style.outline = '2px solid #22d3ee';
+                    element.style.outlineOffset = '4px';
+                    element.style.transition = 'outline 1s ease';
+                    
+                    setTimeout(() => {
+                        element.style.outline = 'none';
+                    }, 2500);
+                }
+            }, 300);
         });
     }
-});
+}
 </script>
-
 </body>
 </html>

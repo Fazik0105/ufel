@@ -308,9 +308,9 @@ def admin_user_detail(request, pk):
 def admin_championship_detail(request, pk):
     championship = get_object_or_404(Championship, pk=pk)
     
-    # FILTERLARNI OLISH - BU YERDA ANIQLAYMIZ
+    # FILTERLARNI OLISH
     search_query = request.GET.get('search', '')
-    status_filter = request.GET.get('status', 'all')  # all, finished, pending
+    status_filter = request.GET.get('status', 'all')
     
     # Participants ni bir martada olish
     participants = ChampionshipParticipant.objects.filter(
@@ -325,31 +325,30 @@ def admin_championship_detail(request, pk):
     
     participant_user_ids = participants.values_list('user_id', flat=True)
     
-    # Available users - faqat kerakli fieldlar
+    # Available users
     available_users = User.objects.filter(
         role='USER'
     ).exclude(
         id__in=participant_user_ids
     ).only('id', 'username', 'first_name', 'last_name')
     
-    # Matches ni optimallashtirish
-    matches = Match.objects.filter(
+    # Barcha matchlarni olish (filterlarsiz) - BRACKET UCHUN
+    all_matches = Match.objects.filter(
         championship=championship
     ).select_related(
-        'home_user', 
-        'away_user',
-        'next_match'
-    ).only(
-        'id', 'round_name', 'round_order', 'bracket_position',
-        'home_score', 'away_score', 'is_finished',
-        'home_user__id', 'home_user__username', 'home_user__first_name', 'home_user__avatar',
-        'away_user__id', 'away_user__username', 'away_user__first_name', 'away_user__avatar',
-        'next_match__id'
-    )
+        'home_user', 'away_user'
+    ).order_by('round_order', 'bracket_position')
     
-    # Filterlarni qo'llash
+    # Matches list uchun (filterlangan)
+    filtered_matches = Match.objects.filter(
+        championship=championship
+    ).select_related(
+        'home_user', 'away_user', 'next_match'
+    ).order_by('round_order', 'bracket_position', 'id')
+    
+    # Filterlarni qo'llash (faqat matches list uchun)
     if search_query:
-        matches = matches.filter(
+        filtered_matches = filtered_matches.filter(
             Q(home_user__username__icontains=search_query) |
             Q(home_user__first_name__icontains=search_query) |
             Q(away_user__username__icontains=search_query) |
@@ -357,36 +356,71 @@ def admin_championship_detail(request, pk):
         )
     
     if status_filter == 'finished':
-        matches = matches.filter(is_finished=True)
+        filtered_matches = filtered_matches.filter(is_finished=True)
     elif status_filter == 'pending':
-        matches = matches.filter(is_finished=False)
+        filtered_matches = filtered_matches.filter(is_finished=False)
     
-    matches = matches.order_by('round_order', 'bracket_position', 'id')
-    
-    matches_exist = matches.exists()
-    
+    # Bracket data ni to'g'ridan-to'g'ri all_matches dan tayyorlash
     bracket_data = []
-    if championship.type == 'PLAYOFF' and matches_exist:
-        bracket_data = get_bracket_data_cached(championship.id)
+    if championship.type == 'PLAYOFF' and all_matches.exists():
+        # Raundlar bo'yicha guruhlash
+        rounds_dict = {}
+        for match in all_matches:
+            round_name = match.round_name
+            if round_name not in rounds_dict:
+                rounds_dict[round_name] = {
+                    'name': round_name,
+                    'order': match.round_order,
+                    'matches': []
+                }
+            
+            # Winner ni aniqlash
+            winner = None
+            if match.is_finished:
+                if match.home_score > match.away_score:
+                    winner = match.home_user
+                elif match.away_score > match.home_score:
+                    winner = match.away_user
+            
+            # Match ma'lumotlarini qo'shish
+            match_data = {
+                'id': match.id,
+                'home_user': match.home_user,
+                'away_user': match.away_user,
+                'home_score': match.home_score,
+                'away_score': match.away_score,
+                'is_finished': match.is_finished,
+                'winner': winner,
+                'bracket_position': match.bracket_position or 0,
+                'round_order': match.round_order,
+            }
+            rounds_dict[round_name]['matches'].append(match_data)
+        
+        # Raundlarni order bo'yicha tartiblash
+        bracket_data = sorted(rounds_dict.values(), key=lambda x: x['order'])
+        
+        # Har bir raunddagi matchlarni bracket_position bo'yicha tartiblash
+        for round_data in bracket_data:
+            round_data['matches'].sort(key=lambda x: x['bracket_position'])
     
     table_data = []
-    if championship.type == 'LEAGUE' and matches_exist:
+    if championship.type == 'LEAGUE' and all_matches.exists():
         table_data = get_standings(championship.id)
-
-    matches_list = list(matches)
+    
+    matches_list = list(filtered_matches)
     matches_count = len(matches_list)
+    matches_exist = all_matches.exists()
 
     context = {
         'championship': championship,
         'participants': participants,
         'available_users': available_users,
         'matches_exist': matches_exist,
-        'matches': matches,
+        'matches': matches_list,
         'table': table_data,
         'bracket_data': bracket_data,
         'search_query': search_query,
         'status_filter': status_filter,
-        'matches': matches_list,
         'matches_count': matches_count,
     }
     
@@ -797,24 +831,21 @@ def update_single_match(request, match_id):
             a_score = int(request.POST.get('away_score', 0))
             
             if match.home_user and match.away_user:
+                if match.championship.type == 'PLAYOFF' and h_score == a_score:
+                    error_msg = "Playoffda durang bo'lishi mumkin emas!"
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
+                    messages.error(request, error_msg)
+                    return redirect(f"{reverse('admin_championship_detail', args=[championship_id])}#match-{match.id}")
+                
                 match.home_score = h_score
                 match.away_score = a_score
                 match.is_finished = True
                 match.save()
                 
+                next_match_updated = None
                 if match.championship.type == 'PLAYOFF':
-                    winner = None
-                    if match.home_score > match.away_score:
-                        winner = match.home_user
-                    elif match.away_score > match.home_score:
-                        winner = match.away_user
-                    
-                    if not winner:
-                        error_msg = "Playoffda durang bo'lishi mumkin emas!"
-                        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
-                            return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
-                        messages.error(request, error_msg)
-                        return redirect(f"{reverse('admin_championship_detail', args=[championship_id])}#match-{match.id}")
+                    winner = match.winner()
                     
                     if match.next_match:
                         next_match = match.next_match
@@ -823,32 +854,209 @@ def update_single_match(request, match_id):
                         else:
                             next_match.away_user = winner
                         next_match.save()
+                        next_match_updated = next_match
                     
                     if match.round_name == "Final":
                         match.championship.status = "FINISHED"
                         match.championship.save()
-
+                
                 success_msg = f"Natija saqlandi: {h_score}:{a_score}"
                 
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
-                    return JsonResponse({
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    response_data = {
                         'status': 'success',
                         'message': success_msg,
-                        'match_id': match.id
-                    })
+                        'match_id': match.id,
+                        'home_score': match.home_score,
+                        'away_score': match.away_score,
+                        'is_finished': match.is_finished,
+                        'winner_id': match.winner().id if match.winner() else None,
+                        'next_match_id': match.next_match.id if match.next_match else None,
+                    }
+                    
+                    if match.next_match:
+                        response_data['next_match_home_id'] = match.next_match.home_user.id if match.next_match.home_user else None
+                        response_data['next_match_away_id'] = match.next_match.away_user.id if match.next_match.away_user else None
+                        
+                        # Next match ma'lumotlarini qo'shamiz - FIRST_NAME ni to'g'ri uzatish
+                        response_data['next_match_data'] = {
+                            'id': next_match_updated.id if next_match_updated else match.next_match.id,
+                            'home_user': {
+                                'id': match.next_match.home_user.id if match.next_match.home_user else None,
+                                'username': match.next_match.home_user.username if match.next_match.home_user else None,
+                                'first_name': match.next_match.home_user.first_name if match.next_match.home_user else None,
+                                'last_name': match.next_match.home_user.last_name if match.next_match.home_user else None,
+                                'avatar_url': match.next_match.home_user.avatar.url if match.next_match.home_user and match.next_match.home_user.avatar else None
+                            } if match.next_match.home_user else None,
+                            'away_user': {
+                                'id': match.next_match.away_user.id if match.next_match.away_user else None,
+                                'username': match.next_match.away_user.username if match.next_match.away_user else None,
+                                'first_name': match.next_match.away_user.first_name if match.next_match.away_user else None,
+                                'last_name': match.next_match.away_user.last_name if match.next_match.away_user else None,
+                                'avatar_url': match.next_match.away_user.avatar.url if match.next_match.away_user and match.next_match.away_user.avatar else None
+                            } if match.next_match.away_user else None,
+                        }
+                    
+                    if match.championship.type == 'LEAGUE':
+                        updated_table = get_standings(match.championship.id)
+                        
+                        serializable_table = []
+                        for entry in updated_table:
+                            serializable_entry = {
+                                'user': {
+                                    'id': entry['user'].id,
+                                    'username': entry['user'].username,
+                                    'first_name': entry['user'].first_name,
+                                    'last_name': entry['user'].last_name,
+                                    'avatar_url': entry['user'].avatar.url if entry['user'].avatar else None
+                                },
+                                'pld': entry['pld'],
+                                'w': entry['w'],
+                                'd': entry['d'],
+                                'l': entry['l'],
+                                'gf': entry['gf'],
+                                'ga': entry['ga'],
+                                'gd': entry['gd'],
+                                'pts': entry['pts']
+                            }
+                            serializable_table.append(serializable_entry)
+                        
+                        response_data['table_data'] = serializable_table
+                    
+                    elif match.championship.type == 'PLAYOFF':
+                        from .services import get_bracket_data
+                        updated_bracket = get_bracket_data(match.championship.id)
+                        
+                        serializable_bracket = []
+                        for round_data in updated_bracket:
+                            serializable_round = {
+                                'name': round_data['name'],
+                                'order': round_data['order'],
+                                'matches': []
+                            }
+                            
+                            for match_data in round_data['matches']:
+                                serializable_match = {
+                                    'id': match_data['id'],
+                                    'home_score': match_data['home_score'],
+                                    'away_score': match_data['away_score'],
+                                    'is_finished': match_data['is_finished'],
+                                    'bracket_position': match_data['bracket_position'],
+                                    'round_order': match_data['round_order'],
+                                    'home_user': {
+                                        'id': match_data['home_user'].id if match_data['home_user'] else None,
+                                        'username': match_data['home_user'].username if match_data['home_user'] else None,
+                                        'first_name': match_data['home_user'].first_name if match_data['home_user'] else None,
+                                        'avatar_url': match_data['home_user'].avatar.url if match_data['home_user'] and match_data['home_user'].avatar else None
+                                    } if match_data['home_user'] else None,
+                                    'away_user': {
+                                        'id': match_data['away_user'].id if match_data['away_user'] else None,
+                                        'username': match_data['away_user'].username if match_data['away_user'] else None,
+                                        'first_name': match_data['away_user'].first_name if match_data['away_user'] else None,
+                                        'avatar_url': match_data['away_user'].avatar.url if match_data['away_user'] and match_data['away_user'].avatar else None
+                                    } if match_data['away_user'] else None,
+                                    'winner_id': match_data['winner'].id if match_data['winner'] else None
+                                }
+                                serializable_round['matches'].append(serializable_match)
+                            
+                            serializable_bracket.append(serializable_round)
+                        
+                        response_data['bracket_data'] = serializable_bracket
+                    
+                    return JsonResponse(response_data)
                 
                 messages.success(request, success_msg)
             else:
                 error_msg = "O'yin uchun ikkala jamoa ham mavjud emas!"
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
                 messages.error(request, error_msg)
             
         except Exception as e:
             error_msg = f"Xatolik yuz berdi: {str(e)}"
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
+            import traceback
+            traceback.print_exc()
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'status': 'error', 'message': error_msg}, status=500)
             messages.error(request, error_msg)
             
     url = reverse('admin_championship_detail', kwargs={'pk': championship_id})
     return redirect(f"{url}#match-{match.id}")
+
+def get_championship_detail(request, pk):
+    championship = get_object_or_404(Championship, pk=pk)
+    
+    # Get all matches with fresh data from database
+    all_matches = Match.objects.filter(
+        championship=championship
+    ).select_related(
+        'home_user', 'away_user'
+    ).order_by('round_order', 'bracket_position')
+    
+    # Debug: Print matches to see what we have
+    print(f"Total matches: {all_matches.count()}")
+    for m in all_matches:
+        print(f"Match {m.id}: {m.round_name}, home={m.home_user}, away={m.away_user}, score={m.home_score}:{m.away_score}, finished={m.is_finished}")
+    
+    # Organize matches by round_order (more reliable than round_name)
+    bracket_data = []
+    current_order = None
+    current_round = []
+    
+    for match in all_matches:
+        if match.round_order != current_order:
+            if current_round:
+                bracket_data.append({
+                    'name': current_round[0].round_name,
+                    'order': current_order,
+                    'matches': current_round
+                })
+            current_order = match.round_order
+            current_round = [match]
+        else:
+            current_round.append(match)
+    
+    # Add the last round
+    if current_round:
+        bracket_data.append({
+            'name': current_round[0].round_name,
+            'order': current_order,
+            'matches': current_round
+        })
+    
+    # Sort rounds by order
+    bracket_data.sort(key=lambda x: x['order'])
+    
+    # Get matches for the matches list section
+    matches = all_matches
+    
+    # Apply filters if needed
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', 'all')
+    
+    if search_query:
+        matches = matches.filter(
+            Q(home_user__username__icontains=search_query) |
+            Q(home_user__first_name__icontains=search_query) |
+            Q(away_user__username__icontains=search_query) |
+            Q(away_user__first_name__icontains=search_query)
+        )
+    
+    if status_filter == 'finished':
+        matches = matches.filter(is_finished=True)
+    elif status_filter == 'pending':
+        matches = matches.filter(is_finished=False)
+    
+    matches_count = matches.count()
+    
+    context = {
+        'championship': championship,
+        'bracket_data': bracket_data,
+        'matches': matches,
+        'matches_count': matches_count,
+        'matches_exist': all_matches.exists(),
+        'search_query': search_query,
+        'status_filter': status_filter,
+    }
+    return render(request, 'your_template.html', context)
+

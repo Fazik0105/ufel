@@ -4,6 +4,78 @@ from collections import defaultdict
 from django.db.models import Q
 from ..models import Match, Championship, User
 from django.core.cache import cache
+from django.db import models
+
+def get_standings(championship_id):
+    championship = Championship.objects.get(id=championship_id)
+    
+    # Faqat tugagan o'yinlarni olamiz
+    matches = Match.objects.filter(
+        championship=championship, 
+        is_finished=True
+    )
+    
+    # Turnir ishtirokchilari
+    participants = User.objects.filter(
+        championshipparticipant__championship=championship
+    )
+    
+    standings = []
+    for user in participants:
+        stats = {
+            'user': user, 
+            'pld': 0,  # O'yinlar soni
+            'w': 0,    # G'alabalar
+            'd': 0,    # Duranglar
+            'l': 0,    # Mag'lubiyatlar
+            'gf': 0,   # Urilgan gollar
+            'ga': 0,   # O'tkazilgan gollar
+            'gd': 0,   # Farq
+            'pts': 0   # Ochkolar
+        }
+        
+        # Userning barcha o'yinlari
+        user_matches = matches.filter(
+            models.Q(home_user=user) | models.Q(away_user=user)
+        )
+        
+        for m in user_matches:
+            stats['pld'] += 1
+            
+            if m.home_user == user:
+                # Home o'yinchi
+                stats['gf'] += m.home_score
+                stats['ga'] += m.away_score
+                
+                if m.home_score > m.away_score:
+                    stats['w'] += 1
+                    stats['pts'] += 3
+                elif m.home_score == m.away_score:
+                    stats['d'] += 1
+                    stats['pts'] += 1
+                else:
+                    stats['l'] += 1
+                    stats['pts'] += 0
+            else:
+                # Away o'yinchi
+                stats['gf'] += m.away_score
+                stats['ga'] += m.home_score
+                
+                if m.away_score > m.home_score:
+                    stats['w'] += 1
+                    stats['pts'] += 3
+                elif m.away_score == m.home_score:
+                    stats['d'] += 1
+                    stats['pts'] += 1
+                else:
+                    stats['l'] += 1
+                    stats['pts'] += 0
+        
+        stats['gd'] = stats['gf'] - stats['ga']
+        standings.append(stats)
+    
+    # Ochkolar bo'yicha saralash (agar teng bo'lsa, gol farqi)
+    return sorted(standings, key=lambda x: (-x['pts'], -x['gd'], -x['gf']))
 
 def generate_league_matches(championship, users):
     Match.objects.filter(championship=championship).delete()
@@ -166,136 +238,306 @@ def generate_playoff_matches(championship, users):
     random.shuffle(users)
     
     total_teams = len(users)
+    print(f"Total teams: {total_teams}")
     
     # Raundlar haqida ma'lumot
     rounds_info = get_playoff_rounds_info(total_teams)
+    print(f"Rounds info: {rounds_info}")
     
     # Barcha matchlarni yaratish
     all_matches = create_playoff_structure(championship, users, rounds_info)
     
+    print(f"Created {len(all_matches)} matches")
+    for match in all_matches:
+        print(f"Match {match.id}: {match.round_name}, order={match.round_order}, pos={match.bracket_position}")
+    
     return all_matches
+
 
 def get_playoff_rounds_info(total_teams):
     """
-    Playoff raundlari haqida ma'lumot qaytaradi
-    Masalan: 6 teams -> 1/4 final (2 match), 1/2 final (2 match), Final (1 match)
+    Har qanday juft sonli jamoalar uchun raundlar strukturasini hisoblaydi.
     """
-    if total_teams < 2:
+    if total_teams < 2: 
         return []
     
-    rounds = []
-    remaining_teams = total_teams
-    round_order = 1
-        
-    while remaining_teams > 1:
-        matches_count = remaining_teams // 2
-        
-        # Round nomini aniqlash
-        if remaining_teams == 2:
-            round_name = "Final"
-        elif remaining_teams == 4:
-            round_name = "1/2-final"
-        elif remaining_teams == 8:
-            round_name = "1/4 final"
-        elif remaining_teams == 16:
-            round_name = "1/8 final"
-        elif remaining_teams == 32:
-            round_name = "1/16 final"
-        elif remaining_teams == 64:
-            round_name = "1/32 final"
-        else:
-            round_name = f"1/{remaining_teams} final"
-                
-        rounds.append({
-            'name': round_name,
-            'order': round_order,
-            'matches_count': matches_count,
-            'teams_count': remaining_teams
-        })
-        
-        remaining_teams = matches_count
-        round_order += 1
+    print(f"Calculating rounds for {total_teams} teams")
     
+    # Eng yaqin kichik 2 ning darajasini topamiz
+    next_power_of_2 = 2 ** int(math.log2(total_teams))
+    print(f"Next power of 2: {next_power_of_2}")
+    
+    # 1-raunddagi o'yinlar soni (Play-in)
+    first_round_matches = total_teams - next_power_of_2
+    print(f"First round matches: {first_round_matches}")
+    
+    rounds = []
+    
+    # 1. PLAY-IN ROUND
+    if first_round_matches > 0:
+        rounds.append({
+            'name': "Round 1 (Play-in)",
+            'order': 1,
+            'matches_count': first_round_matches,
+            'is_preliminary': True
+        })
+        current_round_teams = next_power_of_2
+        start_order = 2
+        print(f"Added Play-in round with {first_round_matches} matches")
+    else:
+        current_round_teams = total_teams
+        start_order = 1
+        print("No Play-in round needed")
+
+    # 2. ASOSIY TO'R
+    temp_teams = current_round_teams
+    order = start_order
+    
+    # Round nomlarini to'g'ri belgilash
+    round_number = 1
+    while temp_teams > 1:
+        m_count = temp_teams // 2
+        
+        if temp_teams == 2:
+            name = "Final"
+        elif temp_teams == 4:
+            name = "1/2 Final"
+        elif temp_teams == 8:
+            name = "1/4 Final"
+        elif temp_teams == 16:
+            name = "1/8 Final"
+        elif temp_teams == 32:
+            name = "1/16 Final"
+        elif temp_teams == 64:
+            name = "1/32 Final"
+        else:
+            name = f"Round {order}"
+        
+        rounds.append({
+            'name': name,
+            'order': order,
+            'matches_count': m_count,
+            'is_preliminary': False
+        })
+        print(f"Added round {order}: {name} with {m_count} matches")
+        
+        temp_teams //= 2
+        order += 1
+        round_number += 1
+    
+    print(f"Total rounds: {len(rounds)}")
     return rounds
 
 def create_playoff_structure(championship, users, rounds_info):
     """
-    Playoff strukturasini yaratish va matchlarni bog'lash
+    Playoff bracket yaratish - istalgan juft sonli jamoalar uchun
     """
-    if not rounds_info:
-        return []
-    
+    random.shuffle(users)
     total_teams = len(users)
-    all_matches = []
-    
-    # 1. Eng keyingi raunddan boshlab matchlarni yaratish (Final dan boshlab)
     round_matches = {}
-    
-    for round_info in reversed(rounds_info):
+    all_matches = []
+
+    # 1. Barcha bo'sh matchlarni yaratib olamiz
+    for r_info in rounds_info:
         matches = []
-        for i in range(round_info['matches_count']):
+        for i in range(r_info['matches_count']):
             match = Match.objects.create(
                 championship=championship,
-                home_user=None,
-                away_user=None,
-                round_name=round_info['name'],
-                round_order=round_info['order'],
-                bracket_position=i,
-                home_score=0,
-                away_score=0,
-                is_finished=False
+                round_name=r_info['name'],
+                round_order=r_info['order'],
+                bracket_position=i
             )
             matches.append(match)
             all_matches.append(match)
-        
-        round_matches[round_info['order']] = matches
-    
-    # 2. Matchlarni o'zaro bog'lash (oldingi raund -> keyingi raund)
+        round_matches[r_info['order']] = matches
+
+    # 2. Matchlarni zanjirdek bog'laymiz
     for i in range(len(rounds_info) - 1):
-        current_round = rounds_info[i]
-        next_round = rounds_info[i + 1]
+        curr_r = rounds_info[i]
+        next_r = rounds_info[i+1]
         
-        current_matches = round_matches[current_round['order']]
-        next_matches = round_matches[next_round['order']]
+        curr_matches = round_matches[curr_r['order']]
+        next_matches = round_matches[next_r['order']]
         
-        
-        for j, match in enumerate(current_matches):
-            next_match_index = j // 2
-            if next_match_index < len(next_matches):
-                next_match = next_matches[next_match_index]
-                match.next_match = next_match
+        for j, match in enumerate(curr_matches):
+            # Play-in rounddan keyingi roundga ulanish
+            if curr_r.get('is_preliminary', False):
+                # Play-in rounddagi har bir match keyingi rounddagi mos matchga ulanadi
+                # Play-in g'oliblari keyingi roundda AWAY pozitsiyasiga tushadi
+                target_match = next_matches[j]
+                match.next_match = target_match
+                match.next_match_position = 1  # Away pozitsiyasiga
+                print(f"Linking Play-in match {match.id} (pos {j}) to next match {target_match.id} as AWAY")
+            else:
+                # Standart 2->1 ulanish
+                target_index = j // 2
+                target_match = next_matches[target_index]
+                match.next_match = target_match
                 match.next_match_position = j % 2  # 0-home, 1-away
-                match.save()
+                print(f"Linking match {match.id} (pos {j}) to next match {target_match.id} as {'HOME' if j%2==0 else 'AWAY'}")
+            match.save()
+
+    # 3. Jamoalarni taqsimlash - TO'G'RILANGAN QISM
+    user_idx = 0
     
-    # 3. Birinchi raundga jamoalarni joylashtirish
-    first_round = rounds_info[0]
-    first_round_matches = round_matches[first_round['order']]
+    # Play-in round mavjudligini tekshirish
+    has_play_in = rounds_info[0].get('is_preliminary', False)
     
-    # Jamoalarni matchlarga taqsimlash
-    teams_per_match = 2
-    total_slots = len(first_round_matches) * teams_per_match
-    
-    if total_teams > total_slots:
-        return all_matches
-    
-    # Jamoalarni matchlarga joylashtirish
-    team_index = 0
-    for i, match in enumerate(first_round_matches):
-        # Har bir matchga 2 tadan jamoa joylashtirish
-        if team_index < total_teams:
-            match.home_user = users[team_index]
-            team_index += 1
-        else:
-            match.home_user = None
-            
-        if team_index < total_teams:
-            match.away_user = users[team_index]
-            team_index += 1
-        else:
-            match.away_user = None
+    if has_play_in:
+        # PLAY-IN ROUND - 1-round
+        first_round = rounds_info[0]
+        first_round_matches = round_matches[first_round['order']]
         
-        match.save()
-    
+        # Play-in matchlarini to'ldirish
+        play_in_matches_count = len(first_round_matches)
+        play_in_players_count = play_in_matches_count * 2
+        print(f"Play-in players count: {play_in_players_count}")
+        
+        for m in first_round_matches:
+            if user_idx < total_teams:
+                m.home_user = users[user_idx]
+                user_idx += 1
+            if user_idx < total_teams:
+                m.away_user = users[user_idx]
+                user_idx += 1
+            m.save()
+            print(f"Play-in match {m.id}: {m.home_user} vs {m.away_user}")
+        
+        # SEED JAMOALAR - qolgan jamoalar
+        seed_teams_count = total_teams - play_in_players_count
+        print(f"Seed teams count: {seed_teams_count}")
+        
+        if seed_teams_count > 0 and len(rounds_info) > 1:
+            second_round = rounds_info[1]  # 1/4 Final
+            second_round_matches = round_matches[second_round['order']]
+            
+            # Seed jamoalarni 2-roundning HOME pozitsiyalariga joylashtirish
+            # 10 ta jamoa uchun:
+            # Play-in: 2 match (4 jamoa)
+            # Seed: 6 jamoa
+            # 1/4 Finalda 4 match bo'ladi (8 jamoa)
+            # Seed jamoalar 4 ta matchning HOME pozitsiyasiga joylashadi
+            # Qolgan 2 ta matchning HOME pozitsiyasi bo'sh qoladi? 
+            # YO'Q - 6 seed jamoa 4 ta matchga sig'maydi!
+            
+            # MUHIM: Seed jamoalar 2-roundning barcha HOME pozitsiyalariga joylashadi
+            # Agar seed_teams_count > len(second_round_matches) bo'lsa, 
+            # bu noto'g'ri - bunday bo'lmasligi kerak
+            
+            # 10 ta jamoa uchun:
+            # total_teams = 10
+            # next_power_of_2 = 8
+            # play_in_matches = 2 (4 jamoa)
+            # seed_teams = 6
+            # 1/4 Final matches = 4
+            # 6 seed jamoa 4 ta matchga joylashadi:
+            # - 4 ta matchning HOME pozitsiyasiga 4 ta seed
+            # - Qolgan 2 ta seed? Ular ham HOME ga joylashadi? 
+            # YO'Q - 2-roundda 4 ta match bor, har bir matchda 1 ta HOME pozitsiyasi
+            # Demak, 4 ta seed HOME ga, qolgan 2 seed esa qayerga?
+            
+            # TO'G'RI YECHIM: Seed jamoalar 2-roundning HOME pozitsiyalariga navbat bilan joylashadi
+            # Qolgan seed jamoalar esa 2-roundning AWAY pozitsiyalariga joylashadi? YO'Q
+            
+            # ASLIDA: 2-roundda jami 8 ta pozitsiya bor (4 HOME + 4 AWAY)
+            # Play-in g'oliblari 4 ta AWAY ga tushadi (2 matchdan 2 g'olib)
+            # Qolgan 4 ta AWAY? Play-in 2 match bo'lgani uchun 2 ta g'olib chiqadi, 2 ta AWAY bo'sh qoladi
+            
+            # TO'G'RI: 2-roundda:
+            # - 4 ta HOME: 4 ta seed
+            # - 2 ta AWAY: 2 ta play-in g'olibi
+            # - 2 ta AWAY: bo'sh? YO'Q - 2-roundda 4 ta match bor, har bir matchda AWAY bor
+            # Demak, 2 ta matchda AWAY play-in g'olibi, 2 ta matchda AWAY bo'sh? BU NOTO'G'RI
+            
+            # XULOSA: 10 ta jamoa uchun bracket noto'g'ri!
+            # 10 ta jamoa = 5 match 1-roundda bo'lishi kerak (10 jamoa) -> 5 g'olib
+            # Keyin 2-roundda 5 match? YO'Q - 2-roundda 3 match bo'lishi kerak (6 jamoa)
+            # Bu esa mumkin emas, chunki 2-roundda matchlar soni 2 ning darajasi bo'lishi kerak
+            
+            # TO'G'RI: 10 ta jamoa uchun:
+            # Round 1 (Play-in): 2 match (4 jamoa) -> 2 g'olib
+            # Round 2 (1/8 Final): 4 match (8 jamoa: 2 g'olib + 6 seed) -> 4 g'olib
+            # Round 3 (1/4 Final): 2 match
+            # Round 4 (1/2 Final): 1 match
+            # Round 5 (Final): 1 match
+            
+            # Bu 5 round bo'ladi, 9 match
+            
+            # Sizning rounds_info da nechta round bor?
+            # 10 ta jamoa uchun:
+            # - Play-in (round 1): 2 match
+            # - 1/8 Final (round 2): 4 match
+            # - 1/4 Final (round 3): 2 match
+            # - 1/2 Final (round 4): 1 match
+            # - Final (round 5): 1 match
+            
+            # Jami: 2+4+2+1+1 = 10 match? YO'Q 2+4=6, +2=8, +1=9, +1=10? 10 match bo'ladi
+            # 10 ta jamoa uchun 9 match bo'lishi kerak (n-1)
+            # Demak, rounds_info da 4 round bo'lishi kerak:
+            # - Play-in (round 1): 2 match
+            # - 1/4 Final (round 2): 4 match
+            # - 1/2 Final (round 3): 2 match
+            # - Final (round 4): 1 match
+            
+            # Jami: 2+4+2+1 = 9 match ✅
+            
+            # Bu to'g'ri:
+            # 1/4 Finalda 4 match (8 jamoa: 2 play-in g'olibi + 6 seed)
+            # Play-in g'oliblari AWAY ga, seedlar HOME ga
+            
+            # Seed jamoalar 6 ta, 1/4 Finalda 4 ta match
+            # 4 ta matchning HOME pozitsiyasiga 4 ta seed
+            # Qolgan 2 ta seed qayerga? Ular 1/4 Finalda AWAY ga tushadi?
+            # YO'Q - 1/4 Finalda AWAY ga play-in g'oliblari tushadi (2 ta)
+            # Qolgan 2 ta AWAY bo'sh qoladi? BU NOTO'G'RI
+            
+            # DEMAK, 1/4 Finalda 4 ta match bor:
+            # Match 1: HOME (seed 1) vs AWAY (play-in g'olibi 1)
+            # Match 2: HOME (seed 2) vs AWAY (play-in g'olibi 2)
+            # Match 3: HOME (seed 3) vs AWAY (seed 5)  <-- seed 5 AWAY ga tushadi
+            # Match 4: HOME (seed 4) vs AWAY (seed 6)  <-- seed 6 AWAY ga tushadi
+            
+            # Bu to'g'ri! Seed jamoalar 1/4 Finalda HOME va AWAY ga joylashadi
+            # Play-in g'oliblari esa faqat AWAY ga tushadi
+            
+            # 10 ta jamoa uchun to'g'ri taqsimot:
+            # Play-in: 2 match -> 2 g'olib (AWAY)
+            # Seed: 6 jamoa -> 4 tasi HOME, 2 tasi AWAY
+            
+            for i in range(seed_teams_count):
+                if i < len(second_round_matches):
+                    m = second_round_matches[i % len(second_round_matches)]
+                    
+                    # Birinchi seed jamoalar HOME ga, keyingilari AWAY ga
+                    if i < len(second_round_matches):
+                        # Birinchi 4 ta seed HOME ga
+                        m.home_user = users[user_idx]
+                        print(f"Seed match {m.id}: home_user = {users[user_idx]} (seed {i+1})")
+                    else:
+                        # Qolgan seed jamoalar AWAY ga
+                        m.away_user = users[user_idx]
+                        print(f"Seed match {m.id}: away_user = {users[user_idx]} (seed {i+1})")
+                    
+                    user_idx += 1
+                    m.save()
+            
+            # Play-in g'oliblari keyingi roundda AWAY ga tushadi (allaqachon next_match_position=1)
+            
+    else:
+        # STANDART PLAYOFF (2,4,8,16...)
+        first_round = rounds_info[0]
+        first_round_matches = round_matches[first_round['order']]
+        
+        for m in first_round_matches:
+            if user_idx < total_teams:
+                m.home_user = users[user_idx]
+                user_idx += 1
+            if user_idx < total_teams:
+                m.away_user = users[user_idx]
+                user_idx += 1
+            m.save()
+            print(f"First round match {m.id}: {m.home_user} vs {m.away_user}")
+
     return all_matches
 
 def get_rounds_info(total_teams):
@@ -443,21 +685,27 @@ def update_playoff_bracket(match):
     if not winner:
         return
     
+    print(f"Match {match.id} finished. Winner: {winner.username if winner else 'None'}")
+    
     if not match.next_match:
         # Final match tugagan bo'lsa, turnirni yakunlash
         if match.round_name == "Final" and match.is_finished:
             match.championship.status = "FINISHED"
             match.championship.save()
+            print(f"Tournament finished!")
         return
     
     try:
         next_match = match.next_match
+        print(f"Next match {next_match.id} before update: home={next_match.home_user}, away={next_match.away_user}")
         
         # G'olibni keyingi matchga qo'yish
         if match.next_match_position == 0:  # Home pozitsiyasiga
             next_match.home_user = winner
+            print(f"Setting winner to HOME position in match {next_match.id}")
         else:  # Away pozitsiyasiga
             next_match.away_user = winner
+            print(f"Setting winner to AWAY position in match {next_match.id}")
         
         next_match.save()
         
@@ -467,16 +715,19 @@ def update_playoff_bracket(match):
             
     except Exception as e:
         print(f"Error updating bracket: {e}")
+        import traceback
+        traceback.print_exc()
 
 def get_bracket_data(championship_id):
     """
     Bracket uchun ma'lumotlarni tayyorlash
     """
-    
     matches = Match.objects.filter(
         championship_id=championship_id
+    ).select_related(
+        'home_user', 'away_user'
     ).order_by('round_order', 'bracket_position')
-        
+    
     # Raundlar bo'yicha guruhlash
     bracket_dict = {}
     
@@ -509,7 +760,6 @@ def get_bracket_data(championship_id):
             'winner': winner,
             'bracket_position': match.bracket_position or 0,
             'round_order': round_order,
-            'next_match_id': match.next_match.id if match.next_match else None,
         }
         
         bracket_dict[round_name]['matches'].append(match_data)

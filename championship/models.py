@@ -104,11 +104,8 @@ class Match(models.Model):
             return None
     
     def save(self, *args, **kwargs):
-        # Yangi match yaratilganda
-        is_new = self.pk is None
         super().save(*args, **kwargs)
         
-        # Match tugatilganda bracketni yangilash
-        if not is_new and self.is_finished:
+        if self.is_finished and self.championship.type == 'PLAYOFF':
             from .services import update_playoff_bracket
             update_playoff_bracket(self)
