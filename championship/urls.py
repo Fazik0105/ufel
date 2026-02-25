@@ -32,4 +32,5 @@ urlpatterns = [
     path('admin/championship/<int:pk>/delete/', views.delete_championship, name='delete_championship'),
     path('admin/championship/<int:pk>/remove-participant/<int:user_id>/', views.remove_participant, name='remove_participant'),
     path('admin/users/delete/<int:pk>/', views.admin_delete_user, name='admin_delete_user'),
+    path('match/<int:match_id>/update-single/', views.update_single_match, name='update_single_match'),
 ]

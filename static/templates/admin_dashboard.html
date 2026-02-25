@@ -67,7 +67,6 @@
         .card {
             background: rgba(255,255,255,0.05);
             border-radius: 20px;
-            padding: 25px;
             backdrop-filter: blur(15px);
             box-shadow:
                 0 0 40px rgba(124, 58, 237, 0.15),
@@ -75,178 +74,256 @@
         }
 
         .list-item {
-            padding: 12px 18px;
+            padding: 15px 20px;
             border-radius: 12px;
             background: rgba(255,255,255,0.06);
             margin-bottom: 10px;
             display: flex;
-            justify-content: space-between;
+            align-items: center; /* Elementlarni vertikal markazlaydi */
+            justify-content: flex-start; /* Hammasini chapdan boshlaydi */
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.03);
         }
-.user-selection-wrapper {
-    grid-column: 1 / -1;
-    width: 100%;
-}
 
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+        .champ-info {
+            flex: 1; /* O'rtadagi bo'shliqni egallaydi va o'ngdagi tugmani chetga suradi */
+            padding-left: 15px; /* Avatar bilan orasidagi 15px masofa */
+            text-align: left; /* Matnni chapga tekislaydi */
+        }
 
-.field label {
-    font-size: 13px;
-    color: #94a3b8;
-    letter-spacing: 1px;
-}
+        .champ-actions {
+            margin-left: auto; /* O'chirish tugmasini oxiriga surib qo'yadi */
+            flex-shrink: 0;
+        }
 
-.field input,
-.field select {
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    transition: 0.3s;
-    backdrop-filter: blur(10px);
-}
+        .user-avatar {
+            overflow: hidden; /* Rasm burchaklari chiqib ketmasligi uchun */
+            border-radius: 50%;
+        }
+        
+        .user-selection-wrapper {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
 
-/* Focus Effect */
-.field input:focus,
-.field select:focus {
-    border-color: #22d3ee;
-    box-shadow: 0 0 0 2px rgba(34,211,238,0.2);
-}
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: 100%;
+        }
 
-/* Select Arrow Custom */
-.field select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    cursor: pointer;
+        .field label {
+            font-size: 13px;
+            color: #94a3b8;
+            letter-spacing: 1px;
+        }
 
-    background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffffff' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-}
+        .field input,
+        .field select {
 
-/* Option dropdown (limited styling support) */
-.field select option {
-    background: #1e293b;
-    color: #fff;
-}
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
 
- .status-badge {
-        padding: 2px 8px;
-        border-radius: 6px;
-        font-size: 10px;
-        text-transform: uppercase;
-        font-weight: bold;
-    }
-    .status-badge.draft { background: rgba(148, 163, 184, 0.1); color: #94a3b8; }
-    .status-badge.started { background: rgba(34, 211, 238, 0.1); color: #22d3ee; }
-    .status-badge.finished { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        /* Focus Effect */
+        .field input:focus,
+        .field select:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 2px rgba(34,211,238,0.2);
+        }
 
-    /* Tournament List Item Custom */
-    .list-item {
-        transition: 0.3s;
-        border: 1px solid rgba(255,255,255,0.03);
-    }
-    .list-item:hover {
-        background: rgba(255,255,255,0.08);
-        transform: translateX(5px);
-        border-color: rgba(34, 211, 238, 0.3);
-    }
-    /* Yangi UI uchun Stylelar */
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 20px;
-        margin-bottom: 25px;
-        width: 100%;
-    }
-    .selection-label { display: block; margin-bottom: 15px; color: #22d3ee; font-weight: bold; font-size: 14px; }
+        /* Select Arrow Custom */
+        .field select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
 
-    .user-select-item:hover { background: rgba(255,255,255,0.1); }
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffffff' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
 
-    .user-select-item.selected {
-        border-color: #22d3ee;
-        background: rgba(34, 211, 238, 0.15);
-        box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
-    }
+        /* Option dropdown (limited styling support) */
+        .field select option {
+            background: #1e293b;
+            color: #fff;
+        }
 
-    .hidden-checkbox { display: none; }
+        .field input[type="file"] {
+            padding: 10px;
+            font-size: 13px;
+            background: rgba(255,255,255,0.04);
+        }
 
-    .user-select-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .status-badge.draft { background: rgba(148, 163, 184, 0.1); color: #94a3b8; }
+        .status-badge.started { background: rgba(34, 211, 238, 0.1); color: #22d3ee; }
+        .status-badge.finished { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
-    .user-select-info { display: flex; flex-direction: column; }
-    .user-select-name { font-size: 13px; font-weight: 600; color: #fff; }
-    .user-select-tag { font-size: 11px; color: #94a3b8; }
+        /* Tournament List Item Custom */
+        .list-item {
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .list-item:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateX(5px);
+            border-color: rgba(34, 211, 238, 0.3);
+        }
+        /* Yangi UI uchun Stylelar */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+            width: 100%;
+            align-items: stretch;
+        }
+        .selection-label { display: block; margin-bottom: 15px; color: #22d3ee; font-weight: bold; font-size: 14px; }
 
-    /* Submit Button */
-    .submit-btn {
-        width: 100%; padding: 15px; border-radius: 12px; border: none;
-        background: linear-gradient(135deg,#7c3aed,#22d3ee); color: white;
-        font-weight: bold; cursor: pointer; transition: 0.3s;
-    }
-    .submit-btn.disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        .user-select-item:hover { background: rgba(255,255,255,0.1); }
 
-    /* User Grid UI - 2 ustunli chiroyli layout */
-.user-selection-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-    max-height: 350px; /* Scrollable bo'lishi uchun balandlik */
-    overflow-y: auto;
-    padding: 15px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.05);
-    scrollbar-width: thin;
-    scrollbar-color: #7c3aed transparent;
-}
+        .user-select-item.selected {
+            border-color: #22d3ee;
+            background: rgba(34, 211, 238, 0.15);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+        }
 
-/* Scrollbar dizayni (Chrome/Safari) */
-.user-selection-grid::-webkit-scrollbar {
-    width: 6px;
-}
-.user-selection-grid::-webkit-scrollbar-thumb {
-    background: #7c3aed;
-    border-radius: 10px;
-}
+        .hidden-checkbox { display: none; }
 
-.user-select-item {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+        .user-select-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block;
+        }
 
-.user-select-item.selected {
-    border-color: #22d3ee;
-    background: rgba(34, 211, 238, 0.1);
-    box-shadow: 0 0 15px rgba(34, 211, 238, 0.1);
-}
+        .user-select-info { display: flex; flex-direction: column; }
+        .user-select-name { font-size: 13px; font-weight: 600; color: #fff; }
+        .user-select-tag { font-size: 11px; color: #94a3b8; }
 
-.user-select-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #2d2d44;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #22d3ee;
-    flex-shrink: 0;
-}
+        /* Submit Button */
+        .submit-btn {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            background: linear-gradient(135deg,#7c3aed,#22d3ee); color: white;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .submit-btn.disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        /* User Grid UI - 2 ustunli chiroyli layout */
+        .user-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            max-height: 350px; /* Scrollable bo'lishi uchun balandlik */
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            scrollbar-width: thin;
+            scrollbar-color: #7c3aed transparent;
+        }
+
+        /* Scrollbar dizayni (Chrome/Safari) */
+        .user-selection-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        .user-selection-grid::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 10px;
+        }
+
+        .user-select-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-select-item.selected {
+            border-color: #22d3ee;
+            background: rgba(34, 211, 238, 0.1);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.1);
+        }
+
+        .user-select-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2d2d44;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #22d3ee;
+            flex-shrink: 0;
+            overflow: hidden; 
+            border: 1px solid rgba(34, 211, 238, 0.2); 
+        }
+
+        /* Collapsible Card */
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible-header h2 {
+            margin: 0;
+        }
+
+        .arrow {
+            transition: transform 0.3s ease;
+            font-size: 18px;
+            color: #22d3ee;
+        }
+
+        /* Body yopiq holat */
+        .collapsible-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        /* Ochiq holat */
+        .collapsible.active .collapsible-body {
+            max-height: 800px;
+            opacity: 1;
+            margin-top: 20px;
+        }
+
+        .collapsible.active .arrow {
+            transform: rotate(180deg);
+        }
+        .collapsible-header .arrow {
+            font-size: 14px;   /* ← shu bilan size control */
+            transition: transform 0.25s ease;
+        }
     </style>
 </head>
 <body>
@@ -260,101 +337,53 @@
     <h1 class="dashboard-title">ADMIN PANEL</h1>
 
     <div class="tabs">
-        <div class="tab-btn active" onclick="showTab('users')">USERS</div>
         <div class="tab-btn" onclick="showTab('tournaments')">TOURNAMENTS</div>
+        <div class="tab-btn active" onclick="showTab('users')">USERS</div>
     </div>
-
-<!-- USERS SECTION -->
-<div id="users" class="admin-section active">
-
-    <!-- USERS LIST -->
-    <div class="container">
-    <h1>O'YINCHILARNI BOSHQARISH</h1>
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="status
-                {% if message.tags == 'error' %} error {% endif %}
-            ">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
-
-    <div class="card">
-        <h2>Yangi o'yinchi qo'shish</h2>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="field">
-                <label>Username (@login)</label>
-                <input type="text" name="username" placeholder="Masalan: ronaldo7" required>
-            </div>
-
-            <div class="field">
-                <label>Ismi</label>
-                <input type="text" name="first_name" placeholder="Ismini kiriting" required>
-            </div>
-
-            <div class="field">
-                <label>Familiyasi</label>
-                <input type="text" name="last_name" placeholder="Familiyasini kiriting" required>
-            </div>
-
-            <div class="field">
-                <label>Rasm (ixtiyoriy)</label>
-                <input type="file" name="avatar" accept="image/*">
-            </div>
-
-            <button type="submit">O'YINCHINI YARATISH</button>
-        </form>
-    </div>
-
-    <h2>Ro'yxatdan o'tgan o'yinchilar</h2>
-
-    <ul class="users-list">
-    {% for user in users %}
-        <li>
-            <div class="user-info">
-                <div class="user-avatar">
-                    {% if user.avatar %}
-                        <img src="{{ user.avatar.url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover;">
-                    {% else %}
-                        <div class="avatar-placeholder">
-                            {{ user.first_name|slice:":1"|upper }}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="user-details">
-                    <h4>{{ user.first_name }} {{ user.last_name }}</h4>
-                    <p>@{{ user.username }}</p>
-                </div>
-            </div>
-            
-            <div class="user-actions" style="display: flex; gap: 10px; align-items: center;">
-                <a href="{% url 'admin_user_detail' user.id %}" class="btn-edit">Tahrirlash</a>
-                <div class="champ-actions">
-                    <a href="{% url 'admin_delete_user' user.id %}" 
-                       style="color: #ef4444; text-decoration: none; font-size: 13px; position: relative; z-index: 2;"
-                       onclick="event.stopPropagation(); return confirm('Rostdan o‘chirmoqchimisiz?');">
-                       O‘chirish
-                    </a>
-                </div>
-            </div>
-        </li>
-    {% empty %}
-        <li style="justify-content: center; color: #64748b;">Hozircha o'yinchilar yo'q</li>
-    {% endfor %}
-</ul>
-</div>
-
-</div>
-
 
 <!-- TOURNAMENTS SECTION -->
 <div id="tournaments" class="admin-section">
     <div class="card tournament-create-card" style="margin-bottom: 30px;">
         <h2 class="section-subtitle" style="color: #22d3ee; margin-bottom: 20px;">YANGI TURNIR YARATISH</h2>
+
+        <!-- YANGI O'YINCHI QO'SHISH COLLAPSIBLE -->
+        <div class="card collapsible">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2 style="font-size: 18px; color: #22d3ee;">Yangi o'yinchi qo'shish</h2>
+                <span class="arrow">▼</span>
+            </div>
+
+            <div class="collapsible-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- ✅ USERS section bilan BIR XIL -->
+                    <div class="field">
+                        <label>Username (@login)</label>
+                        <input type="text" name="username" placeholder="Masalan: ronaldo7">
+                    </div>
+
+                    <div class="field">
+                        <label>Ismi</label>
+                        <input type="text" name="first_name" placeholder="Ismini kiriting">
+                    </div>
+
+                    <div class="field">
+                        <label>Familiyasi</label>
+                        <input type="text" name="last_name" placeholder="Familiyasini kiriting">
+                    </div>
+
+                    <div class="field">
+                        <label>Rasm (ixtiyoriy)</label>
+                        <input type="file" name="avatar" accept="image/*">
+                    </div>
+
+                    <button type="submit">
+                        O'YINCHINI YARATISH
+                    </button>
+                </form>
+            </div>
+        </div>
 
         <form method="POST" action="{% url 'create_championship' %}" enctype="multipart/form-data" id="tournamentForm">
             {% csrf_token %}
@@ -378,7 +407,7 @@
                 </div>
             </div>
 
-            <div class="form-grid" style="margin-top: 20px;">
+            <div class="form-grid">
                 <div class="field">
                     <label>Har bir jamoaga o'yinlar soni</label>
                     <input type="number" name="matches_per_team" value="2" min="1">
@@ -393,7 +422,7 @@
                 </div>
             </div>
 
-            <div class="form-grid" style="margin-top: 20px; grid-template-columns: 1fr 1fr 1fr;">
+            <div class="form-grid">
                 <div class="field">
                     <label>Mag'lubiyat uchun ochko</label>
                     <input type="number" name="loss_points" value="0" min="0">
@@ -414,22 +443,42 @@
                 </div>
             </div>
 
+            
+
             <div class="user-selection-wrapper" style="margin-top: 30px;">
-                <label class="selection-label">O'yinchilarni tanlang: <span id="selection-counter">0 / 8</span></label>
+                <label class="selection-label">O'yinchilarni tanlang: 
+                    <span id="selection-counter">0 / 8</span>
+                    <small style="color: #94a3b8; margin-left: 10px;">(Jami mavjud: {{ users.count }})</small>
+                </label>
+
+                <div class="search-box" style="margin-top: 10px; margin-right: 25px; margin-bottom: 15px;">
+                    <input type="text" id="userSearchInput" 
+                        placeholder="Ism yoki username bo'yicha qidirish..." 
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white;">
+                </div>
+
                 <div class="user-selection-grid">
                     {% for user in users %}
                         <div class="user-select-item" onclick="toggleUser(this)">
                             <input type="checkbox" name="users" value="{{ user.id }}" class="hidden-checkbox" onchange="validateSelection()">
                             <div class="user-select-avatar">
                                 {% if user.avatar %}
-                                    <img src="{{ user.avatar.url }}" alt="">
+                                    <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
                                 {% else %}
-                                    <span>{{ user.first_name|slice:":1"|upper }}</span>
+                                    <span>
+                                        {% if user.first_name %}
+                                            {{ user.first_name|slice:":1"|upper }}
+                                        {% else %}
+                                            {{ user.username|slice:":1"|upper }}
+                                        {% endif %}
+                                    </span>
                                 {% endif %}
                             </div>
                             <div class="user-select-info">
                                 <span class="user-select-name">{{ user.first_name }} {{ user.last_name }}</span>
-                                <span class="user-select-tag">@{{ user.username }}</span>
+                                {% if user.username %}
+                                    <span class="user-select-tag">{{ user.username }}</span>
+                                {% endif %}
                             </div>
                         </div>
                     {% empty %}
@@ -447,78 +496,218 @@
     <h2 class="section-subtitle" style="margin-bottom: 20px;">MAVJUD TURNIRLAR</h2>
     <div class="tournament-list">
         {% for champ in championships %}
-            <div class="list-item" 
-                 onclick="window.location.href='{% url 'admin_championship_detail' champ.id %}'" 
-                 style="cursor: pointer;">
-                
-                <div class="champ-info">
-                    <strong style="color: #fff;">{{ champ.name }}</strong>
-                    <div style="font-size: 11px; margin-top: 5px;">
-                        <span style="color: #94a3b8;">{{ champ.type }}</span> | 
-                        <span class="status-badge {{ champ.status|lower }}">{{ champ.status }}</span> |
-                        <span style="color: #22d3ee;">{{ champ.teams_count }} Jamoa</span>
-                    </div>
-                </div>
+            <div class="list-item" onclick="window.location.href='{% url 'admin_championship_detail' champ.id %}'" style="cursor: pointer;">
+    
+    <div class="user-avatar" style="width: 50px; height: 50px; flex-shrink: 0;">
+        {% if champ.avatar %}
+            <img src="{{ champ.avatar.url }}" alt="avatar" style="width:100%; height:100%; border-radius: 50%; object-fit:cover;">
+        {% else %}
+            <div class="avatar-placeholder" style="width:100%; height:100%; border-radius: 50%; background: #2d2d44; display: flex; align-items: center; justify-content: center;">
+                <span>{{ champ.name|slice:":1"|upper }}</span>
+            </div>
+        {% endif %}
+    </div>
 
+    <div class="champ-info">
+        <strong style="color: #fff; font-size: 16px; display: block;">{{ champ.name }}</strong>
+        <div style="font-size: 11px; margin-top: 5px; display: flex; align-items: center; gap: 8px;">
+            <span style="color: #94a3b8;">{{ champ.type }}</span>
+            <span style="color: rgba(255,255,255,0.2);">|</span>
+            <span class="status-badge {{ champ.status|lower }}">{{ champ.status }}</span>
+            <span style="color: rgba(255,255,255,0.2);">|</span>
+            <span style="color: #22d3ee;">{{ champ.teams_count }} Jamoa</span>
+        </div>
+    </div>
+
+    <div class="champ-actions">
+        <a href="{% url 'delete_championship' champ.id %}" 
+           style="color: #ef4444; text-decoration: none; font-size: 13px; position: relative; z-index: 2;"
+           onclick="event.stopPropagation(); return confirm('Rostdan o‘chirmoqchimisiz?');">
+           O‘chirish
+        </a>
+    </div>
+</div>
+        {% empty %}
+            <p style="text-align: center; color: #64748b;">Turnirlar hali yo'q</p>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+
+<!-- USERS SECTION -->
+<div id="users" class="admin-section active">
+
+    <!-- USERS LIST -->
+    <div class="container">
+    <h1>O'YINCHILARNI BOSHQARISH</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="status
+                {% if message.tags == 'error' %} error {% endif %}
+            ">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+   <div class="card">
+        <h2>Yangi o'yinchi qo'shish</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="field">
+                <label>Username (@login)</label>
+                <input type="text" name="username" placeholder="Masalan: ronaldo7">
+            </div>
+
+            <div class="field">
+                <label>Ismi</label>
+                <input type="text" name="first_name" placeholder="Ismini kiriting">
+            </div>
+
+            <div class="field">
+                <label>Familiyasi</label>
+                <input type="text" name="last_name" placeholder="Familiyasini kiriting">
+            </div>
+
+            <div class="field">
+                <label>Rasm (ixtiyoriy)</label>
+                <input type="file" name="avatar" accept="image/*">
+            </div>
+
+            <button type="submit">O'YINCHINI YARATISH</button>
+        </form>
+    </div>
+
+    <h2>Ro'yxatdan o'tgan o'yinchilar (Umumiy: {{ users|length }})</h2>
+
+    <ul class="users-list">
+    {% for user in users %}
+        <li>
+            <div class="user-info">
+                <div class="user-avatar">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="avatar" style="width:100%; height:100%; object-fit:cover;">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            <span>{% if user.first_name %}{{ user.first_name|slice:":1"|upper }}{% else %}{{ user.username|slice:":1"|upper }}{% endif %}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="user-details">
+                    <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                    {% if user.username %}
+                        <p>{{ user.username }}</p>
+                    {% endif %}
+                    
+                </div>
+            </div>
+            
+            <div class="user-actions" style="display: flex; gap: 10px; align-items: center;">
+                <a href="{% url 'admin_user_detail' user.id %}" class="btn-edit">Tahrirlash</a>
                 <div class="champ-actions">
-                    <a href="{% url 'delete_championship' champ.id %}" 
+                    <a href="{% url 'admin_delete_user' user.id %}" 
                        style="color: #ef4444; text-decoration: none; font-size: 13px; position: relative; z-index: 2;"
                        onclick="event.stopPropagation(); return confirm('Rostdan o‘chirmoqchimisiz?');">
                        O‘chirish
                     </a>
                 </div>
             </div>
-        {% empty %}
-            <p style="text-align: center; color: #64748b;">Turnirlar hali yo'q</p>
-        {% endfor %}
-    </div>
+        </li>
+    {% empty %}
+        <li style="justify-content: center; color: #64748b;">Hozircha o'yinchilar yo'q</li>
+    {% endfor %}
+</ul>
+</div>
+
 </div>
 
 <script>
-function toggleUser(el) {
-    const checkbox = el.querySelector('input[type="checkbox"]');
-    checkbox.checked = !checkbox.checked;
-    
-    if(checkbox.checked) {
-        el.classList.add('selected');
-    } else {
-        el.classList.remove('selected');
+    function toggleUser(el) {
+        const checkbox = el.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+        
+        if(checkbox.checked) {
+            el.classList.add('selected');
+        } else {
+            el.classList.remove('selected');
+        }
+        validateSelection();
     }
-    validateSelection();
-}
 
-function validateSelection() {
-    const teamsCount = parseInt(document.getElementById('dashboard_teams_count').value) || 0;
-    const checkedCount = document.querySelectorAll('input[name="users"]:checked').length;
-    const createBtn = document.getElementById('createBtn');
-    const counterDisplay = document.getElementById('selection-counter');
+    function validateSelection() {
+        const teamsCount = parseInt(document.getElementById('dashboard_teams_count').value) || 0;
+        const checkedCount = document.querySelectorAll('input[name="users"]:checked').length;
+        const createBtn = document.getElementById('createBtn');
+        const counterDisplay = document.getElementById('selection-counter');
 
-    counterDisplay.innerText = `${checkedCount} / ${teamsCount}`;
+        counterDisplay.innerText = `${checkedCount} / ${teamsCount}`;
 
-    if (checkedCount === teamsCount && teamsCount > 0) {
-        createBtn.disabled = false;
-        createBtn.classList.remove('disabled');
-        counterDisplay.style.color = "#10b981"; // Yashil
-    } else {
-        createBtn.disabled = true;
-        createBtn.classList.add('disabled');
-        counterDisplay.style.color = "#ef4444"; // Qizil
+        if (checkedCount === teamsCount && teamsCount > 0) {
+            createBtn.disabled = false;
+            createBtn.classList.remove('disabled');
+            counterDisplay.style.color = "#10b981";
+        } else {
+            createBtn.disabled = true;
+            createBtn.classList.add('disabled');
+            counterDisplay.style.color = "#ef4444";
+        }
     }
-}
 
-function showTab(tabId){
-    document.querySelectorAll('.admin-section').forEach(el=>{
-        el.classList.remove('active');
+    function showTab(tabId){
+        document.querySelectorAll('.admin-section').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        document.getElementById(tabId).classList.add('active');
+        
+        // Tab btn active qilish
+        const tabs = document.querySelectorAll('.tab-btn');
+        for(let i = 0; i < tabs.length; i++) {
+            if(tabs[i].getAttribute('onclick')?.includes(tabId)) {
+                tabs[i].classList.add('active');
+                break;
+            }
+        }
+    }
+
+    function toggleCollapse(header) {
+        const card = header.closest('.collapsible');
+        card.classList.toggle('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sahifa yuklanganda tournaments tabini active qilish
+        showTab('tournaments');
+        
+        // Search funksiyasi
+        const searchInput = document.getElementById('userSearchInput');
+        const userItems = document.querySelectorAll('.user-select-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+
+                userItems.forEach(item => {
+                    const name = item.querySelector('.user-select-name').textContent.toLowerCase();
+                    const tag = item.querySelector('.user-select-tag') ? 
+                                item.querySelector('.user-select-tag').textContent.toLowerCase() : '';
+
+                    if (name.includes(searchTerm) || tag.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
     });
-
-    document.querySelectorAll('.tab-btn').forEach(el=>{
-        el.classList.remove('active');
-    });
-
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
-}
 </script>
-
 </body>
 </html>

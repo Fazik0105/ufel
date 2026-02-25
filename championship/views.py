@@ -1,5 +1,7 @@
+from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.urls import reverse
 from championship.services.services import *
 from .models import *
 from .permissions import admin_only
@@ -156,9 +158,25 @@ def add_participant(request, pk):
     return redirect('admin_championship_detail', pk=pk)
 
 def championship_matches(request, pk):
-    matches = Match.objects.filter(championship_id=pk).order_by('round_name', 'group_label')
+    matches = Match.objects.filter(
+        championship_id=pk
+    ).select_related(
+        'home_user', 
+        'away_user',
+        'championship'
+    ).prefetch_related(
+        'home_user__avatar',  # Agar avatar field bo'lsa
+        'away_user__avatar'
+    ).order_by('round_name', 'group_label')
+    
+    # Agar playoff bo'lsa, next_match ni ham olib kelish
+    championship = get_object_or_404(Championship, pk=pk)
+    if championship.type == 'PLAYOFF':
+        matches = matches.select_related('next_match')
+    
     return render(request, 'matches_list.html', {
-        "matches": matches
+        "matches": matches,
+        "championship": championship
     })
 
 def championship_table(request, pk):
@@ -285,51 +303,78 @@ def admin_user_detail(request, pk):
     
     return render(request, 'admin_user_detail.html', {'target_user': target_user})
 
+
 @admin_only
 def admin_championship_detail(request, pk):
     championship = get_object_or_404(Championship, pk=pk)
-
-    if request.method == "POST":
-        championship.name = request.POST.get("name")
-        championship.type = request.POST.get("type")
-        championship.status = request.POST.get("status")
-        championship.teams_count = int(request.POST.get("teams_count", championship.teams_count))
-        championship.save()
-
-        messages.success(request, "Turnir ma'lumotlari yangilandi!")
-        return redirect('admin_championship_detail', pk=pk)
-
+    
+    # FILTERLARNI OLISH - BU YERDA ANIQLAYMIZ
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', 'all')  # all, finished, pending
+    
+    # Participants ni bir martada olish
     participants = ChampionshipParticipant.objects.filter(
         championship=championship
-    ).select_related('user')
-
+    ).select_related('user').only(
+        'user__id', 
+        'user__username', 
+        'user__first_name', 
+        'user__last_name',
+        'user__avatar'
+    )
+    
     participant_user_ids = participants.values_list('user_id', flat=True)
-
-    available_users = User.objects.filter(role='USER').exclude(id__in=participant_user_ids)
-
-    matches = Match.objects.filter(championship=championship).order_by('round_order', 'bracket_position')
+    
+    # Available users - faqat kerakli fieldlar
+    available_users = User.objects.filter(
+        role='USER'
+    ).exclude(
+        id__in=participant_user_ids
+    ).only('id', 'username', 'first_name', 'last_name')
+    
+    # Matches ni optimallashtirish
+    matches = Match.objects.filter(
+        championship=championship
+    ).select_related(
+        'home_user', 
+        'away_user',
+        'next_match'
+    ).only(
+        'id', 'round_name', 'round_order', 'bracket_position',
+        'home_score', 'away_score', 'is_finished',
+        'home_user__id', 'home_user__username', 'home_user__first_name', 'home_user__avatar',
+        'away_user__id', 'away_user__username', 'away_user__first_name', 'away_user__avatar',
+        'next_match__id'
+    )
+    
+    # Filterlarni qo'llash
+    if search_query:
+        matches = matches.filter(
+            Q(home_user__username__icontains=search_query) |
+            Q(home_user__first_name__icontains=search_query) |
+            Q(away_user__username__icontains=search_query) |
+            Q(away_user__first_name__icontains=search_query)
+        )
+    
+    if status_filter == 'finished':
+        matches = matches.filter(is_finished=True)
+    elif status_filter == 'pending':
+        matches = matches.filter(is_finished=False)
+    
+    matches = matches.order_by('round_order', 'bracket_position', 'id')
+    
     matches_exist = matches.exists()
-
-    table_data = []
+    
     bracket_data = []
-
-    if championship.type == 'LEAGUE':
+    if championship.type == 'PLAYOFF' and matches_exist:
+        bracket_data = get_bracket_data_cached(championship.id)
+    
+    table_data = []
+    if championship.type == 'LEAGUE' and matches_exist:
         table_data = get_standings(championship.id)
-    elif championship.type == 'PLAYOFF':
-        print(f"\n=== Admin Championship Detail - Championship {championship.id} ===")
-        print(f"Total matches: {matches.count()}")
-        
-        # Matchlarni round bo'yicha guruhlab chiqamiz
-        rounds = matches.values_list('round_name', flat=True).distinct()
-        print(f"Rounds in DB: {list(rounds)}")
-        
-        for match in matches:
-            print(f"Match {match.id}: round='{match.round_name}' (order={match.round_order}), pos={match.bracket_position}")
-        
-        bracket_data = get_bracket_data(championship.id)
-        print(f"Bracket data rounds: {len(bracket_data)}")
-        for rd in bracket_data:
-            print(f"  - {rd['name']} (order={rd['order']}): {len(rd['matches'])} matches")
+
+    matches_list = list(matches)
+    matches_count = len(matches_list)
 
     context = {
         'championship': championship,
@@ -339,9 +384,14 @@ def admin_championship_detail(request, pk):
         'matches': matches,
         'table': table_data,
         'bracket_data': bracket_data,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'matches': matches_list,
+        'matches_count': matches_count,
     }
-
+    
     return render(request, 'admin_championship_detail.html', context)
+
 
 @admin_only
 def update_match_score(request, pk):
@@ -378,19 +428,6 @@ def update_match_score(request, pk):
         
     return redirect('admin_championship_detail', pk=pk)
 
-def check_playoff_completion(championship):
-    """
-    Playoff tugaganligini tekshirish
-    """
-    final_matches = Match.objects.filter(
-        championship=championship,
-        round_name="Final"
-    )
-    
-    if final_matches.exists() and final_matches.first().is_finished:
-        championship.status = "FINISHED"
-        championship.save()
-
 @admin_only
 def bulk_add_participants(request, pk):
     championship = get_object_or_404(Championship, pk=pk)
@@ -426,29 +463,61 @@ def bulk_add_participants(request, pk):
 
 @admin_only
 def generate_matches(request, pk):
+    """
+    Turnir uchun matchlarni yaratish
+    """
     championship = get_object_or_404(Championship, pk=pk)
-
-    participants = ChampionshipParticipant.objects.filter(
-        championship=championship
-    )
-
+    
+    participants = ChampionshipParticipant.objects.filter(championship=championship)
+    
     if participants.count() != championship.teams_count:
-        messages.error(request, "Ishtirokchilar soni yetarli emas!")
+        messages.error(request, f"Ishtirokchilar soni {championship.teams_count} ta bo'lishi shart!")
         return redirect('admin_championship_detail', pk=pk)
 
     users = [p.user for p in participants]
+    n = len(users)
 
     if championship.type == 'LEAGUE':
-        generate_league_matches(championship, users)
+        total_created = generate_league_matches(championship, users)
+        matches_per_team = (n - 1) * championship.matches_per_team
+        messages.success(
+            request, 
+            f"Liga o'yinlari yaratildi! Har bir jamoa {matches_per_team} ta o'yin o'ynaydi. Jami {total_created} ta o'yin."
+        )
+            
     elif championship.type == 'PLAYOFF':
+        # Playoff uchun tekshirish
+        if n < 2:
+            messages.error(request, "Playoff uchun kamida 2 ta jamoa kerak!")
+            return redirect('admin_championship_detail', pk=pk)
+        
+        if n % 2 != 0:
+            messages.error(request, "Playoff uchun jamoalar soni juft bo'lishi kerak!")
+            return redirect('admin_championship_detail', pk=pk)
+        
         generate_playoff_matches(championship, users)
+        messages.success(request, f"Playoff o'yinlari yaratildi! {n} ta jamoa, {n-1} ta o'yin.")
 
     championship.status = 'STARTED'
     championship.save()
 
-    messages.success(request, "O'yinlar yaratildi!")
-
     return redirect('admin_championship_detail', pk=pk)
+
+def generate_league_matches_single(championship, users):
+    """Har bir jamoa bir marta o'ynaydigan liga"""
+    Match.objects.filter(championship=championship).delete()
+    
+    for i in range(len(users)):
+        for j in range(i + 1, len(users)):
+            Match.objects.create(
+                championship=championship,
+                home_user=users[i],
+                away_user=users[j],
+                round_name="Liga",
+                home_score=0,
+                away_score=0,
+                is_finished=False
+            )
 
 def get_championship_data(request, pk):
     championship = get_object_or_404(Championship, pk=pk)
@@ -476,18 +545,22 @@ def get_championship_data(request, pk):
         'admin_html': admin_html
     })
 
-
 @admin_only
 def admin_dashboard(request):
     if request.method == "POST":
-
-        username = request.POST.get('username')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        username = request.POST.get('username') 
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
         avatar = request.FILES.get('avatar')
 
-        # Username tekshirish
-        if User.objects.filter(username=username).exists():
+        if not username or username.strip() == "":
+            username = None
+
+        if username is None and not first_name:
+            messages.error(request, "Xato: Username yoki Ism kiritilishi shart!")
+            return redirect('admin_dashboard')
+
+        if username and User.objects.filter(username=username).exists():
             messages.error(request, f"Xato: '{username}' username band.")
             return redirect('admin_dashboard')
 
@@ -496,12 +569,11 @@ def admin_dashboard(request):
                 username=username,
                 first_name=first_name,
                 last_name=last_name,
-                role='USER',  # Sizda role USER edi
+                role='USER',
                 avatar=avatar,
                 password=make_password(str(uuid.uuid4()))
             )
-            messages.success(request, f"{first_name} muvaffaqiyatli qo'shildi!")
-
+            messages.success(request, f"{first_name or username} muvaffaqiyatli qo'shildi!")
         except Exception as e:
             messages.error(request, f"Kutilmagan xato: {e}")
 
@@ -537,40 +609,74 @@ def delete_championship(request, pk):
 
 def get_standings(championship_id):
     championship = get_object_or_404(Championship, id=championship_id)
-    matches = Match.objects.filter(championship=championship, is_finished=True)
-    participants = User.objects.filter(championshipparticipant__championship=championship)
+    
+    # Faqat tugagan o'yinlarni olamiz
+    matches = Match.objects.filter(
+        championship=championship, 
+        is_finished=True
+    )
+    
+    # Turnir ishtirokchilari
+    participants = User.objects.filter(
+        championshipparticipant__championship=championship
+    )
     
     standings = []
     for user in participants:
-        stats = {'user': user, 'pld': 0, 'w': 0, 'd': 0, 'l': 0, 'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0}
+        stats = {
+            'user': user, 
+            'pld': 0,  # O'yinlar soni
+            'w': 0,    # G'alabalar
+            'd': 0,    # Duranglar
+            'l': 0,    # Mag'lubiyatlar
+            'gf': 0,   # Urilgan gollar
+            'ga': 0,   # O'tkazilgan gollar
+            'gd': 0,   # Farq
+            'pts': 0   # Ochkolar
+        }
         
-        user_matches = matches.filter(models.Q(home_user=user) | models.Q(away_user=user))
+        # Userning barcha o'yinlari
+        user_matches = matches.filter(
+            models.Q(home_user=user) | models.Q(away_user=user)
+        )
+        
         for m in user_matches:
             stats['pld'] += 1
+            
             if m.home_user == user:
+                # Home o'yinchi
                 stats['gf'] += m.home_score
                 stats['ga'] += m.away_score
-                if m.home_score > m.away_score: 
-                    stats['pts'] += championship.win_points
-                elif m.home_score == m.away_score: 
-                    stats['pts'] += championship.draw_points
+                
+                if m.home_score > m.away_score:
+                    stats['w'] += 1
+                    stats['pts'] += 3
+                elif m.home_score == m.away_score:
+                    stats['d'] += 1
+                    stats['pts'] += 1
                 else:
-                    stats['pts'] += championship.loss_points
+                    stats['l'] += 1
+                    stats['pts'] += 0
             else:
+                # Away o'yinchi
                 stats['gf'] += m.away_score
                 stats['ga'] += m.home_score
-                if m.away_score > m.home_score: 
-                    stats['pts'] += championship.win_points
-                elif m.away_score == m.home_score: 
-                    stats['pts'] += championship.draw_points
+                
+                if m.away_score > m.home_score:
+                    stats['w'] += 1
+                    stats['pts'] += 3
+                elif m.away_score == m.home_score:
+                    stats['d'] += 1
+                    stats['pts'] += 1
                 else:
-                    stats['pts'] += championship.loss_points
+                    stats['l'] += 1
+                    stats['pts'] += 0
         
         stats['gd'] = stats['gf'] - stats['ga']
         standings.append(stats)
     
+    # Ochkolar bo'yicha saralash (agar teng bo'lsa, gol farqi)
     return sorted(standings, key=lambda x: (-x['pts'], -x['gd'], -x['gf']))
-
 
 @admin_only
 def create_championship(request):
@@ -629,6 +735,7 @@ def create_championship(request):
         return redirect('admin_championship_detail', pk=championship.pk)
 
     return redirect('admin_dashboard')
+
 @admin_only
 def admin_delete_user(request, pk):
     target_user = get_object_or_404(User, pk=pk)
@@ -640,6 +747,7 @@ def admin_delete_user(request, pk):
         return redirect('admin_dashboard') # Yoki 'admin_users' qaysi biri bo'lsa
     
     return redirect('admin_dashboard')
+
 @admin_only
 def update_all_scores(request, pk):
     if request.method == 'POST':
@@ -677,3 +785,70 @@ def update_all_scores(request, pk):
         messages.success(request, f"{updated_count} ta o'yin natijalari muvaffaqiyatli yangilandi!")
         
     return redirect('admin_championship_detail', pk=pk)
+
+@admin_only
+def update_single_match(request, match_id):
+    match = get_object_or_404(Match, id=match_id)
+    championship_id = match.championship.id
+    
+    if request.method == 'POST':
+        try:
+            h_score = int(request.POST.get('home_score', 0))
+            a_score = int(request.POST.get('away_score', 0))
+            
+            if match.home_user and match.away_user:
+                match.home_score = h_score
+                match.away_score = a_score
+                match.is_finished = True
+                match.save()
+                
+                if match.championship.type == 'PLAYOFF':
+                    winner = None
+                    if match.home_score > match.away_score:
+                        winner = match.home_user
+                    elif match.away_score > match.home_score:
+                        winner = match.away_user
+                    
+                    if not winner:
+                        error_msg = "Playoffda durang bo'lishi mumkin emas!"
+                        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
+                            return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
+                        messages.error(request, error_msg)
+                        return redirect(f"{reverse('admin_championship_detail', args=[championship_id])}#match-{match.id}")
+                    
+                    if match.next_match:
+                        next_match = match.next_match
+                        if match.next_match_position == 0:
+                            next_match.home_user = winner
+                        else:
+                            next_match.away_user = winner
+                        next_match.save()
+                    
+                    if match.round_name == "Final":
+                        match.championship.status = "FINISHED"
+                        match.championship.save()
+
+                success_msg = f"Natija saqlandi: {h_score}:{a_score}"
+                
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': success_msg,
+                        'match_id': match.id
+                    })
+                
+                messages.success(request, success_msg)
+            else:
+                error_msg = "O'yin uchun ikkala jamoa ham mavjud emas!"
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
+                    return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
+                messages.error(request, error_msg)
+            
+        except Exception as e:
+            error_msg = f"Xatolik yuz berdi: {str(e)}"
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('Accept', ''):
+                return JsonResponse({'status': 'error', 'message': error_msg}, status=500)
+            messages.error(request, error_msg)
+            
+    url = reverse('admin_championship_detail', kwargs={'pk': championship_id})
+    return redirect(f"{url}#match-{match.id}")

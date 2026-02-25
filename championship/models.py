@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class User(AbstractUser):
+    username = models.CharField(max_length=150, unique=True, null=True, blank=True)
+    
     ROLE_CHOICES = (('ADMIN', 'Admin'), ('USER', 'User'))
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='USER')
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
@@ -10,8 +12,11 @@ class User(AbstractUser):
         return self.role == 'ADMIN' or self.is_superuser
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.username})"
-
+        display_name = f"{self.first_name} {self.last_name}".strip()
+        if not display_name:
+            display_name = self.username or f"User-{self.id}"
+        return display_name
+    
 class Championship(models.Model):
     CHAMPIONSHIP_TYPE = (
         ('LEAGUE', 'League'),
@@ -55,25 +60,48 @@ class ChampionshipParticipant(models.Model):
 
 class Match(models.Model):
     championship = models.ForeignKey(Championship, on_delete=models.CASCADE, related_name='matches')
-    home_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='home_matches', null=True, blank=True)  # null=True qo'shildi
-    away_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='away_matches', null=True, blank=True)  # null=True qo'shildi
+    home_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='home_matches', null=True, blank=True)
+    away_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='away_matches', null=True, blank=True)
     home_score = models.IntegerField(default=0)
     away_score = models.IntegerField(default=0)
     round_name = models.CharField(max_length=50, null=True, blank=True)
-    round_order = models.IntegerField(default=0)  # Raund tartibi (1-final, 2-semifinal, ...)
+    round_order = models.IntegerField(default=0)  # Raund tartibi (1-birinchi raund, 2-ikkinchi raund, ...)
     group_label = models.CharField(max_length=10, null=True, blank=True)
     is_finished = models.BooleanField(default=False)
     bracket_position = models.IntegerField(null=True, blank=True)  # Joriy raunddagi o'rni
-    next_match_id = models.IntegerField(null=True, blank=True)  # Keyingi match ID si
-    next_match_position = models.IntegerField(null=True, blank=True)  # Keyingi matchdagi pozitsiya (0-home, 1-away)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['championship', 'is_finished']),
+            models.Index(fields=['championship', 'round_order']),
+            models.Index(fields=['home_user']),
+            models.Index(fields=['away_user']),
+        ]
+    
+    # MUHIM: Keyingi matchga ForeignKey bilan bog'lash
+    next_match = models.ForeignKey(
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='previous_matches'
+    )
+    next_match_position = models.IntegerField(null=True, blank=True, default=0)  # Keyingi matchdagi pozitsiya (0-home, 1-away)
 
     def winner(self):
-        if self.is_finished:
-            if self.home_score > self.away_score:
-                return self.home_user
-            elif self.away_score > self.home_score:
-                return self.away_user
-        return None
+            if self.is_finished:
+                # BYE (Raqibsiz) holati uchun tekshiruv
+                if self.home_user and not self.away_user:
+                    return self.home_user
+                if self.away_user and not self.home_user:
+                    return self.away_user
+                    
+                # Oddiy o'yin holati
+                if self.home_score > self.away_score:
+                    return self.home_user
+                elif self.away_score > self.home_score:
+                    return self.away_user
+            return None
     
     def save(self, *args, **kwargs):
         # Yangi match yaratilganda

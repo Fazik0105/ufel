@@ -148,6 +148,13 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
 # ALLOWED_HOSTS ni ham tekshirib oling, u yerda ham bo'lishi kerak
 ALLOWED_HOSTS = [
     "unarrived-impecuniously-cathrine.ngrok-free.dev",
