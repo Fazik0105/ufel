@@ -403,106 +403,12 @@ def create_playoff_structure(championship, users, rounds_info):
             m.save()
             print(f"Play-in match {m.id}: {m.home_user} vs {m.away_user}")
         
-        # SEED JAMOALAR - qolgan jamoalar
         seed_teams_count = total_teams - play_in_players_count
         print(f"Seed teams count: {seed_teams_count}")
         
         if seed_teams_count > 0 and len(rounds_info) > 1:
             second_round = rounds_info[1]  # 1/4 Final
             second_round_matches = round_matches[second_round['order']]
-            
-            # Seed jamoalarni 2-roundning HOME pozitsiyalariga joylashtirish
-            # 10 ta jamoa uchun:
-            # Play-in: 2 match (4 jamoa)
-            # Seed: 6 jamoa
-            # 1/4 Finalda 4 match bo'ladi (8 jamoa)
-            # Seed jamoalar 4 ta matchning HOME pozitsiyasiga joylashadi
-            # Qolgan 2 ta matchning HOME pozitsiyasi bo'sh qoladi? 
-            # YO'Q - 6 seed jamoa 4 ta matchga sig'maydi!
-            
-            # MUHIM: Seed jamoalar 2-roundning barcha HOME pozitsiyalariga joylashadi
-            # Agar seed_teams_count > len(second_round_matches) bo'lsa, 
-            # bu noto'g'ri - bunday bo'lmasligi kerak
-            
-            # 10 ta jamoa uchun:
-            # total_teams = 10
-            # next_power_of_2 = 8
-            # play_in_matches = 2 (4 jamoa)
-            # seed_teams = 6
-            # 1/4 Final matches = 4
-            # 6 seed jamoa 4 ta matchga joylashadi:
-            # - 4 ta matchning HOME pozitsiyasiga 4 ta seed
-            # - Qolgan 2 ta seed? Ular ham HOME ga joylashadi? 
-            # YO'Q - 2-roundda 4 ta match bor, har bir matchda 1 ta HOME pozitsiyasi
-            # Demak, 4 ta seed HOME ga, qolgan 2 seed esa qayerga?
-            
-            # TO'G'RI YECHIM: Seed jamoalar 2-roundning HOME pozitsiyalariga navbat bilan joylashadi
-            # Qolgan seed jamoalar esa 2-roundning AWAY pozitsiyalariga joylashadi? YO'Q
-            
-            # ASLIDA: 2-roundda jami 8 ta pozitsiya bor (4 HOME + 4 AWAY)
-            # Play-in g'oliblari 4 ta AWAY ga tushadi (2 matchdan 2 g'olib)
-            # Qolgan 4 ta AWAY? Play-in 2 match bo'lgani uchun 2 ta g'olib chiqadi, 2 ta AWAY bo'sh qoladi
-            
-            # TO'G'RI: 2-roundda:
-            # - 4 ta HOME: 4 ta seed
-            # - 2 ta AWAY: 2 ta play-in g'olibi
-            # - 2 ta AWAY: bo'sh? YO'Q - 2-roundda 4 ta match bor, har bir matchda AWAY bor
-            # Demak, 2 ta matchda AWAY play-in g'olibi, 2 ta matchda AWAY bo'sh? BU NOTO'G'RI
-            
-            # XULOSA: 10 ta jamoa uchun bracket noto'g'ri!
-            # 10 ta jamoa = 5 match 1-roundda bo'lishi kerak (10 jamoa) -> 5 g'olib
-            # Keyin 2-roundda 5 match? YO'Q - 2-roundda 3 match bo'lishi kerak (6 jamoa)
-            # Bu esa mumkin emas, chunki 2-roundda matchlar soni 2 ning darajasi bo'lishi kerak
-            
-            # TO'G'RI: 10 ta jamoa uchun:
-            # Round 1 (Play-in): 2 match (4 jamoa) -> 2 g'olib
-            # Round 2 (1/8 Final): 4 match (8 jamoa: 2 g'olib + 6 seed) -> 4 g'olib
-            # Round 3 (1/4 Final): 2 match
-            # Round 4 (1/2 Final): 1 match
-            # Round 5 (Final): 1 match
-            
-            # Bu 5 round bo'ladi, 9 match
-            
-            # Sizning rounds_info da nechta round bor?
-            # 10 ta jamoa uchun:
-            # - Play-in (round 1): 2 match
-            # - 1/8 Final (round 2): 4 match
-            # - 1/4 Final (round 3): 2 match
-            # - 1/2 Final (round 4): 1 match
-            # - Final (round 5): 1 match
-            
-            # Jami: 2+4+2+1+1 = 10 match? YO'Q 2+4=6, +2=8, +1=9, +1=10? 10 match bo'ladi
-            # 10 ta jamoa uchun 9 match bo'lishi kerak (n-1)
-            # Demak, rounds_info da 4 round bo'lishi kerak:
-            # - Play-in (round 1): 2 match
-            # - 1/4 Final (round 2): 4 match
-            # - 1/2 Final (round 3): 2 match
-            # - Final (round 4): 1 match
-            
-            # Jami: 2+4+2+1 = 9 match ✅
-            
-            # Bu to'g'ri:
-            # 1/4 Finalda 4 match (8 jamoa: 2 play-in g'olibi + 6 seed)
-            # Play-in g'oliblari AWAY ga, seedlar HOME ga
-            
-            # Seed jamoalar 6 ta, 1/4 Finalda 4 ta match
-            # 4 ta matchning HOME pozitsiyasiga 4 ta seed
-            # Qolgan 2 ta seed qayerga? Ular 1/4 Finalda AWAY ga tushadi?
-            # YO'Q - 1/4 Finalda AWAY ga play-in g'oliblari tushadi (2 ta)
-            # Qolgan 2 ta AWAY bo'sh qoladi? BU NOTO'G'RI
-            
-            # DEMAK, 1/4 Finalda 4 ta match bor:
-            # Match 1: HOME (seed 1) vs AWAY (play-in g'olibi 1)
-            # Match 2: HOME (seed 2) vs AWAY (play-in g'olibi 2)
-            # Match 3: HOME (seed 3) vs AWAY (seed 5)  <-- seed 5 AWAY ga tushadi
-            # Match 4: HOME (seed 4) vs AWAY (seed 6)  <-- seed 6 AWAY ga tushadi
-            
-            # Bu to'g'ri! Seed jamoalar 1/4 Finalda HOME va AWAY ga joylashadi
-            # Play-in g'oliblari esa faqat AWAY ga tushadi
-            
-            # 10 ta jamoa uchun to'g'ri taqsimot:
-            # Play-in: 2 match -> 2 g'olib (AWAY)
-            # Seed: 6 jamoa -> 4 tasi HOME, 2 tasi AWAY
             
             for i in range(seed_teams_count):
                 if i < len(second_round_matches):
@@ -813,3 +719,237 @@ def check_playoff_completion(championship):
     if final_matches.exists() and final_matches.first().is_finished:
         championship.status = "FINISHED"
         championship.save()
+
+def get_group_standings(championship_id):
+    """
+    Guruhlar bo'yicha jadvalni qaytaradi
+    """
+    try:
+        championship = Championship.objects.get(id=championship_id)
+    except Championship.DoesNotExist:
+        return []
+    
+    # Guruh o'yinlarini olish (tugagan va tugamagan)
+    matches = Match.objects.filter(
+        championship=championship
+    ).exclude(group_label__isnull=True).exclude(group_label='')
+    
+    # Guruhlar bo'yicha guruhlash
+    groups = {}
+    
+    # Guruhdagi barcha jamoalarni olish
+    for match in matches:
+        if match.group_label not in groups:
+            groups[match.group_label] = {}
+        
+        # Home user
+        if match.home_user and match.home_user.id not in groups[match.group_label]:
+            groups[match.group_label][match.home_user.id] = {
+                'user': match.home_user,
+                'pld': 0, 'w': 0, 'd': 0, 'l': 0,
+                'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
+            }
+        
+        # Away user
+        if match.away_user and match.away_user.id not in groups[match.group_label]:
+            groups[match.group_label][match.away_user.id] = {
+                'user': match.away_user,
+                'pld': 0, 'w': 0, 'd': 0, 'l': 0,
+                'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
+            }
+    
+    # Faqat tugagan o'yinlar uchun statistikani hisoblash
+    finished_matches = matches.filter(is_finished=True)
+    
+    for match in finished_matches:
+        group_label = match.group_label
+        
+        if group_label not in groups:
+            continue
+        
+        # Home user statistikasi
+        if match.home_user:
+            home_id = match.home_user.id
+            if home_id in groups[group_label]:
+                stats = groups[group_label][home_id]
+                stats['pld'] += 1
+                stats['gf'] += match.home_score
+                stats['ga'] += match.away_score
+                
+                if match.home_score > match.away_score:
+                    stats['w'] += 1
+                    stats['pts'] += 3
+                elif match.home_score == match.away_score:
+                    stats['d'] += 1
+                    stats['pts'] += 1
+                else:
+                    stats['l'] += 1
+        
+        # Away user statistikasi
+        if match.away_user:
+            away_id = match.away_user.id
+            if away_id in groups[group_label]:
+                stats = groups[group_label][away_id]
+                stats['pld'] += 1
+                stats['gf'] += match.away_score
+                stats['ga'] += match.home_score
+                
+                if match.away_score > match.home_score:
+                    stats['w'] += 1
+                    stats['pts'] += 3
+                elif match.away_score == match.home_score:
+                    stats['d'] += 1
+                    stats['pts'] += 1
+                else:
+                    stats['l'] += 1
+    
+    # GD hisoblash
+    for group_label, users_dict in groups.items():
+        for user_id, stats in users_dict.items():
+            stats['gd'] = stats['gf'] - stats['ga']
+    
+    # Guruhlarni tartiblash va chiqish
+    result = []
+    for group_label in sorted(groups.keys()):
+        standings = list(groups[group_label].values())
+        # Ochkolar, gol farqi, urilgan gollar bo'yicha tartiblash
+        standings.sort(key=lambda x: (-x['pts'], -x['gd'], -x['gf']))
+        result.append({
+            'label': group_label,
+            'standings': standings
+        })
+    
+    return result
+
+def generate_group_matches(championship, users):
+    """
+    GROUP tizimi uchun o'yinlar yaratish - guruhlarga random taqsimlash
+    Guruhlar A, B, C, D... ko'rinishida nomlanadi
+    """
+    Match.objects.filter(championship=championship).delete()
+    
+    total_users = len(users)
+    group_count = championship.group_count  # Nechta guruh
+    
+    # Guruhlar sonini tekshirish
+    if group_count <= 0:
+        group_count = 4  # Default
+    
+    print(f"Generating groups: {group_count} groups, {total_users} users")
+    print(f"Users before shuffling: {[u.username for u in users]}")
+    
+    # Jamoalarni random tartiblash - BU MUHIM!
+    random.shuffle(users)
+    print(f"Users after shuffling: {[u.username for u in users]}")
+    
+    # Guruhlarga ajratish (teng taqsimlash)
+    groups = []
+    base_size = total_users // group_count
+    remainder = total_users % group_count
+    
+    # Har bir guruhdagi jamoalar sonini aniqlash
+    group_sizes = []
+    for i in range(group_count):
+        if i < remainder:
+            group_sizes.append(base_size + 1)
+        else:
+            group_sizes.append(base_size)
+    
+    print(f"Group sizes: {group_sizes}")
+    
+    # Jamoalarni guruhlarga random taqsimlash
+    # Buning uchun users ro'yxatini random tartiblab, keyin ketma-ket guruhlarga joylaymiz
+    start_idx = 0
+    for i in range(group_count):
+        group_size = group_sizes[i]
+        end_idx = start_idx + group_size
+        
+        # Guruh uchun jamoalarni olish
+        group_users = users[start_idx:end_idx]
+        
+        # Guruh labeli: A, B, C, D... (65 = 'A' ASCII)
+        group_label = chr(65 + i)
+        
+        # Guruh ichida ham jamoalarni random tartiblash (ixtiyoriy)
+        random.shuffle(group_users)
+        
+        groups.append({
+            'label': group_label,
+            'users': group_users,
+            'size': group_size
+        })
+        
+        print(f"Group {group_label}: {[u.username for u in group_users]}")
+        
+        start_idx = end_idx
+    
+    # Qolgan jamoalarni tekshirish
+    if start_idx < total_users:
+        print(f"Warning: {total_users - start_idx} users left unassigned!")
+        # Qolgan jamoalarni random guruhlarga qo'shish
+        remaining_users = users[start_idx:]
+        for i, user in enumerate(remaining_users):
+            group_idx = i % group_count
+            groups[group_idx]['users'].append(user)
+            groups[group_idx]['size'] += 1
+            print(f"Added {user.username} to group {groups[group_idx]['label']}")
+    
+    # Har bir guruh uchun o'yinlar yaratish
+    total_matches = 0
+    round_order = 1  # Barcha guruh o'yinlari 1-raund deb hisoblanadi
+    
+    for group in groups:
+        group_users = group['users']
+        group_label = group['label']
+        n = len(group_users)
+        
+        print(f"Creating matches for Group {group_label} with {n} teams: {[u.username for u in group_users]}")
+        
+        # Guruhdagi jamoalar soni kamida 2 bo'lishi kerak
+        if n < 2:
+            print(f"Group {group_label} has less than 2 teams, skipping")
+            continue
+        
+        # Guruh ichida random o'yinlar tartibini yaratish
+        # Har bir jamoa bir-biri bilan o'ynaydi (League usulida)
+        
+        # O'yinlar ro'yxatini yaratish
+        matches_list = []
+        for i in range(n):
+            for j in range(i + 1, n):
+                # Birinchi o'yin (home i, away j)
+                matches_list.append({
+                    'home': group_users[i],
+                    'away': group_users[j],
+                    'is_first': True
+                })
+                
+                # Agar matches_per_team = 2 bo'lsa, javob o'yini
+                if championship.matches_per_team == 2:
+                    matches_list.append({
+                        'home': group_users[j],
+                        'away': group_users[i],
+                        'is_first': False
+                    })
+        
+        # O'yinlar tartibini randomlashtirish
+        random.shuffle(matches_list)
+        print(f"Group {group_label}: Created {len(matches_list)} matches in random order")
+        
+        # O'yinlarni yaratish
+        for match_data in matches_list:
+            Match.objects.create(
+                championship=championship,
+                home_user=match_data['home'],
+                away_user=match_data['away'],
+                round_name=f"Guruh {group_label}",
+                round_order=round_order,
+                group_label=group_label,
+                home_score=0,
+                away_score=0,
+                is_finished=False
+            )
+            total_matches += 1
+    
+    print(f"Total matches created: {total_matches}")
+    return total_matches

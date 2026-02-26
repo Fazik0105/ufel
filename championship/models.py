@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
 
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
@@ -21,8 +23,7 @@ class Championship(models.Model):
     CHAMPIONSHIP_TYPE = (
         ('LEAGUE', 'League'),
         ('PLAYOFF', 'Play Off'),
-        ('LEAGUE_PLAYOFF', 'League + Play Off'),
-        ('GROUP_PLAYOFF', 'Group + Play Off'),
+        ('GROUP', 'Group'),
     )
 
     STATUS = (
@@ -30,7 +31,7 @@ class Championship(models.Model):
         ('STARTED', 'Started'),
         ('FINISHED', 'Finished'),
     )
-
+    
     name = models.CharField(max_length=150)
     type = models.CharField(max_length=20, choices=CHAMPIONSHIP_TYPE)
     status = models.CharField(max_length=20, choices=STATUS, default='DRAFT')
@@ -44,6 +45,9 @@ class Championship(models.Model):
     loss_points = models.IntegerField(default=0) # Mag'lubiyat uchun ochko
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
+    group_count = models.IntegerField(default=4, verbose_name="Guruhlar soni")
+    group_advance_count = models.IntegerField(default=1, verbose_name="Har bir guruhdan chiqadigan jamoalar soni")
+    
     def __str__(self):
         return self.name
     
@@ -109,3 +113,43 @@ class Match(models.Model):
         if self.is_finished and self.championship.type == 'PLAYOFF':
             from .services import update_playoff_bracket
             update_playoff_bracket(self)
+
+@receiver(pre_save, sender=User)
+def delete_old_user_avatar(sender, instance, **kwargs):
+    if not instance.pk:
+        return
+    
+    try:
+        old_avatar = User.objects.get(pk=instance.pk).avatar
+    except User.DoesNotExist:
+        return
+
+    new_avatar = instance.avatar
+    if old_avatar and old_avatar != new_avatar:
+        old_avatar.delete(save=False)
+
+
+@receiver(pre_save, sender=Championship)
+def delete_old_championship_avatar(sender, instance, **kwargs):
+    if not instance.pk:
+        return
+    
+    try:
+        old_avatar = Championship.objects.get(pk=instance.pk).avatar
+    except Championship.DoesNotExist:
+        return
+
+    new_avatar = instance.avatar
+    if old_avatar and old_avatar != new_avatar:
+        old_avatar.delete(save=False)
+
+@receiver(post_delete, sender=User)
+def delete_user_avatar_on_delete(sender, instance, **kwargs):
+    if instance.avatar:
+        instance.avatar.delete(save=False)
+
+
+@receiver(post_delete, sender=Championship)
+def delete_championship_avatar_on_delete(sender, instance, **kwargs):
+    if instance.avatar:
+        instance.avatar.delete(save=False)

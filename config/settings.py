@@ -25,7 +25,14 @@ SECRET_KEY = 'django-insecure-1jfl=xr3g441xs0$jrd^5fa%dzi%4aq(w(ggozu$@q7i8-i^eq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["*"]
+
+ALLOWED_HOSTS = ["*", ".ngrok-free.dev"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://unarrived-impecuniously-cathrine.ngrok-free.dev",
+    "http://127.0.0.1",
+]
 
 
 # Application definition
@@ -154,10 +161,3 @@ CACHES = {
         'LOCATION': 'unique-snowflake',
     }
 }
-
-# ALLOWED_HOSTS ni ham tekshirib oling, u yerda ham bo'lishi kerak
-ALLOWED_HOSTS = [
-    "unarrived-impecuniously-cathrine.ngrok-free.dev",
-    "127.0.0.1",
-    "localhost",
-]

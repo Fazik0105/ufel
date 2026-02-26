@@ -308,6 +308,26 @@ def admin_user_detail(request, pk):
 def admin_championship_detail(request, pk):
     championship = get_object_or_404(Championship, pk=pk)
     
+    if request.method == 'POST':
+        # Turnir ma'lumotlarini yangilash
+        championship.name = request.POST.get('name', championship.name)
+        championship.type = request.POST.get('type', championship.type)
+        championship.status = request.POST.get('status', championship.status)
+        championship.teams_count = int(request.POST.get('teams_count', championship.teams_count))
+        
+        # GROUP settings
+        if championship.type == 'GROUP':
+            championship.group_count = int(request.POST.get('group_count', championship.group_count or 4))
+            championship.group_advance_count = int(request.POST.get('group_advance_count', championship.group_advance_count or 1))
+        
+        # Rasm yuklash
+        if 'avatar' in request.FILES:
+            championship.avatar = request.FILES['avatar']
+        
+        championship.save()
+        messages.success(request, "Turnir ma'lumotlari muvaffaqiyatli yangilandi!")
+        return redirect('admin_championship_detail', pk=pk)
+
     # FILTERLARNI OLISH
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'all')
@@ -406,6 +426,10 @@ def admin_championship_detail(request, pk):
     table_data = []
     if championship.type == 'LEAGUE' and all_matches.exists():
         table_data = get_standings(championship.id)
+    elif championship.type == 'GROUP' and all_matches.exists():
+        # GROUP uchun maxsus jadval
+        from championship.services import get_group_standings
+        table_data = get_group_standings(championship.id)   
     
     matches_list = list(filtered_matches)
     matches_count = len(matches_list)
@@ -626,12 +650,10 @@ def remove_participant(request, pk, user_id):
     championship = get_object_or_404(Championship, pk=pk)
     participant = get_object_or_404(ChampionshipParticipant, championship=championship, user_id=user_id)
 
-    if request.method == "POST":
-        participant.delete()
-        messages.success(request, f"{participant.user.first_name} turnirdan olib tashlandi!")
-        return redirect('admin_championship_detail', pk=pk)
+    # GET va POST so'rovlarini qabul qilish
+    participant.delete()
+    messages.success(request, f"{participant.user.get_full_name() or participant.user.username} turnirdan olib tashlandi!")
     
-    # GET so'rov bo'lsa oddiy redirect
     return redirect('admin_championship_detail', pk=pk)
 
 @admin_only
@@ -727,6 +749,10 @@ def create_championship(request):
         draw_points = int(request.POST.get('draw_points', 1))
         loss_points = int(request.POST.get('loss_points', 0))
 
+        # 🆕 GROUP uchun fieldlar
+        group_count = int(request.POST.get('group_count', 4))
+        group_advance_count = int(request.POST.get('group_advance_count', 1))
+
         # 🆕 Avatar faylini olish
         avatar = request.FILES.get('avatar')
 
@@ -748,7 +774,10 @@ def create_championship(request):
             draw_points=draw_points,
             loss_points=loss_points,
             status=status,
-            avatar=avatar  # 🆕 Avatar qo'shildi
+            avatar=avatar,
+            # YANGI: GROUP fieldlari
+            group_count=group_count,
+            group_advance_count=group_advance_count
         )
 
         participants = [
@@ -774,11 +803,9 @@ def create_championship(request):
 def admin_delete_user(request, pk):
     target_user = get_object_or_404(User, pk=pk)
     
-    if request.method == 'POST':
-        username = target_user.username
-        target_user.delete()
-        messages.success(request, f"O'yinchi @{username} muvaffaqiyatli o'chirildi.")
-        return redirect('admin_dashboard') # Yoki 'admin_users' qaysi biri bo'lsa
+    username = target_user.username
+    target_user.delete()
+    messages.success(request, f"O'yinchi @{username} muvaffaqiyatli o'chirildi.")
     
     return redirect('admin_dashboard')
 
@@ -878,7 +905,6 @@ def update_single_match(request, match_id):
                         response_data['next_match_home_id'] = match.next_match.home_user.id if match.next_match.home_user else None
                         response_data['next_match_away_id'] = match.next_match.away_user.id if match.next_match.away_user else None
                         
-                        # Next match ma'lumotlarini qo'shamiz - FIRST_NAME ni to'g'ri uzatish
                         response_data['next_match_data'] = {
                             'id': next_match_updated.id if next_match_updated else match.next_match.id,
                             'home_user': {
@@ -963,6 +989,40 @@ def update_single_match(request, match_id):
                         
                         response_data['bracket_data'] = serializable_bracket
                     
+                    # GROUP uchun yangilangan jadval
+                    elif match.championship.type == 'GROUP':
+                        from championship.services import get_group_standings
+                        updated_group_table = get_group_standings(match.championship.id)
+                        
+                        serializable_group_table = []
+                        for group in updated_group_table:
+                            serializable_group = {
+                                'label': group['label'],
+                                'standings': []
+                            }
+                            for entry in group['standings']:
+                                serializable_entry = {
+                                    'user': {
+                                        'id': entry['user'].id,
+                                        'username': entry['user'].username,
+                                        'first_name': entry['user'].first_name,
+                                        'last_name': entry['user'].last_name,
+                                        'avatar_url': entry['user'].avatar.url if entry['user'].avatar else None
+                                    },
+                                    'pld': entry['pld'],
+                                    'w': entry['w'],
+                                    'd': entry['d'],
+                                    'l': entry['l'],
+                                    'gf': entry['gf'],
+                                    'ga': entry['ga'],
+                                    'gd': entry['gd'],
+                                    'pts': entry['pts']
+                                }
+                                serializable_group['standings'].append(serializable_entry)
+                            serializable_group_table.append(serializable_group)
+                        
+                        response_data['group_table_data'] = serializable_group_table
+                    
                     return JsonResponse(response_data)
                 
                 messages.success(request, success_msg)
@@ -982,81 +1042,130 @@ def update_single_match(request, match_id):
             
     url = reverse('admin_championship_detail', kwargs={'pk': championship_id})
     return redirect(f"{url}#match-{match.id}")
+# def get_championship_detail(request, pk):
+#     championship = get_object_or_404(Championship, pk=pk)
+    
+#     # Get all matches with fresh data from database
+#     all_matches = Match.objects.filter(
+#         championship=championship
+#     ).select_related(
+#         'home_user', 'away_user'
+#     ).order_by('round_order', 'bracket_position')
+    
+#     # Debug: Print matches to see what we have
+#     print(f"Total matches: {all_matches.count()}")
+#     for m in all_matches:
+#         print(f"Match {m.id}: {m.round_name}, home={m.home_user}, away={m.away_user}, score={m.home_score}:{m.away_score}, finished={m.is_finished}")
+    
+#     # Organize matches by round_order (more reliable than round_name)
+#     bracket_data = []
+#     current_order = None
+#     current_round = []
+    
+#     for match in all_matches:
+#         if match.round_order != current_order:
+#             if current_round:
+#                 bracket_data.append({
+#                     'name': current_round[0].round_name,
+#                     'order': current_order,
+#                     'matches': current_round
+#                 })
+#             current_order = match.round_order
+#             current_round = [match]
+#         else:
+#             current_round.append(match)
+    
+#     # Add the last round
+#     if current_round:
+#         bracket_data.append({
+#             'name': current_round[0].round_name,
+#             'order': current_order,
+#             'matches': current_round
+#         })
+    
+#     # Sort rounds by order
+#     bracket_data.sort(key=lambda x: x['order'])
+    
+#     # Get matches for the matches list section
+#     matches = all_matches
+    
+#     # Apply filters if needed
+#     search_query = request.GET.get('search', '')
+#     status_filter = request.GET.get('status', 'all')
+    
+#     if search_query:
+#         matches = matches.filter(
+#             Q(home_user__username__icontains=search_query) |
+#             Q(home_user__first_name__icontains=search_query) |
+#             Q(away_user__username__icontains=search_query) |
+#             Q(away_user__first_name__icontains=search_query)
+#         )
+    
+#     if status_filter == 'finished':
+#         matches = matches.filter(is_finished=True)
+#     elif status_filter == 'pending':
+#         matches = matches.filter(is_finished=False)
+    
+#     matches_count = matches.count()
+    
+#     context = {
+#         'championship': championship,
+#         'bracket_data': bracket_data,
+#         'matches': matches,
+#         'matches_count': matches_count,
+#         'matches_exist': all_matches.exists(),
+#         'search_query': search_query,
+#         'status_filter': status_filter,
+#     }
+#     return render(request, 'your_template.html', context)
 
-def get_championship_detail(request, pk):
+
+@admin_only
+def generate_matches(request, pk):
+    """
+    Turnir uchun matchlarni yaratish
+    """
     championship = get_object_or_404(Championship, pk=pk)
     
-    # Get all matches with fresh data from database
-    all_matches = Match.objects.filter(
-        championship=championship
-    ).select_related(
-        'home_user', 'away_user'
-    ).order_by('round_order', 'bracket_position')
+    participants = ChampionshipParticipant.objects.filter(championship=championship)
     
-    # Debug: Print matches to see what we have
-    print(f"Total matches: {all_matches.count()}")
-    for m in all_matches:
-        print(f"Match {m.id}: {m.round_name}, home={m.home_user}, away={m.away_user}, score={m.home_score}:{m.away_score}, finished={m.is_finished}")
-    
-    # Organize matches by round_order (more reliable than round_name)
-    bracket_data = []
-    current_order = None
-    current_round = []
-    
-    for match in all_matches:
-        if match.round_order != current_order:
-            if current_round:
-                bracket_data.append({
-                    'name': current_round[0].round_name,
-                    'order': current_order,
-                    'matches': current_round
-                })
-            current_order = match.round_order
-            current_round = [match]
-        else:
-            current_round.append(match)
-    
-    # Add the last round
-    if current_round:
-        bracket_data.append({
-            'name': current_round[0].round_name,
-            'order': current_order,
-            'matches': current_round
-        })
-    
-    # Sort rounds by order
-    bracket_data.sort(key=lambda x: x['order'])
-    
-    # Get matches for the matches list section
-    matches = all_matches
-    
-    # Apply filters if needed
-    search_query = request.GET.get('search', '')
-    status_filter = request.GET.get('status', 'all')
-    
-    if search_query:
-        matches = matches.filter(
-            Q(home_user__username__icontains=search_query) |
-            Q(home_user__first_name__icontains=search_query) |
-            Q(away_user__username__icontains=search_query) |
-            Q(away_user__first_name__icontains=search_query)
+    if participants.count() != championship.teams_count:
+        messages.error(request, f"Ishtirokchilar soni {championship.teams_count} ta bo'lishi shart!")
+        return redirect('admin_championship_detail', pk=pk)
+
+    users = [p.user for p in participants]
+    n = len(users)
+
+    if championship.type == 'LEAGUE':
+        total_created = generate_league_matches(championship, users)
+        matches_per_team = (n - 1) * championship.matches_per_team
+        messages.success(
+            request, 
+            f"Liga o'yinlari yaratildi! Har bir jamoa {matches_per_team} ta o'yin o'ynaydi. Jami {total_created} ta o'yin."
         )
     
-    if status_filter == 'finished':
-        matches = matches.filter(is_finished=True)
-    elif status_filter == 'pending':
-        matches = matches.filter(is_finished=False)
+    elif championship.type == 'PLAYOFF':
+        # Playoff uchun tekshirish
+        if n < 2:
+            messages.error(request, "Playoff uchun kamida 2 ta jamoa kerak!")
+            return redirect('admin_championship_detail', pk=pk)
+        
+        if n % 2 != 0:
+            messages.error(request, "Playoff uchun jamoalar soni juft bo'lishi kerak!")
+            return redirect('admin_championship_detail', pk=pk)
+        
+        generate_playoff_matches(championship, users)
+        messages.success(request, f"Playoff o'yinlari yaratildi! {n} ta jamoa, {n-1} ta o'yin.")
     
-    matches_count = matches.count()
-    
-    context = {
-        'championship': championship,
-        'bracket_data': bracket_data,
-        'matches': matches,
-        'matches_count': matches_count,
-        'matches_exist': all_matches.exists(),
-        'search_query': search_query,
-        'status_filter': status_filter,
-    }
-    return render(request, 'your_template.html', context)
+    # YANGI: GROUP uchun
+    elif championship.type == 'GROUP':
+        total_created = generate_group_matches(championship, users)
+        messages.success(
+            request, 
+            f"Guruh bosqichi o'yinlari yaratildi! {championship.group_count} ta guruh, jami {total_created} ta o'yin."
+        )
 
+    championship.status = 'STARTED'
+    championship.save()
+
+    return redirect('admin_championship_detail', pk=pk)

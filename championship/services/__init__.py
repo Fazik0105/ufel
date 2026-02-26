@@ -1,5 +1,5 @@
-# championship/services/__init__.py
 from .services import (
+    get_standings,
     generate_league_matches,
     generate_league_matches_simple,
     generate_league_matches_double,
@@ -14,10 +14,12 @@ from .services import (
     get_bracket_data,
     get_bracket_data_cached,
     check_playoff_completion,
-    get_standings,  # Yangi qo'shilgan funksiya
+    generate_group_matches,
+    get_group_standings,
 )
 
 __all__ = [
+    'get_standings',
     'generate_league_matches',
     'generate_league_matches_simple',
     'generate_league_matches_double',
@@ -32,5 +34,6 @@ __all__ = [
     'get_bracket_data',
     'get_bracket_data_cached',
     'check_playoff_completion',
-    'get_standings',
+    'generate_group_matches',
+    'get_group_standings',
 ]

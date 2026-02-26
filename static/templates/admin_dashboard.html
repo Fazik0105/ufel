@@ -324,6 +324,101 @@
             font-size: 14px;   /* ← shu bilan size control */
             transition: transform 0.25s ease;
         }
+
+        .group-settings-card{
+
+            display:none;
+
+            margin-top:20px;
+
+            padding:24px;
+
+            border-radius:20px;
+
+            background:
+                linear-gradient(135deg,
+                    rgba(124,58,237,0.18),
+                    rgba(34,211,238,0.12));
+
+            border:1px solid rgba(124,58,237,0.35);
+
+            box-shadow:
+                0 10px 50px rgba(124,58,237,0.25),
+                inset 0 0 0 1px rgba(255,255,255,0.05);
+
+            backdrop-filter: blur(20px);
+
+            animation: groupFade 0.35s ease;
+        }
+
+        .group-settings-header{
+
+            margin-bottom:18px;
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+        }
+
+        .group-settings-title{
+
+            font-size:15px;
+
+            font-weight:600;
+
+            letter-spacing:1px;
+
+            color:#22d3ee;
+
+        }
+
+        .group-settings-sub{
+
+            font-size:12px;
+
+            color:#94a3b8;
+
+            margin-top:3px;
+
+        }
+
+        .group-settings-grid{
+
+            display:grid;
+
+            grid-template-columns:
+                repeat(auto-fit,minmax(240px,1fr));
+
+            gap:20px;
+
+        }
+
+        .field-hint{
+
+            color:#94a3b8;
+
+            font-size:11px;
+
+            margin-top:6px;
+
+            display:block;
+
+        }
+
+        @keyframes groupFade{
+
+            from{
+                opacity:0;
+                transform:translateY(-10px);
+            }
+
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
+
+        }
     </style>
 </head>
 <body>
@@ -337,12 +432,12 @@
     <h1 class="dashboard-title">ADMIN PANEL</h1>
 
     <div class="tabs">
-        <div class="tab-btn" onclick="showTab('tournaments')">TOURNAMENTS</div>
-        <div class="tab-btn active" onclick="showTab('users')">USERS</div>
+        <div class="tab-btn active" onclick="showTab('tournaments')">TOURNAMENTS</div>
+        <div class="tab-btn" onclick="showTab('users')">USERS</div>
     </div>
 
 <!-- TOURNAMENTS SECTION -->
-<div id="tournaments" class="admin-section">
+<div id="tournaments" class="admin-section active">
     <div class="card tournament-create-card" style="margin-bottom: 30px;">
         <h2 class="section-subtitle" style="color: #22d3ee; margin-bottom: 20px;">YANGI TURNIR YARATISH</h2>
 
@@ -398,7 +493,7 @@
                     <select name="type">
                         <option value="LEAGUE">League (Liga)</option>
                         <option value="PLAYOFF">Playoff (O'yinchi chiqarib yuborish)</option>
-                        <option value="GROUP_PLAYOFF">Group + Playoff</option>
+                        <option value="GROUP">Group (Guruh bosqichi)</option>
                     </select>
                 </div>
                 <div class="field">
@@ -443,7 +538,57 @@
                 </div>
             </div>
 
-            
+            <div id="group-settings" class="card group-settings-card">
+                <div class="group-settings-header">
+                    <div>
+                        <div class="group-settings-title">GROUP BOSQICHI SOZLAMALARI</div>
+                        <div class="group-settings-sub">
+                            Guruhlar soni va keyingi bosqichga chiqish qoidalarini belgilang
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group-settings-grid">
+                    <div class="field">
+                        <label>Guruhlar soni</label>
+                        <input type="number"
+                            name="group_count"
+                            id="group_count"
+                            value="4"
+                            min="2"
+                            max="32">
+                        <small class="field-hint">
+                            A, B, C, D ... guruhlar yaratiladi
+                        </small>
+                    </div>
+
+                    <div class="field">
+                        <label>Har bir guruhdan nechta jamoa chiqadi</label>
+                        <input type="number"
+                            name="group_advance_count"
+                            id="group_advance_count"
+                            value="1"
+                            min="1"
+                            max="4">
+                        <small class="field-hint">
+                            Keyingi bosqichga chiqadigan jamoalar soni
+                        </small>
+                    </div>
+
+                    <div class="field">
+                        <label>Har bir guruhdagi jamoalar</label>
+                        <input type="text"
+                            id="teams_per_group_preview"
+                            value="2"
+                            readonly
+                            disabled>
+
+                        <small class="field-hint">
+                            avtomatik hisoblanadi
+                        </small>
+                    </div>
+                </div>
+            </div>
 
             <div class="user-selection-wrapper" style="margin-top: 30px;">
                 <label class="selection-label">O'yinchilarni tanlang: 
@@ -519,12 +664,14 @@
         </div>
     </div>
 
-    <div class="champ-actions">
-        <a href="{% url 'delete_championship' champ.id %}" 
-           style="color: #ef4444; text-decoration: none; font-size: 13px; position: relative; z-index: 2;"
-           onclick="event.stopPropagation(); return confirm('Rostdan o‘chirmoqchimisiz?');">
-           O‘chirish
-        </a>
+    <div class="user-actions" style="display: flex; gap: 10px; align-items: center;">
+        <div class="champ-actions">
+            <a href="{% url 'delete_championship' champ.id %}"
+                style="color: #ef4444; text-decoration: none; font-size: 13px; position: relative; z-index: 2;"
+                onclick="event.stopPropagation(); return confirm('Rostdan o‘chirmoqchimisiz?');">
+                O‘chirish
+            </a>
+        </div>
     </div>
 </div>
         {% empty %}
@@ -536,7 +683,7 @@
 
 
 <!-- USERS SECTION -->
-<div id="users" class="admin-section active">
+<div id="users" class="admin-section">
 
     <!-- USERS LIST -->
     <div class="container">
@@ -708,6 +855,45 @@
             });
         }
     });
+
+    document.querySelector('select[name="type"]').addEventListener('change', function() {
+    const groupSettings =
+        document.getElementById('group-settings');
+    if (this.value === 'GROUP') {
+        groupSettings.style.display = 'block';
+        updateTeamsPerGroup();
+    } else {
+        groupSettings.style.display = 'none';
+    }
+});
+
+// Jamoalar soni yoki guruhlar soni o'zgarganida previewni yangilash
+document.getElementById('dashboard_teams_count').addEventListener('input', updateTeamsPerGroup);
+document.getElementById('group_count').addEventListener('input', updateTeamsPerGroup);
+
+function updateTeamsPerGroup() {
+    const teamsCount = parseInt(document.getElementById('dashboard_teams_count').value) || 8;
+    const groupCount = parseInt(document.getElementById('group_count').value) || 4;
+    
+    // Har bir guruhdagi jamoalar soni (teng taqsimlanmay qolganlar oxirgi guruhga)
+    const teamsPerGroup = Math.ceil(teamsCount / groupCount);
+    document.getElementById('teams_per_group_preview').value = teamsPerGroup + ' (oxirgi guruhda kamroq bo`lishi mumkin)';
+    
+    // Guruhdan chiqadigan jamoalar soni guruhdagi jamoalar sonidan oshmasligi kerak
+    const advanceCount = document.getElementById('group_advance_count');
+    if (parseInt(advanceCount.value) > teamsPerGroup) {
+        advanceCount.value = teamsPerGroup;
+    }
+    advanceCount.max = teamsPerGroup;
+}
+
+// Sahifa yuklanganda tekshirish
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('select[name="type"]').value === 'GROUP') {
+        document.getElementById('group-settings').style.display = 'grid';
+        updateTeamsPerGroup();
+    }
+});
 </script>
 </body>
 </html>

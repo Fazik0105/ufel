@@ -2,12 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # index / home
     path('', views.index, name='index'),
 
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    # championships
     path('championships/', views.championship_list, name='championship_list'),
     path('championships/create/', views.create_championship, name='create_championship'),
     path('championships/<int:pk>/generate/', views.generate_matches, name='generate_matches'),
@@ -16,10 +14,8 @@ urlpatterns = [
     path('championships/<int:pk>/matches/', views.championship_matches, name='championship_matches'),
     path('championships/<int:pk>/table/', views.championship_table, name='championship_table'),
     path('championship/<int:pk>/update-all-scores/', views.update_all_scores, name='update_all_scores'),
-    # profile
     path('profile/', views.update_profile, name='update_profile'),
 
-    # admin users
     path('users/', views.admin_users, name='admin_users'),
     path('users/<int:pk>/', views.admin_user_detail, name='admin_user_detail'),
 
