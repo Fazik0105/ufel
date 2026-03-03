@@ -153,3 +153,15 @@ def delete_user_avatar_on_delete(sender, instance, **kwargs):
 def delete_championship_avatar_on_delete(sender, instance, **kwargs):
     if instance.avatar:
         instance.avatar.delete(save=False)
+
+class BookmarkedMatch(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarked_matches')
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='bookmarked_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'match')
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"{self.user.username} - Match {self.match.id}"

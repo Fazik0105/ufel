@@ -109,6 +109,14 @@
       </a>
     </div>
 
+    <div class="bookmarks-section" style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(34,211,238,0.2);">
+        <div id="bookmarks-list" style="display: flex; flex-direction: column; gap: 12px; min-height: 100px;">
+            <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                Yuklanmoqda...
+            </div>
+        </div>
+    </div>
+
     <h6 class="end-text">© 2026 UFeL | All Rights Reserved</h6>
 
   </div>
@@ -116,23 +124,17 @@
 
 <!-- TOURNAMENTS PAGE -->
 <section id="tournaments" class="page">
-    
-    <div class="tournaments-liga">
-      {% for champ in championships %}
-      <a href="#"
-        class="liga-tab {% if latest_champ and champ.id == latest_champ.id %}active{% endif %}"
-        data-liga="{{ champ.id }}"
-        data-url="{% url 'get_championship_data' champ.id %}">
-      <h1 class="liga-tab-text">{{ champ.name }}</h1>
+      <div class="tournaments-liga">
+        {% for champ in championships %}
+        <a href="{% url 'tournament_public_view' champ.id %}"
+          class="liga-tab {% if latest_champ and champ.id == latest_champ.id %}active{% endif %}">
+          <h1 class="liga-tab-text">{{ champ.name }}</h1>
           <div class="liga-line"></div>
-      </a>
-      {% endfor %}
-    </div>
+        </a>
+        {% endfor %}
+      </div>
 
-    {% if user.is_authenticated and user.is_admin and latest_champ %}
-
-
-{% endif %}
+   
 
 
 <div class="tournaments-container">
@@ -335,4 +337,144 @@
     <script src="{% static 'JavaScripts/champions-modal.js' %}"></script>
 
 </body>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Faqat bookmark listi bor sahifalarda ishlaydi
+    if (document.getElementById('bookmarks-list')) {
+        loadUserBookmarks();
+    }
+    
+    // Liga tablar uchun event listener
+    document.querySelectorAll('.liga-tab').forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.liga-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const champId = this.getAttribute('data-liga');
+            
+            document.getElementById('tournament-table-body').style.opacity = '0.5';
+
+            fetch(`/app/get-championship-data/${champId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('tournament-table-body').innerHTML = data.table_html;
+                        document.getElementById('active-champ-name').innerText = data.champ_name;
+                        
+                        const adminWrapper = document.getElementById('admin-section-wrapper');
+                        if (adminWrapper) {
+                            adminWrapper.innerHTML = data.admin_html;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error))
+                .finally(() => {
+                    document.getElementById('tournament-table-body').style.opacity = '1';
+                });
+        });
+    });
+});
+
+function loadUserBookmarks() {
+    fetch('/app/get-bookmarks/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            updateBookmarksList(data.bookmarks);
+        })
+        .catch(error => {
+            console.error('Error loading bookmarks:', error);
+            const container = document.getElementById('bookmarks-list');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                        <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
+                        <p style="color: #64748b; font-size: 12px; margin-top: 8px;">Qaytadan urinib ko'ring</p>
+                    </div>
+                `;
+            }
+        });
+}
+
+function updateBookmarksList(bookmarks) {
+    const container = document.getElementById('bookmarks-list');
+    const counterSpan = document.getElementById('bookmark-counter');
+    
+    if (!container) return;
+    
+    if (counterSpan) {
+        counterSpan.textContent = `(${bookmarks?.length || 0}/3)`;
+    }
+    
+    if (!bookmarks || bookmarks.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
+                <p style="color: #64748b; font-size: 12px; margin-top: 8px;">Turnirlardagi o'yinlarni bookmark qilib qo'ying</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
+            <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
+                ⭐ TOP O'yinlar
+            </span>
+        </div>
+    `;
+    bookmarks.forEach(bm => {
+        const homeName = bm.home_user?.name || 'TBD';
+        const awayName = bm.away_user?.name || 'TBD';
+        const homeAvatar = bm.home_user?.avatar || null;
+        const awayAvatar = bm.away_user?.avatar || null;
+        
+        html += `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; transition: all 0.3s ease;">
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                    <!-- Home team avatar -->
+                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${bm.is_finished ? '#10b981' : '#f59e0b'};">
+                        ${homeAvatar ? 
+                            `<img src="${homeAvatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                            `<span>${homeName.charAt(0)}</span>`}
+                    </div>
+                    
+                   <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center; ">
+                      <div style="font-size: 13px; color: #94a3b8; margin-bottom: 4px;">
+                          ${bm.championship_name} • ${bm.round_name}
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                          <span style="color: #f8fafc;">${homeName}</span>
+                          <span style="color: #22d3ee; font-weight: 700;">${bm.score}</span>
+                          <span style="color: #f8fafc;">${awayName}</span>
+                      </div>
+                  </div>
+                    
+                    <!-- Away team avatar -->
+                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${bm.is_finished ? '#10b981' : '#f59e0b'};">
+                        ${awayAvatar ? 
+                            `<img src="${awayAvatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                            `<span>${awayName.charAt(0)}</span>`}
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                <span style="font-size: 8px; letter-spacing: 1px; color: ${bm.is_finished ? '#10b981' : '#f59e0b'}; opacity: 0.8;">
+                            ${bm.is_finished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
+                </span>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+</script>
 </html>

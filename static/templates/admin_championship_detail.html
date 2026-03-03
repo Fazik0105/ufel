@@ -303,7 +303,6 @@
     {% endif %}
 
     {% if championship.type == 'GROUP' and table and matches_exist %}
-        <!-- GURUHLAR OVERVIEW CARDS -->
         <div class="card" style="margin-bottom: 25px;">
             <h2 style="font-size: 18px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                 <span>📋 GURUHLAR TAQSIMOTI</span>
@@ -408,7 +407,6 @@
             </div>
         </div>
 
-        <!-- GURUHLAR JADVALI (BATAFSIL) -->
         <div class="card">
             <h2 style="font-size: 18px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                 📊 <span>GURUHLAR BATAFSIL JADVALI</span>
@@ -769,7 +767,17 @@
                             </div>
                         </div>
 
-                        <div style="display: flex; align-items: center; gap: 15px; width: 180px; justify-content: flex-end;">
+                        <div style="display: flex; align-items: center; gap: 10px; width: 180px; justify-content: flex-end;">
+                            <button type="button" 
+                                    class="bookmark-btn" 
+                                    data-match-id="{{ match.id }}"
+                                    style="background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;"
+                                    onclick="toggleBookmark(this, {{ match.id }})">
+                                <svg class="bookmark-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: all 0.2s;">
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                                </svg>
+                            </button>
+
                             <div style="text-align: center;">
                                 {% if match.is_finished %}
                                     <span style="color: #10b981; font-size: 11px; display: block; font-weight: bold;">TUGAGAN</span>
@@ -1694,6 +1702,126 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Sahifa yuklanganda bookmark statuslarini tekshirish
+document.addEventListener('DOMContentLoaded', function() {
+    checkAllBookmarks();
+});
+
+function checkAllBookmarks() {
+    fetch('{% url "get_user_bookmarks" %}')
+        .then(response => response.json())
+        .then(data => {
+            const bookmarkedIds = data.bookmarks.map(b => b.match_id);
+            
+            // Barcha bookmark buttonlarini yangilash
+            document.querySelectorAll('.bookmark-btn').forEach(btn => {
+                const matchId = parseInt(btn.dataset.matchId);
+                if (bookmarkedIds.includes(matchId)) {
+                    btn.classList.add('bookmarked');
+                    // Match qatoriga highlight qo'shish
+                    const matchForm = document.getElementById(`match-${matchId}`);
+                    if (matchForm) {
+                        matchForm.classList.add('bookmarked');
+                    }
+                } else {
+                    btn.classList.remove('bookmarked');
+                    const matchForm = document.getElementById(`match-${matchId}`);
+                    if (matchForm) {
+                        matchForm.classList.remove('bookmarked');
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error checking bookmarks:', error));
+}
+
+function toggleBookmark(button, matchId) {
+    fetch(`/app/toggle-bookmark/${matchId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            showBookmarkNotification(data.error, 'error');
+            return;
+        }
+        
+        // Button statusini yangilash
+        if (data.status === 'added') {
+            button.classList.add('bookmarked');
+            document.getElementById(`match-${matchId}`)?.classList.add('bookmarked');
+            showBookmarkNotification(`✅ Bookmark qo'shildi (${data.bookmark_count}/3)`, 'success');
+        } else {
+            button.classList.remove('bookmarked');
+            document.getElementById(`match-${matchId}`)?.classList.remove('bookmarked');
+            showBookmarkNotification(`❌ Bookmark o'chirildi (${data.bookmark_count}/3)`, 'warning');
+        }
+        
+        // Agar eski bookmark o'chirilgan bo'lsa
+        if (data.message && data.message.includes('Eng eskisi o\'chirildi')) {
+            showBookmarkNotification('📌 Eng eski bookmark o\'chirildi va yangisi qo\'shildi', 'warning');
+        }
+        
+        // Bookmarklar ro'yxatini yangilash (agar index.html da bo'lsa)
+        if (typeof updateBookmarksList === 'function' && data.bookmarks) {
+            updateBookmarksList(data.bookmarks);
+        } else {
+            // Qaytadan yuklash
+            if (typeof loadUserBookmarks === 'function') {
+                loadUserBookmarks();
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showBookmarkNotification('Xatolik yuz berdi', 'error');
+    });
+}
+
+function showBookmarkNotification(message, type) {
+    // Eski notificationni o'chirish
+    const oldNotification = document.querySelector('.bookmark-notification');
+    if (oldNotification) oldNotification.remove();
+    
+    // Yangi notification yaratish
+    const notification = document.createElement('div');
+    notification.className = `bookmark-notification ${type}`;
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">${type === 'success' ? '✨' : '⚠️'}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 3 sekunddan keyin o'chirish
+    setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease reverse';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// CSRF token olish uchun yordamchi funksiya
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
 </script>
 </body>

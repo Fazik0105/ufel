@@ -29,4 +29,8 @@ urlpatterns = [
     path('admin/championship/<int:pk>/remove-participant/<int:user_id>/', views.remove_participant, name='remove_participant'),
     path('admin/users/delete/<int:pk>/', views.admin_delete_user, name='admin_delete_user'),
     path('match/<int:match_id>/update-single/', views.update_single_match, name='update_single_match'),
+    path('toggle-bookmark/<int:match_id>/', views.toggle_bookmark, name='toggle_bookmark'),
+    path('get-bookmarks/', views.get_user_bookmarks, name='get_user_bookmarks'),
+    path('tournament/<int:pk>/', views.tournament_public_view, name='tournament_public_view'),
+    path('api/tournament/<int:pk>/', views.tournament_detail_partial, name='tournament_detail_partial'),
 ]

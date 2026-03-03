@@ -664,6 +664,7 @@ def get_bracket_data(championship_id):
             'away_score': match.away_score,
             'is_finished': match.is_finished,
             'winner': winner,
+            'winner_id': winner.id if winner else None,
             'bracket_position': match.bracket_position or 0,
             'round_order': round_order,
         }

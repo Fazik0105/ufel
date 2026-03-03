@@ -1,0 +1,936 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ championship.name }} | UFEL</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e, #000);
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header a {
+            color: #22d3ee;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(34, 211, 238, 0.1);
+            transition: 0.3s;
+        }
+        
+        header a:hover {
+            background: rgba(34, 211, 238, 0.2);
+        }
+        
+        h1 {
+            font-size: 28px;
+            letter-spacing: 1px;
+            margin: 0;
+            background: linear-gradient(135deg, #fff, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tournament-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+        
+        .badge-draft { background: #64748b; color: #fff; }
+        .badge-started { background: #22d3ee; color: #000; }
+        .badge-finished { background: #10b981; color: #fff; }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(34, 211, 238, 0.1);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #22d3ee;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+            color: #22d3ee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* League Table Styles */
+        .modern-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        
+        .modern-table th {
+            padding: 12px;
+            color: #94a3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        .modern-table th:first-child { text-align: left; }
+        
+        .modern-table td {
+            padding: 15px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #22d3ee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            overflow: hidden;
+        }
+        
+        .player-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .rank-1 { background: rgba(255, 215, 0, 0.1); }
+        .rank-2 { background: rgba(192, 192, 192, 0.1); }
+        .rank-3 { background: rgba(205, 127, 50, 0.1); }
+        
+        .pts-badge {
+            background: rgba(34, 211, 238, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #22d3ee;
+            display: inline-block;
+        }
+        
+        /* Groups Grid */
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .group-card {
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid rgba(124,58,237,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .group-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .group-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #22d3ee);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(124,58,237,0.3);
+        }
+        
+        .group-badge span:first-child {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .group-badge span:last-child {
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .group-team-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .qualified {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Bracket Styles */
+        .bracket-container {
+            display: flex;
+            gap: 45px;
+            overflow-x: auto;
+            padding: 25px 10px;
+        }
+        
+        .bracket-round {
+            min-width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .bracket-title {
+            text-align: center;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+        
+        .bracket-card {
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 18px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        
+        .bracket-team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 6px;
+        }
+        
+        .bracket-team.winner {
+            background: rgba(16, 185, 129, 0.12);
+            border-radius: 10px;
+        }
+        
+        .bracket-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,#7c3aed,#22d3ee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 11px;
+            overflow: hidden;
+        }
+        
+        .bracket-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .bracket-score {
+            background: #0f172a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            color: #22d3ee;
+            border: 1px solid #334155;
+        }
+        
+        .bracket-vs {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+        }
+        
+        .bracket-vs span {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        .bracket-vs::before,
+        .bracket-vs::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+        }
+        
+        /* Matches List */
+        .match-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 25px;
+            background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(34,211,238,0.05));
+            border-radius: 18px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-left: 5px solid;
+        }
+        
+        .match-finished { border-left-color: #10b981; }
+        .match-pending { border-left-color: #f59e0b; }
+        
+        .match-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: #22d3ee;
+            padding: 0 20px;
+        }
+        
+        .match-teams {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        .team-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .team-info.right {
+            justify-content: flex-end;
+        }
+        
+        .team-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .match-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .status-finished {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+        }
+        
+        .filter-input {
+            flex: 2;
+            min-width: 200px;
+            padding: 10px 15px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+        }
+        
+        .filter-select {
+            flex: 1;
+            min-width: 150px;
+            padding: 10px 15px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #7c3aed, #22d3ee);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 211, 238, 0.3);
+        }
+        
+        .filter-reset {
+            padding: 10px 20px;
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        
+        .filter-reset:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .match-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .match-teams {
+                justify-content: center;
+            }
+            
+            .team-info.right {
+                justify-content: flex-start;
+            }
+            
+            .groups-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="{% url 'index' %}">← BOSH SAHIFA</a>
+                <h1>{{ championship.name }}</h1>
+                <span class="tournament-badge badge-{{ championship.status|lower }}">
+                    {{ championship.get_status_display|upper }}
+                </span>
+            </div>
+            <div>
+                <span style="color: #94a3b8; font-size: 14px;">
+                    {{ championship.get_type_display }}
+                </span>
+            </div>
+        </header>
+        
+        <!-- Info Cards -->
+        <div class="info-grid">
+            <div class="stat-card">
+                <div class="stat-label">TURNIR TURI</div>
+                <div class="stat-value">{{ championship.get_type_display }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ISHTIROKCHILAR</div>
+                <div class="stat-value">{{ championship.teams_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">HOLATI</div>
+                <div class="stat-value" style="color: {% if championship.status == 'STARTED' %}#22d3ee{% elif championship.status == 'FINISHED' %}#10b981{% else %}#94a3b8{% endif %}">
+                    {{ championship.get_status_display }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- LEAGUE TABLE -->
+        {% if championship.type == 'LEAGUE' and table %}
+        <div class="card">
+            <div class="card-title">
+                <span>📊 TURNIR JADVALI</span>
+                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">Ochkolar bo'yicha tartiblangan</span>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th style="text-align: left;">O'yinchi / Jamoa</th>
+                            <th style="text-align: center;">O'yn</th>
+                            <th style="text-align: center;">G</th>
+                            <th style="text-align: center;">D</th>
+                            <th style="text-align: center;">M</th>
+                            <th style="text-align: center;">UG</th>
+                            <th style="text-align: center;">O'G</th>
+                            <th style="text-align: center;">±</th>
+                            <th style="text-align: center;">OCH</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in table %}
+                        <tr class="{% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+                            <td style="text-align: center; font-weight: 700;">
+                                {% if forloop.counter == 1 %}🥇
+                                {% elif forloop.counter == 2 %}🥈
+                                {% elif forloop.counter == 3 %}🥉
+                                {% else %}{{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="player-info">
+                                    <div class="player-avatar">
+                                        {% if entry.user.avatar %}
+                                            <img src="{{ entry.user.avatar.url }}" alt="">
+                                        {% else %}
+                                            <span>{% if entry.user.first_name %}{{ entry.user.first_name|slice:":1"|upper }}{% else %}{{ entry.user.username|slice:":1"|upper }}{% endif %}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600;">
+                                            {% if entry.user.get_full_name %}{{ entry.user.get_full_name }}{% else %}{{ entry.user.username }}{% endif %}
+                                        </div>
+                                        <div style="font-size: 11px; color: #64748b;">@{{ entry.user.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">{{ entry.pld }}</td>
+                            <td style="text-align: center; color: #10b981;">{{ entry.w }}</td>
+                            <td style="text-align: center; color: #94a3b8;">{{ entry.d }}</td>
+                            <td style="text-align: center; color: #ef4444;">{{ entry.l }}</td>
+                            <td style="text-align: center;">{{ entry.gf }}</td>
+                            <td style="text-align: center;">{{ entry.ga }}</td>
+                            <td style="text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% elif entry.gd < 0 %}color: #ef4444;{% endif %}">
+                                {{ entry.gd }}
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="pts-badge">{{ entry.pts }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- GROUP STAGE -->
+        {% if championship.type == 'GROUP' and group_data %}
+        <div class="card">
+            <div class="card-title">
+                <span>📋 GURUHLAR BOSQICHI</span>
+                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">
+                    {{ championship.group_count }} ta guruh | Har bir guruhdan {{ championship.group_advance_count }} ta jamoa chiqadi
+                </span>
+            </div>
+            
+            <div class="groups-grid">
+                {% for group in group_data %}
+                <div class="group-card">
+                    <div class="group-header">
+                        <div class="group-badge">
+                            <span>GURUH</span>
+                            <span>{{ group.label }}</span>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; color: #94a3b8;">{{ group.standings|length }} ta jamoa</div>
+                            <div style="font-size: 13px; margin-top: 5px; color: #22d3ee;">🔝 {{ championship.group_advance_count }} ta saralanadi</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        {% for entry in group.standings %}
+                        <div class="group-team-row {% if forloop.counter <= championship.group_advance_count %}qualified{% endif %}">
+                            <div style="width: 30px; text-align: center; font-weight: 700; color: 
+                                {% if forloop.counter == 1 %}#ffd700
+                                {% elif forloop.counter == 2 %}#c0c0c0
+                                {% elif forloop.counter == 3 %}#cd7f32
+                                {% else %}#64748b
+                                {% endif %};">
+                                {{ forloop.counter }}
+                            </div>
+                            
+                            <div class="player-avatar" style="width: 32px; height: 32px;">
+                                {% if entry.user.avatar %}
+                                    <img src="{{ entry.user.avatar.url }}" alt="">
+                                {% else %}
+                                    <span>{% if entry.user.first_name %}{{ entry.user.first_name|slice:":1"|upper }}{% else %}{{ entry.user.username|slice:":1"|upper }}{% endif %}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div style="flex: 1; font-weight: 600; font-size: 14px;">
+                                {% if entry.user.get_full_name %}{{ entry.user.get_full_name }}{% else %}{{ entry.user.username }}{% endif %}
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="font-size: 12px; color: #94a3b8;">{{ entry.pld }} o'yn</div>
+                                <div class="pts-badge" style="padding: 2px 8px;">{{ entry.pts }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Detailed Group Tables -->
+            <div style="margin-top: 30px;">
+                {% for group in group_data %}
+                <div style="background: rgba(124,58,237,0.05); border-radius: 20px; padding: 20px; margin-bottom: 25px;">
+                    <h3 style="margin-top: 0; margin-bottom: 20px; color: #22d3ee;">GURUH {{ group.label }} - Batafsil statistika</h3>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">#</th>
+                                    <th style="text-align: left;">O'yinchi</th>
+                                    <th style="text-align: center;">O'yn</th>
+                                    <th style="text-align: center; color: #10b981;">G</th>
+                                    <th style="text-align: center; color: #94a3b8;">D</th>
+                                    <th style="text-align: center; color: #ef4444;">M</th>
+                                    <th style="text-align: center;">UG</th>
+                                    <th style="text-align: center;">O'G</th>
+                                    <th style="text-align: center;">±</th>
+                                    <th style="text-align: center;">OCH</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in group.standings %}
+                                <tr style="background: {% if forloop.counter <= championship.group_advance_count %}rgba(16,185,129,0.05){% endif %};">
+                                    <td style="text-align: center; font-weight: 700;">
+                                        {% if forloop.counter == 1 %}🥇
+                                        {% elif forloop.counter == 2 %}🥈
+                                        {% elif forloop.counter == 3 %}🥉
+                                        {% else %}{{ forloop.counter }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <div class="player-avatar" style="width: 35px; height: 35px;">
+                                                {% if entry.user.avatar %}
+                                                    <img src="{{ entry.user.avatar.url }}" alt="">
+                                                {% else %}
+                                                    <span>{% if entry.user.first_name %}{{ entry.user.first_name|slice:":1"|upper }}{% else %}{{ entry.user.username|slice:":1"|upper }}{% endif %}</span>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600;">
+                                                    {% if entry.user.get_full_name %}{{ entry.user.get_full_name }}{% else %}{{ entry.user.username }}{% endif %}
+                                                </div>
+                                                <div style="font-size: 11px; color: #64748b;">@{{ entry.user.username }}</div>
+                                            </div>
+                                            {% if forloop.counter <= championship.group_advance_count %}
+                                            <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-left: 10px;">NEXT</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">{{ entry.pld }}</td>
+                                    <td style="text-align: center; color: #10b981;">{{ entry.w }}</td>
+                                    <td style="text-align: center; color: #94a3b8;">{{ entry.d }}</td>
+                                    <td style="text-align: center; color: #ef4444;">{{ entry.l }}</td>
+                                    <td style="text-align: center;">{{ entry.gf }}</td>
+                                    <td style="text-align: center;">{{ entry.ga }}</td>
+                                    <td style="text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% elif entry.gd < 0 %}color: #ef4444;{% endif %}">
+                                        {{ entry.gd }}
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="pts-badge">{{ entry.pts }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- PLAYOFF BRACKET -->
+        {% if championship.type == 'PLAYOFF' and bracket_data %}
+        <div class="card">
+            <div class="card-title">
+                <span>🏆 TURNIR SETKASI</span>
+            </div>
+            
+            <div class="bracket-container">
+                {% for round in bracket_data %}
+                <div class="bracket-round">
+                    <div class="bracket-title">{{ round.name }}</div>
+                    
+                    {% for match in round.matches %}
+                    <div class="bracket-card">
+                        <!-- Home Team -->
+                        <div class="bracket-team {% if match.winner and match.home_user and match.winner.id == match.home_user.id %}winner{% endif %}">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="bracket-avatar">
+                                    {% if match.home_user %}
+                                        {% if match.home_user.avatar %}
+                                            <img src="{{ match.home_user.avatar.url }}" alt="">
+                                        {% else %}
+                                            <span>{% if match.home_user.first_name %}{{ match.home_user.first_name|slice:":1"|upper }}{% else %}{{ match.home_user.username|slice:":1"|upper }}{% endif %}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        ?
+                                    {% endif %}
+                                </div>
+                                <span style="font-weight: 600;">
+                                    {% if match.home_user %}
+                                        {% if match.home_user.first_name %}{{ match.home_user.first_name }}{% else %}{{ match.home_user.username }}{% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="bracket-score">{{ match.home_score }}</div>
+                        </div>
+                        
+                        <!-- VS -->
+                        <div class="bracket-vs"><span>VS</span></div>
+                        
+                        <!-- Away Team -->
+                        <div class="bracket-team {% if match.winner and match.away_user and match.winner.id == match.away_user.id %}winner{% endif %}">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="bracket-avatar">
+                                    {% if match.away_user %}
+                                        {% if match.away_user.avatar %}
+                                            <img src="{{ match.away_user.avatar.url }}" alt="">
+                                        {% else %}
+                                            <span>{% if match.away_user.first_name %}{{ match.away_user.first_name|slice:":1"|upper }}{% else %}{{ match.away_user.username|slice:":1"|upper }}{% endif %}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        ?
+                                    {% endif %}
+                                </div>
+                                <span style="font-weight: 600;">
+                                    {% if match.away_user %}
+                                        {% if match.away_user.first_name %}{{ match.away_user.first_name }}{% else %}{{ match.away_user.username }}{% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="bracket-score">{{ match.away_score }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- MATCHES LIST -->
+        {% if matches_exist %}
+        <div class="card">
+            <div class="card-title">
+                <span>🎮 O'YINLAR RO'YXATI</span>
+                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">Jami: {{ matches_count }} ta o'yin</span>
+            </div>
+            
+            <!-- Filter Section (Read-only) -->
+            <div class="filter-section">
+                <form method="GET" action="" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; width: 100%;">
+                    <input type="text" name="search" placeholder="O'yinchi nomi..." value="{{ search_query }}" class="filter-input">
+                    
+                    <select name="status" class="filter-select">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Barcha o'yinlar</option>
+                        <option value="finished" {% if status_filter == 'finished' %}selected{% endif %}>Tugagan o'yinlar</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Kutilayotgan o'yinlar</option>
+                    </select>
+                    
+                    <button type="submit" class="filter-btn">FILTERLASH</button>
+                    <a href="?search=&status=all" class="filter-reset">FILTRLARNI TOZALASH</a>
+                </form>
+            </div>
+            
+            <!-- Matches List -->
+            {% if matches %}
+                {% for match in matches %}
+                <div class="match-item {% if match.is_finished %}match-finished{% else %}match-pending{% endif %}">
+                    <!-- Round Info -->
+                    <div style="min-width: 90px;">
+                        <div style="font-size: 11px; color: #94a3b8;">Raund</div>
+                        <div style="font-weight: 600;">{{ match.round_name|default:"Guruh" }}</div>
+                    </div>
+                    
+                    <!-- Teams and Score -->
+                    <div class="match-teams">
+                        <!-- Home Team -->
+                        <div class="team-info">
+                            <div class="player-avatar" style="width: 40px; height: 40px;">
+                                {% if match.home_user %}
+                                    {% if match.home_user.avatar %}
+                                        <img src="{{ match.home_user.avatar.url }}" alt="">
+                                    {% else %}
+                                        <span>{% if match.home_user.first_name %}{{ match.home_user.first_name|slice:":1"|upper }}{% else %}{{ match.home_user.username|slice:":1"|upper }}{% endif %}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span>?</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="team-name">
+                                    {% if match.home_user %}
+                                        {% if match.home_user.first_name %}{{ match.home_user.first_name }}{% else %}{{ match.home_user.username }}{% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </div>
+                                {% if match.home_user %}
+                                <div style="font-size: 11px; color: #64748b;">@{{ match.home_user.username }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Score -->
+                        <div class="match-score">{{ match.home_score }} : {{ match.away_score }}</div>
+                        
+                        <!-- Away Team -->
+                        <div class="team-info right">
+                            <div style="text-align: right;">
+                                <div class="team-name">
+                                    {% if match.away_user %}
+                                        {% if match.away_user.first_name %}{{ match.away_user.first_name }}{% else %}{{ match.away_user.username }}{% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </div>
+                                {% if match.away_user %}
+                                <div style="font-size: 11px; color: #64748b;">@{{ match.away_user.username }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="player-avatar" style="width: 40px; height: 40px;">
+                                {% if match.away_user %}
+                                    {% if match.away_user.avatar %}
+                                        <img src="{{ match.away_user.avatar.url }}" alt="">
+                                    {% else %}
+                                        <span>{% if match.away_user.first_name %}{{ match.away_user.first_name|slice:":1"|upper }}{% else %}{{ match.away_user.username|slice:":1"|upper }}{% endif %}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span>?</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div style="min-width: 100px; text-align: right;">
+                        <span class="match-status {% if match.is_finished %}status-finished{% else %}status-pending{% endif %}">
+                            {% if match.is_finished %}✅ TUGAGAN{% else %}⏳ KUTILMOQDA{% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-data">
+                    <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+                    <p style="font-size: 16px;">Hech qanday o'yin topilmadi</p>
+                    <p style="font-size: 14px; color: #64748b;">Qidiruv so'rovini o'zgartirib qaytadan urinib ko'ring</p>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- No matches message -->
+        {% if not matches_exist %}
+        <div class="no-data">
+            <div style="font-size: 48px; margin-bottom: 20px;">⚽</div>
+            <p style="font-size: 16px;">Bu turnir uchun hali o'yinlar yaratilmagan</p>
+        </div>
+        {% endif %}
+        
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 30px; padding: 20px; color: #64748b; font-size: 12px;">
+            © 2024 UFEL | Barcha ma'lumotlar faqat o'qish uchun
+        </div>
+    </div>
+</body>
+</html>

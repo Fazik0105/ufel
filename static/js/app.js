@@ -1,7 +1,6 @@
 document.querySelectorAll('.liga-tab').forEach(tab => {
     tab.addEventListener('click', function(e) {
         e.preventDefault();
-        
         // Aktiv klassni o'zgartirish
         document.querySelectorAll('.liga-tab').forEach(t => t.classList.remove('active'));
         this.classList.add('active');

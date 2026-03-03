@@ -12,6 +12,7 @@ import uuid
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from django.views.decorators.http import require_POST
 
 # INDEX PAGE
 def index(request):
@@ -303,7 +304,6 @@ def admin_user_detail(request, pk):
     
     return render(request, 'admin_user_detail.html', {'target_user': target_user})
 
-
 @admin_only
 def admin_championship_detail(request, pk):
     championship = get_object_or_404(Championship, pk=pk)
@@ -380,7 +380,7 @@ def admin_championship_detail(request, pk):
     elif status_filter == 'pending':
         filtered_matches = filtered_matches.filter(is_finished=False)
     
-    # Bracket data ni to'g'ridan-to'g'ri all_matches dan tayyorlash
+    # Bracket data ni to'g'ridan-to'g'ri all_matches dan tayyorlash (SERIALIZABLE VERSION)
     bracket_data = []
     if championship.type == 'PLAYOFF' and all_matches.exists():
         # Raundlar bo'yicha guruhlash
@@ -402,15 +402,46 @@ def admin_championship_detail(request, pk):
                 elif match.away_score > match.home_score:
                     winner = match.away_user
             
+            # Convert User objects to serializable dictionaries
+            home_user_data = None
+            if match.home_user:
+                home_user_data = {
+                    'id': match.home_user.id,
+                    'username': match.home_user.username,
+                    'first_name': match.home_user.first_name,
+                    'last_name': match.home_user.last_name,
+                    'avatar_url': match.home_user.avatar.url if match.home_user.avatar else None
+                }
+            
+            away_user_data = None
+            if match.away_user:
+                away_user_data = {
+                    'id': match.away_user.id,
+                    'username': match.away_user.username,
+                    'first_name': match.away_user.first_name,
+                    'last_name': match.away_user.last_name,
+                    'avatar_url': match.away_user.avatar.url if match.away_user.avatar else None
+                }
+            
+            winner_data = None
+            if winner:
+                winner_data = {
+                    'id': winner.id,
+                    'username': winner.username,
+                    'first_name': winner.first_name,
+                    'last_name': winner.last_name,
+                    'avatar_url': winner.avatar.url if winner.avatar else None
+                }
+            
             # Match ma'lumotlarini qo'shish
             match_data = {
                 'id': match.id,
-                'home_user': match.home_user,
-                'away_user': match.away_user,
+                'home_user': home_user_data,
+                'away_user': away_user_data,
                 'home_score': match.home_score,
                 'away_score': match.away_score,
                 'is_finished': match.is_finished,
-                'winner': winner,
+                'winner': winner_data,
                 'bracket_position': match.bracket_position or 0,
                 'round_order': match.round_order,
             }
@@ -442,14 +473,13 @@ def admin_championship_detail(request, pk):
         'matches_exist': matches_exist,
         'matches': matches_list,
         'table': table_data,
-        'bracket_data': bracket_data,
+        'bracket_data': bracket_data,  # Now this is JSON serializable
         'search_query': search_query,
         'status_filter': status_filter,
         'matches_count': matches_count,
     }
     
     return render(request, 'admin_championship_detail.html', context)
-
 
 @admin_only
 def update_match_score(request, pk):
@@ -953,6 +983,7 @@ def update_single_match(request, match_id):
                         from .services import get_bracket_data
                         updated_bracket = get_bracket_data(match.championship.id)
                         
+                        # Convert to serializable format
                         serializable_bracket = []
                         for round_data in updated_bracket:
                             serializable_round = {
@@ -962,6 +993,37 @@ def update_single_match(request, match_id):
                             }
                             
                             for match_data in round_data['matches']:
+                                # Convert user objects to dictionaries
+                                home_user_data = None
+                                if match_data['home_user']:
+                                    home_user_data = {
+                                        'id': match_data['home_user'].id,
+                                        'username': match_data['home_user'].username,
+                                        'first_name': match_data['home_user'].first_name,
+                                        'last_name': match_data['home_user'].last_name,
+                                        'avatar_url': match_data['home_user'].avatar.url if match_data['home_user'].avatar else None
+                                    }
+                                
+                                away_user_data = None
+                                if match_data['away_user']:
+                                    away_user_data = {
+                                        'id': match_data['away_user'].id,
+                                        'username': match_data['away_user'].username,
+                                        'first_name': match_data['away_user'].first_name,
+                                        'last_name': match_data['away_user'].last_name,
+                                        'avatar_url': match_data['away_user'].avatar.url if match_data['away_user'].avatar else None
+                                    }
+                                
+                                winner_data = None
+                                if match_data['winner']:
+                                    winner_data = {
+                                        'id': match_data['winner'].id,
+                                        'username': match_data['winner'].username,
+                                        'first_name': match_data['winner'].first_name,
+                                        'last_name': match_data['winner'].last_name,
+                                        'avatar_url': match_data['winner'].avatar.url if match_data['winner'].avatar else None
+                                    }
+                                
                                 serializable_match = {
                                     'id': match_data['id'],
                                     'home_score': match_data['home_score'],
@@ -969,24 +1031,17 @@ def update_single_match(request, match_id):
                                     'is_finished': match_data['is_finished'],
                                     'bracket_position': match_data['bracket_position'],
                                     'round_order': match_data['round_order'],
-                                    'home_user': {
-                                        'id': match_data['home_user'].id if match_data['home_user'] else None,
-                                        'username': match_data['home_user'].username if match_data['home_user'] else None,
-                                        'first_name': match_data['home_user'].first_name if match_data['home_user'] else None,
-                                        'avatar_url': match_data['home_user'].avatar.url if match_data['home_user'] and match_data['home_user'].avatar else None
-                                    } if match_data['home_user'] else None,
-                                    'away_user': {
-                                        'id': match_data['away_user'].id if match_data['away_user'] else None,
-                                        'username': match_data['away_user'].username if match_data['away_user'] else None,
-                                        'first_name': match_data['away_user'].first_name if match_data['away_user'] else None,
-                                        'avatar_url': match_data['away_user'].avatar.url if match_data['away_user'] and match_data['away_user'].avatar else None
-                                    } if match_data['away_user'] else None,
-                                    'winner_id': match_data['winner'].id if match_data['winner'] else None
+                                    'home_user': home_user_data,
+                                    'away_user': away_user_data,
+                                    'winner_id': winner_data['id'] if winner_data else None,
+                                    'winner': winner_data
                                 }
                                 serializable_round['matches'].append(serializable_match)
                             
                             serializable_bracket.append(serializable_round)
                         
+                        # Sort rounds by order
+                        serializable_bracket.sort(key=lambda x: x['order'])
                         response_data['bracket_data'] = serializable_bracket
                     
                     # GROUP uchun yangilangan jadval
@@ -1042,83 +1097,6 @@ def update_single_match(request, match_id):
             
     url = reverse('admin_championship_detail', kwargs={'pk': championship_id})
     return redirect(f"{url}#match-{match.id}")
-# def get_championship_detail(request, pk):
-#     championship = get_object_or_404(Championship, pk=pk)
-    
-#     # Get all matches with fresh data from database
-#     all_matches = Match.objects.filter(
-#         championship=championship
-#     ).select_related(
-#         'home_user', 'away_user'
-#     ).order_by('round_order', 'bracket_position')
-    
-#     # Debug: Print matches to see what we have
-#     print(f"Total matches: {all_matches.count()}")
-#     for m in all_matches:
-#         print(f"Match {m.id}: {m.round_name}, home={m.home_user}, away={m.away_user}, score={m.home_score}:{m.away_score}, finished={m.is_finished}")
-    
-#     # Organize matches by round_order (more reliable than round_name)
-#     bracket_data = []
-#     current_order = None
-#     current_round = []
-    
-#     for match in all_matches:
-#         if match.round_order != current_order:
-#             if current_round:
-#                 bracket_data.append({
-#                     'name': current_round[0].round_name,
-#                     'order': current_order,
-#                     'matches': current_round
-#                 })
-#             current_order = match.round_order
-#             current_round = [match]
-#         else:
-#             current_round.append(match)
-    
-#     # Add the last round
-#     if current_round:
-#         bracket_data.append({
-#             'name': current_round[0].round_name,
-#             'order': current_order,
-#             'matches': current_round
-#         })
-    
-#     # Sort rounds by order
-#     bracket_data.sort(key=lambda x: x['order'])
-    
-#     # Get matches for the matches list section
-#     matches = all_matches
-    
-#     # Apply filters if needed
-#     search_query = request.GET.get('search', '')
-#     status_filter = request.GET.get('status', 'all')
-    
-#     if search_query:
-#         matches = matches.filter(
-#             Q(home_user__username__icontains=search_query) |
-#             Q(home_user__first_name__icontains=search_query) |
-#             Q(away_user__username__icontains=search_query) |
-#             Q(away_user__first_name__icontains=search_query)
-#         )
-    
-#     if status_filter == 'finished':
-#         matches = matches.filter(is_finished=True)
-#     elif status_filter == 'pending':
-#         matches = matches.filter(is_finished=False)
-    
-#     matches_count = matches.count()
-    
-#     context = {
-#         'championship': championship,
-#         'bracket_data': bracket_data,
-#         'matches': matches,
-#         'matches_count': matches_count,
-#         'matches_exist': all_matches.exists(),
-#         'search_query': search_query,
-#         'status_filter': status_filter,
-#     }
-#     return render(request, 'your_template.html', context)
-
 
 @admin_only
 def generate_matches(request, pk):
@@ -1169,3 +1147,327 @@ def generate_matches(request, pk):
     championship.save()
 
     return redirect('admin_championship_detail', pk=pk)
+
+@admin_only
+@require_POST
+def toggle_bookmark(request, match_id):
+    try:
+        match = Match.objects.get(id=match_id)
+        user = request.user
+        
+        user_bookmarks = BookmarkedMatch.objects.filter(user=user)
+        
+        existing_bookmark = user_bookmarks.filter(match=match).first()
+        if existing_bookmark:
+            existing_bookmark.delete()
+            return JsonResponse({
+                'status': 'removed',
+                'message': 'Bookmark o\'chirildi',
+                'bookmark_count': user_bookmarks.count()
+            })
+        
+        if user_bookmarks.count() >= 3:
+            oldest_bookmark = user_bookmarks.last() 
+            if oldest_bookmark:
+                oldest_bookmark.delete()
+        
+        bookmark = BookmarkedMatch.objects.create(user=user, match=match)
+        
+        updated_bookmarks = BookmarkedMatch.objects.filter(user=user).select_related('match')
+        bookmarks_data = [{
+            'id': bm.id,
+            'match_id': bm.match.id,
+            'home_user': {
+                'id': bm.match.home_user.id if bm.match.home_user else None,
+                'name': bm.match.home_user.get_full_name() or bm.match.home_user.username if bm.match.home_user else 'TBD',
+                'avatar': bm.match.home_user.avatar.url if bm.match.home_user and bm.match.home_user.avatar else None
+            } if bm.match.home_user else None,
+            'away_user': {
+                'id': bm.match.away_user.id if bm.match.away_user else None,
+                'name': bm.match.away_user.get_full_name() or bm.match.away_user.username if bm.match.away_user else 'TBD',
+                'avatar': bm.match.away_user.avatar.url if bm.match.away_user and bm.match.away_user.avatar else None
+            } if bm.match.away_user else None,
+            'score': f"{bm.match.home_score}:{bm.match.away_score}",
+            'is_finished': bm.match.is_finished,
+            'championship_name': bm.match.championship.name,
+            'championship_id': bm.match.championship.id,
+            'round_name': bm.match.round_name or 'Guruh bosqichi'
+        } for bm in updated_bookmarks]
+        
+        return JsonResponse({
+            'status': 'added',
+            'message': 'Bookmark qo\'shildi',
+            'bookmark_count': user_bookmarks.count(),
+            'bookmarks': bookmarks_data
+        })
+        
+    except Match.DoesNotExist:
+        return JsonResponse({'error': 'Match topilmadi'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def get_user_bookmarks(request):
+    """Foydalanuvchining bookmarklarini qaytarish"""
+    try:
+        bookmarks = BookmarkedMatch.objects.filter(user=request.user).select_related(
+            'match', 'match__home_user', 'match__away_user', 'match__championship'
+        )[:3]
+                
+        data = [{
+            'id': bm.id,
+            'match_id': bm.match.id,
+            'home_user': {
+                'id': bm.match.home_user.id if bm.match.home_user else None,
+                'name': bm.match.home_user.get_full_name() or bm.match.home_user.username if bm.match.home_user else 'TBD',
+                'avatar': bm.match.home_user.avatar.url if bm.match.home_user and bm.match.home_user.avatar else None
+            } if bm.match.home_user else None,
+            'away_user': {
+                'id': bm.match.away_user.id if bm.match.away_user else None,
+                'name': bm.match.away_user.get_full_name() or bm.match.away_user.username if bm.match.away_user else 'TBD',
+                'avatar': bm.match.away_user.avatar.url if bm.match.away_user and bm.match.away_user.avatar else None
+            } if bm.match.away_user else None,
+            'score': f"{bm.match.home_score}:{bm.match.away_score}",
+            'is_finished': bm.match.is_finished,
+            'championship_name': bm.match.championship.name,
+            'championship_id': bm.match.championship.id,
+            'round_name': bm.match.round_name or 'Guruh bosqichi'
+        } for bm in bookmarks]
+        
+        return JsonResponse({'bookmarks': data})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+
+def tournament_public_view(request, pk):
+    """
+    Turnir ma'lumotlarini faqat o'qish rejimida ko'rsatish (public view)
+    - Hech qanday forma, input yoki o'zgartirish imkoniyati yo'q
+    - Faqat jadvallar, setkalar va o'yinlar ro'yxati ko'rinadi
+    """
+    championship = get_object_or_404(Championship, pk=pk)
+    
+    # Barcha turnirlarni olish (tablar uchun)
+    if request.user.is_authenticated and request.user.role == 'ADMIN':
+        championships = Championship.objects.all().order_by('-created_at')
+    else:
+        championships = Championship.objects.filter(
+            status__in=['STARTED', 'FINISHED']
+        ).order_by('-created_at')
+    
+    # Faqat STARTED yoki FINISHED turnirlarni ko'rsatish
+    if championship.status == 'DRAFT' and not (request.user.is_authenticated and request.user.role == 'ADMIN'):
+        messages.error(request, "Bu turnir hali boshlanmagan.")
+        return redirect('index')
+    
+    # Barcha matchlarni olish
+    all_matches = Match.objects.filter(
+        championship=championship
+    ).select_related(
+        'home_user', 'away_user'
+    ).order_by('round_order', 'bracket_position', 'id')
+    
+    # Turnir jadvali (League uchun)
+    table_data = []
+    if championship.type == 'LEAGUE' and all_matches.exists():
+        table_data = get_standings(championship.id)
+    
+    # Guruhlar jadvali (Group uchun)
+    group_data = []
+    if championship.type == 'GROUP' and all_matches.exists():
+        from championship.services import get_group_standings
+        group_data = get_group_standings(championship.id)
+    
+    # Playoff setkasi (Playoff uchun)
+    bracket_data = []
+    if championship.type == 'PLAYOFF' and all_matches.exists():
+        # Raundlar bo'yicha guruhlash
+        rounds_dict = {}
+        for match in all_matches:
+            round_name = match.round_name
+            if round_name not in rounds_dict:
+                rounds_dict[round_name] = {
+                    'name': round_name,
+                    'order': match.round_order,
+                    'matches': []
+                }
+            
+            # Winner ni aniqlash
+            winner = None
+            if match.is_finished:
+                if match.home_score > match.away_score:
+                    winner = match.home_user
+                elif match.away_score > match.home_score:
+                    winner = match.away_user
+            
+            # Match ma'lumotlarini qo'shish
+            match_data = {
+                'id': match.id,
+                'home_user': match.home_user,
+                'away_user': match.away_user,
+                'home_score': match.home_score,
+                'away_score': match.away_score,
+                'is_finished': match.is_finished,
+                'winner': winner,
+                'bracket_position': match.bracket_position or 0,
+                'round_order': match.round_order,
+            }
+            rounds_dict[round_name]['matches'].append(match_data)
+        
+        # Raundlarni order bo'yicha tartiblash
+        bracket_data = sorted(rounds_dict.values(), key=lambda x: x['order'])
+        
+        # Har bir raunddagi matchlarni bracket_position bo'yicha tartiblash
+        for round_data in bracket_data:
+            round_data['matches'].sort(key=lambda x: x['bracket_position'])
+    
+    # Filterlash parametrlari
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', 'all')
+    
+    # Filterlangan matchlar (o'yinlar ro'yxati uchun)
+    filtered_matches = all_matches
+    
+    if search_query:
+        filtered_matches = filtered_matches.filter(
+            Q(home_user__username__icontains=search_query) |
+            Q(home_user__first_name__icontains=search_query) |
+            Q(away_user__username__icontains=search_query) |
+            Q(away_user__first_name__icontains=search_query)
+        )
+    
+    if status_filter == 'finished':
+        filtered_matches = filtered_matches.filter(is_finished=True)
+    elif status_filter == 'pending':
+        filtered_matches = filtered_matches.filter(is_finished=False)
+    
+    # Ishtirokchilarni olish
+    participants = ChampionshipParticipant.objects.filter(
+        championship=championship
+    ).select_related('user')
+    
+    # Ratings (HOME PAGE uchun)
+    users = User.objects.filter(role='USER')
+    ratings = []
+    for user in users:
+        home_matches = Match.objects.filter(home_user=user, is_finished=True)
+        away_matches = Match.objects.filter(away_user=user, is_finished=True)
+        total_pld = home_matches.count() + away_matches.count()
+        total_pts = 0
+
+        for m in home_matches:
+            if m.home_score > m.away_score:
+                total_pts += 3
+            elif m.home_score == m.away_score:
+                total_pts += 1
+
+        for m in away_matches:
+            if m.away_score > m.home_score:
+                total_pts += 3
+            elif m.home_score == m.away_score:
+                total_pts += 1
+
+        ratings.append({
+            'user': user,
+            'pld': total_pld,
+            'pts': total_pts
+        })
+
+    ratings = sorted(ratings, key=lambda x: x['pts'], reverse=True)
+    
+    context = {
+        'championships': championships,  # MUHIM: tablar uchun
+        'championship': championship,
+        'matches': filtered_matches,
+        'matches_count': filtered_matches.count(),
+        'matches_exist': all_matches.exists(),
+        'table': table_data,
+        'group_data': group_data,
+        'bracket_data': bracket_data,
+        'participants': participants,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'ratings': ratings,  # HOME PAGE uchun
+        'is_public_view': True,
+    }
+    
+    return render(request, 'index.html', context)
+
+# views.py ga quyidagi funksiyani qo'shing
+def tournament_detail_partial(request, pk):
+    """
+    Turnir ma'lumotlarini qisman yuklash (AJAX uchun)
+    """
+    championship = get_object_or_404(Championship, pk=pk)
+    
+    # Barcha matchlarni olish
+    all_matches = Match.objects.filter(
+        championship=championship
+    ).select_related(
+        'home_user', 'away_user'
+    ).order_by('round_order', 'bracket_position', 'id')
+    
+    # Turnir jadvali (League uchun)
+    table_data = []
+    if championship.type == 'LEAGUE' and all_matches.exists():
+        table_data = get_standings(championship.id)
+    
+    # Guruhlar jadvali (Group uchun)
+    group_data = []
+    if championship.type == 'GROUP' and all_matches.exists():
+        from championship.services import get_group_standings
+        group_data = get_group_standings(championship.id)
+    
+    # Playoff setkasi (Playoff uchun)
+    bracket_data = []
+    if championship.type == 'PLAYOFF' and all_matches.exists():
+        rounds_dict = {}
+        for match in all_matches:
+            round_name = match.round_name
+            if round_name not in rounds_dict:
+                rounds_dict[round_name] = {
+                    'name': round_name,
+                    'order': match.round_order,
+                    'matches': []
+                }
+            
+            winner = None
+            if match.is_finished:
+                if match.home_score > match.away_score:
+                    winner = match.home_user
+                elif match.away_score > match.home_score:
+                    winner = match.away_user
+            
+            match_data = {
+                'id': match.id,
+                'home_user': match.home_user,
+                'away_user': match.away_user,
+                'home_score': match.home_score,
+                'away_score': match.away_score,
+                'is_finished': match.is_finished,
+                'winner': winner,
+                'bracket_position': match.bracket_position or 0,
+                'round_order': match.round_order,
+            }
+            rounds_dict[round_name]['matches'].append(match_data)
+        
+        bracket_data = sorted(rounds_dict.values(), key=lambda x: x['order'])
+        for round_data in bracket_data:
+            round_data['matches'].sort(key=lambda x: x['bracket_position'])
+    
+    # HTML qismlarini render qilish
+    tournament_content_html = render_to_string('tournament_content_partial.html', {
+        'championship': championship,
+        'table': table_data,
+        'group_data': group_data,
+        'bracket_data': bracket_data,
+        'matches': all_matches,
+        'is_public_view': True,
+    }, request=request)
+    
+    return JsonResponse({
+        'success': True,
+        'html': tournament_content_html,
+        'championship_name': championship.name,
+    })
+
