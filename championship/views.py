@@ -1208,12 +1208,19 @@ def toggle_bookmark(request, match_id):
         return JsonResponse({'error': str(e)}, status=500)
 
 def get_user_bookmarks(request):
-    """Foydalanuvchining bookmarklarini qaytarish"""
+    """Foydalanuvchining bookmarklarini qaytarish - hamma uchun ochiq"""
     try:
-        bookmarks = BookmarkedMatch.objects.filter(user=request.user).select_related(
-            'match', 'match__home_user', 'match__away_user', 'match__championship'
-        )[:3]
-                
+        # Agar foydalanuvchi autentifikatsiya qilingan bo'lsa, uning bookmarklarini olish
+        if request.user.is_authenticated:
+            bookmarks = BookmarkedMatch.objects.filter(user=request.user).select_related(
+                'match', 'match__home_user', 'match__away_user', 'match__championship'
+            )[:3]
+        else:
+            # ANONYMOUS USER UCHUN - eng so'nggi 3 ta bookmarkni ko'rsatish
+            bookmarks = BookmarkedMatch.objects.all().select_related(
+                'match', 'match__home_user', 'match__away_user', 'match__championship'
+            ).order_by('-created_at')[:3]  # created_at field bo'lishi kerak
+            
         data = [{
             'id': bm.id,
             'match_id': bm.match.id,
@@ -1234,11 +1241,19 @@ def get_user_bookmarks(request):
             'round_name': bm.match.round_name or 'Guruh bosqichi'
         } for bm in bookmarks]
         
-        return JsonResponse({'bookmarks': data})
+        return JsonResponse({
+            'success': True,
+            'bookmarks': data,
+            'is_authenticated': request.user.is_authenticated
+        })
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({
+            'success': False,
+            'error': str(e), 
+            'bookmarks': []
+        }, status=500)
 
 def tournament_public_view(request, pk):
     """

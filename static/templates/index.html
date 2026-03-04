@@ -910,114 +910,112 @@
         }
     }
 
-    // Bookmarklarni yuklash
-    async function loadUserBookmarks() {
-        if (!elements.bookmarksList) return;
-        
-        try {
-            elements.bookmarksList.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                    <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
-                    Yuklanmoqda...
-                </div>
-            `;
-            
-            const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            
-            updateBookmarksList(data.bookmarks);
-        } catch (error) {
-            console.error('Error loading bookmarks:', error);
-            elements.bookmarksList.innerHTML = `
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                    <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
-                    <p style="color: #64748b; font-size: 12px; margin-top: 8px;">${error.message}</p>
-                    <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
-                        Qayta urinish
-                    </button>
-                </div>
-            `;
-        }
-    }
-
-    // Bookmarklarni yangilash
-    function updateBookmarksList(bookmarks) {
-        if (!elements.bookmarksList) return;
-        
-        if (!bookmarks || bookmarks.length === 0) {
-            elements.bookmarksList.innerHTML = `
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                    <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
-                    <p style="color: #64748b; font-size: 12px; margin-top: 8px;">Turnirlardagi o'yinlarni bookmark qilib qo'ying</p>
-                </div>
-            `;
-            return;
-        }
-        
-        let html = `
-            <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
-                <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
-                    ⭐ TOP O'yinlar
-                </span>
+// Bookmarklarni yuklash - hamma uchun ochiq
+async function loadUserBookmarks() {
+    if (!elements.bookmarksList) return;
+    
+    try {
+        elements.bookmarksList.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
+                Yuklanmoqda...
             </div>
         `;
         
-        bookmarks.forEach(bm => {
-            const homeName = bm.home_user?.name || 'TBD';
-            const awayName = bm.away_user?.name || 'TBD';
-            const homeInitial = homeName.charAt(0).toUpperCase();
-            const awayInitial = awayName.charAt(0).toUpperCase();
-            const isFinished = bm.is_finished || false;
-            
-            html += `
-                <div class="bookmark-item" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'" 
-                     style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
-                     onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-                        <!-- Home team avatar -->
-                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${bm.home_user?.avatar ? 
-                                `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                                `<span>${homeInitial}</span>`}
+        const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+        
+        // data.is_authenticated maydoniga qarab ishlash
+        updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
+        
+    } catch (error) {
+        console.error('Error loading bookmarks:', error);
+        // Xatolik bo'lganda bo'sh ro'yxat ko'rsatish
+        elements.bookmarksList.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
+                <p style="color: #64748b; font-size: 12px; margin-top: 8px;">${error.message}</p>
+                <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
+                    Qayta urinish
+                </button>
+            </div>
+        `;
+    }
+}
+// Bookmarklarni yangilash - hamma uchun ochiq
+function updateBookmarksList(bookmarks, isAuthenticated = false) {
+    if (!elements.bookmarksList) return;
+    
+    // Agar bookmarklar bo'lmasa
+    if (!bookmarks || bookmarks.length === 0) {
+        elements.bookmarksList.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
+            </div>
+        `;
+        return;
+    }
+    
+    // Bookmarklar mavjud bo'lsa - ko'rsatish
+    let html = `
+        <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
+            <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
+                ⭐ TOP O'yinlar (${bookmarks.length}/3)
+            </span>
+        </div>
+    `;
+    
+    bookmarks.forEach(bm => {
+        const homeName = bm.home_user?.name || 'TBD';
+        const awayName = bm.away_user?.name || 'TBD';
+        const homeInitial = homeName.charAt(0).toUpperCase();
+        const awayInitial = awayName.charAt(0).toUpperCase();
+        const isFinished = bm.is_finished || false;
+        
+        html += `
+            <div class="bookmark-item" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'" 
+                 style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
+                 onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                    <!-- Home team avatar -->
+                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
+                        ${bm.home_user?.avatar ? 
+                            `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                            `<span>${homeInitial}</span>`}
+                    </div>
+                    
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
+                            ${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}
                         </div>
-                        
-                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
-                                ${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
-                                <span style="color: #f8fafc; font-size: 13px;">${homeName}</span>
-                                <span style="color: #22d3ee; font-weight: 700;">${bm.score || '0:0'}</span>
-                                <span style="color: #f8fafc; font-size: 13px;">${awayName}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Away team avatar -->
-                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${bm.away_user?.avatar ? 
-                                `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                                `<span>${awayInitial}</span>`}
+                        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                            <span style="color: #f8fafc; font-size: 13px;">${homeName}</span>
+                            <span style="color: #22d3ee; font-weight: 700;">${bm.score || '0:0'}</span>
+                            <span style="color: #f8fafc; font-size: 13px;">${awayName}</span>
                         </div>
                     </div>
                     
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: ${isFinished ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${isFinished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
-                        </span>
+                    <!-- Away team avatar -->
+                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
+                        ${bm.away_user?.avatar ? 
+                            `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                            `<span>${awayInitial}</span>`}
                     </div>
                 </div>
-            `;
-        });
-        
-        elements.bookmarksList.innerHTML = html;
-    }
-
+                
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: ${isFinished ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${isFinished ? '#10b981' : '#f59e0b'};">
+                        ${isFinished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
+                    </span>
+                </div>
+            </div>
+        `;
+    });
+    
+    elements.bookmarksList.innerHTML = html;
+}
     // Notification ko'rsatish
     function showNotification(message, type = 'info') {
         const oldNotification = document.querySelector('.custom-notification');
