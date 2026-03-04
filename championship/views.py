@@ -454,13 +454,16 @@ def admin_championship_detail(request, pk):
         for round_data in bracket_data:
             round_data['matches'].sort(key=lambda x: x['bracket_position'])
     
+    # MUHIM O'ZGARTIRISH: championship.id ni uzatish
     table_data = []
     if championship.type == 'LEAGUE' and all_matches.exists():
-        table_data = get_standings(championship.id)
+        # championship obyektini emas, ID sini uzatish
+        table_data = get_standings(championship.id)  # ID uzatilyapti
     elif championship.type == 'GROUP' and all_matches.exists():
         # GROUP uchun maxsus jadval
         from championship.services import get_group_standings
-        table_data = get_group_standings(championship.id)   
+        # ID uzatish
+        table_data = get_group_standings(championship.id)  # ID uzatilyapti   
     
     matches_list = list(filtered_matches)
     matches_count = len(matches_list)
@@ -693,8 +696,8 @@ def delete_championship(request, pk):
     messages.success(request, f"{champ.name} muvaffaqiyatli o'chirildi!")
     return redirect('admin_dashboard')
 
-def get_standings(championship_id):
-    championship = get_object_or_404(Championship, id=championship_id)
+def get_standings(championship_id):  # championship_id qabul qilishi kerak
+    championship = get_object_or_404(Championship, id=championship_id)  # ID orqali olish
     
     # Faqat tugagan o'yinlarni olamiz
     matches = Match.objects.filter(
@@ -723,7 +726,7 @@ def get_standings(championship_id):
         
         # Userning barcha o'yinlari
         user_matches = matches.filter(
-            models.Q(home_user=user) | models.Q(away_user=user)
+            Q(home_user=user) | Q(away_user=user)
         )
         
         for m in user_matches:
@@ -742,7 +745,6 @@ def get_standings(championship_id):
                     stats['pts'] += 1
                 else:
                     stats['l'] += 1
-                    stats['pts'] += 0
             else:
                 # Away o'yinchi
                 stats['gf'] += m.away_score
@@ -756,7 +758,6 @@ def get_standings(championship_id):
                     stats['pts'] += 1
                 else:
                     stats['l'] += 1
-                    stats['pts'] += 0
         
         stats['gd'] = stats['gf'] - stats['ga']
         standings.append(stats)
@@ -1244,18 +1245,11 @@ def tournament_public_view(request, pk):
     Turnir ma'lumotlarini faqat o'qish rejimida ko'rsatish (public view)
     - Hech qanday forma, input yoki o'zgartirish imkoniyati yo'q
     - Faqat jadvallar, setkalar va o'yinlar ro'yxati ko'rinadi
+    - Barcha userlar (hatto login qilmaganlar ham) ko'ra oladi
     """
     championship = get_object_or_404(Championship, pk=pk)
     
-    # Barcha turnirlarni olish (tablar uchun)
-    if request.user.is_authenticated and request.user.role == 'ADMIN':
-        championships = Championship.objects.all().order_by('-created_at')
-    else:
-        championships = Championship.objects.filter(
-            status__in=['STARTED', 'FINISHED']
-        ).order_by('-created_at')
-    
-    # Faqat STARTED yoki FINISHED turnirlarni ko'rsatish
+    # Faqat DRAFT turnirlarni adminlardan boshqalar ko'rmasligi uchun
     if championship.status == 'DRAFT' and not (request.user.is_authenticated and request.user.role == 'ADMIN'):
         messages.error(request, "Bu turnir hali boshlanmagan.")
         return redirect('index')
@@ -1267,28 +1261,122 @@ def tournament_public_view(request, pk):
         'home_user', 'away_user'
     ).order_by('round_order', 'bracket_position', 'id')
     
-    # Turnir jadvali (League uchun)
+    # TURNIR JADVALI (LEAGUE uchun)
     table_data = []
     if championship.type == 'LEAGUE' and all_matches.exists():
-        table_data = get_standings(championship.id)
+        try:
+            from championship.services import get_standings
+            table_data = get_standings(championship.id)
+        except Exception as e:
+            print(f"Error in get_standings: {e}")
+            table_data = []
     
-    # Guruhlar jadvali (Group uchun)
+    # GURUHLAR JADVALI (GROUP uchun) - To'g'ridan-to'g'ri hisoblash
     group_data = []
-    if championship.type == 'GROUP' and all_matches.exists():
-        from championship.services import get_group_standings
-        group_data = get_group_standings(championship.id)
+    if championship.type == 'GROUP':
+        # Guruh o'yinlarini olish
+        group_matches = all_matches.exclude(group_label__isnull=True).exclude(group_label='')
+        
+        if group_matches.exists():
+            # Guruhlar bo'yicha guruhlash
+            groups_dict = {}
+            
+            # 1-QADAM: Barcha guruhlarni va jamoalarni aniqlash
+            for match in group_matches:
+                # Guruh labelini qo'shish
+                if match.group_label not in groups_dict:
+                    groups_dict[match.group_label] = {}
+                
+                # Home userni qo'shish
+                if match.home_user and match.home_user.id not in groups_dict[match.group_label]:
+                    groups_dict[match.group_label][match.home_user.id] = {
+                        'user': match.home_user,
+                        'pld': 0, 'w': 0, 'd': 0, 'l': 0,
+                        'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
+                    }
+                
+                # Away userni qo'shish
+                if match.away_user and match.away_user.id not in groups_dict[match.group_label]:
+                    groups_dict[match.group_label][match.away_user.id] = {
+                        'user': match.away_user,
+                        'pld': 0, 'w': 0, 'd': 0, 'l': 0,
+                        'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
+                    }
+            
+            # 2-QADAM: Faqat tugagan o'yinlar uchun statistikani hisoblash
+            finished_matches = group_matches.filter(is_finished=True)
+            
+            for match in finished_matches:
+                group_label = match.group_label
+                
+                if group_label not in groups_dict:
+                    continue
+                
+                # HOME USER statistikasi
+                if match.home_user:
+                    home_id = match.home_user.id
+                    if home_id in groups_dict[group_label]:
+                        stats = groups_dict[group_label][home_id]
+                        stats['pld'] += 1
+                        stats['gf'] += match.home_score
+                        stats['ga'] += match.away_score
+                        
+                        if match.home_score > match.away_score:
+                            stats['w'] += 1
+                            stats['pts'] += 3
+                        elif match.home_score == match.away_score:
+                            stats['d'] += 1
+                            stats['pts'] += 1
+                        else:
+                            stats['l'] += 1
+                
+                # AWAY USER statistikasi
+                if match.away_user:
+                    away_id = match.away_user.id
+                    if away_id in groups_dict[group_label]:
+                        stats = groups_dict[group_label][away_id]
+                        stats['pld'] += 1
+                        stats['gf'] += match.away_score
+                        stats['ga'] += match.home_score
+                        
+                        if match.away_score > match.home_score:
+                            stats['w'] += 1
+                            stats['pts'] += 3
+                        elif match.away_score == match.home_score:
+                            stats['d'] += 1
+                            stats['pts'] += 1
+                        else:
+                            stats['l'] += 1
+            
+            # 3-QADAM: GD (gol farqini) hisoblash
+            for group_label, users_dict in groups_dict.items():
+                for user_id, stats in users_dict.items():
+                    stats['gd'] = stats['gf'] - stats['ga']
+            
+            # 4-QADAM: Guruhlarni tartiblash va chiqish uchun tayyorlash
+            for group_label in sorted(groups_dict.keys()):
+                standings = list(groups_dict[group_label].values())
+                # Ochkolar, gol farqi, urilgan gollar bo'yicha tartiblash
+                standings.sort(key=lambda x: (-x['pts'], -x['gd'], -x['gf']))
+                
+                group_data.append({
+                    'label': group_label,
+                    'standings': standings
+                })
     
-    # Playoff setkasi (Playoff uchun)
+    # PLAYOFF SETKASI (PLAYOFF uchun)
     bracket_data = []
     if championship.type == 'PLAYOFF' and all_matches.exists():
         # Raundlar bo'yicha guruhlash
         rounds_dict = {}
+        
         for match in all_matches:
-            round_name = match.round_name
+            round_name = match.round_name or f"Round {match.round_order}"
+            
             if round_name not in rounds_dict:
                 rounds_dict[round_name] = {
                     'name': round_name,
-                    'order': match.round_order,
+                    'order': match.round_order or 0,
                     'matches': []
                 }
             
@@ -1310,7 +1398,7 @@ def tournament_public_view(request, pk):
                 'is_finished': match.is_finished,
                 'winner': winner,
                 'bracket_position': match.bracket_position or 0,
-                'round_order': match.round_order,
+                'round_order': match.round_order or 0,
             }
             rounds_dict[round_name]['matches'].append(match_data)
         
@@ -1321,13 +1409,86 @@ def tournament_public_view(request, pk):
         for round_data in bracket_data:
             round_data['matches'].sort(key=lambda x: x['bracket_position'])
     
-    # Filterlash parametrlari
+    # FILTERLASH PARAMETRLARI
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'all')
     
     # Filterlangan matchlar (o'yinlar ro'yxati uchun)
     filtered_matches = all_matches
     
+    if search_query:
+        filtered_matches = filtered_matches.filter(
+            Q(home_user__username__icontains=search_query) |
+            Q(home_user__first_name__icontains=search_query) |
+            Q(home_user__last_name__icontains=search_query) |
+            Q(away_user__username__icontains=search_query) |
+            Q(away_user__first_name__icontains=search_query) |
+            Q(away_user__last_name__icontains=search_query)
+        )
+    
+    if status_filter == 'finished':
+        filtered_matches = filtered_matches.filter(is_finished=True)
+    elif status_filter == 'pending':
+        filtered_matches = filtered_matches.filter(is_finished=False)
+    
+    # Ishtirokchilarni olish
+    participants = ChampionshipParticipant.objects.filter(
+        championship=championship
+    ).select_related('user').order_by('user__username')
+    
+    # Guruhlar soni va saralanish statistikasi
+    group_stats = {
+        'total_groups': len(group_data) if championship.type == 'GROUP' else 0,
+        'advance_count': championship.group_advance_count if championship.type == 'GROUP' else 0,
+        'total_teams': sum(len(g['standings']) for g in group_data) if championship.type == 'GROUP' else 0
+    }
+    
+    context = {
+        'championship': championship,
+        'matches': filtered_matches,
+        'matches_count': filtered_matches.count(),
+        'total_matches': all_matches.count(),
+        'matches_exist': all_matches.exists(),
+        'table': table_data,
+        'group_data': group_data,
+        'group_stats': group_stats,
+        'bracket_data': bracket_data,
+        'participants': participants,
+        'participants_count': participants.count(),
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'is_public_view': True,  # Template uchun flag
+        
+        # Qo'shimcha ma'lumotlar
+        'finished_matches_count': all_matches.filter(is_finished=True).count(),
+        'pending_matches_count': all_matches.filter(is_finished=False).count(),
+    }
+    
+    # Agar so'rov AJAX orqali kelgan bo'lsa, faqat ma'lumotlarni qaytarish
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        return JsonResponse({
+            'success': True,
+            'group_data': group_data,
+            'matches_count': filtered_matches.count(),
+        })
+    
+    return render(request, 'tournament_public_view.html', context)
+
+def tournament_detail_partial(request, pk):
+    championship = get_object_or_404(Championship, pk=pk)
+    
+    # Filter parametrlarini olish
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', 'all')
+    
+    # Barcha matchlarni olish
+    all_matches = Match.objects.filter(
+        championship=championship
+    ).select_related('home_user', 'away_user').order_by('round_order', 'id')
+    
+    # Filterlarni qo'llash
+    filtered_matches = all_matches
     if search_query:
         filtered_matches = filtered_matches.filter(
             Q(home_user__username__icontains=search_query) |
@@ -1341,84 +1502,18 @@ def tournament_public_view(request, pk):
     elif status_filter == 'pending':
         filtered_matches = filtered_matches.filter(is_finished=False)
     
-    # Ishtirokchilarni olish
-    participants = ChampionshipParticipant.objects.filter(
-        championship=championship
-    ).select_related('user')
-    
-    # Ratings (HOME PAGE uchun)
-    users = User.objects.filter(role='USER')
-    ratings = []
-    for user in users:
-        home_matches = Match.objects.filter(home_user=user, is_finished=True)
-        away_matches = Match.objects.filter(away_user=user, is_finished=True)
-        total_pld = home_matches.count() + away_matches.count()
-        total_pts = 0
-
-        for m in home_matches:
-            if m.home_score > m.away_score:
-                total_pts += 3
-            elif m.home_score == m.away_score:
-                total_pts += 1
-
-        for m in away_matches:
-            if m.away_score > m.home_score:
-                total_pts += 3
-            elif m.home_score == m.away_score:
-                total_pts += 1
-
-        ratings.append({
-            'user': user,
-            'pld': total_pld,
-            'pts': total_pts
-        })
-
-    ratings = sorted(ratings, key=lambda x: x['pts'], reverse=True)
-    
-    context = {
-        'championships': championships,  # MUHIM: tablar uchun
-        'championship': championship,
-        'matches': filtered_matches,
-        'matches_count': filtered_matches.count(),
-        'matches_exist': all_matches.exists(),
-        'table': table_data,
-        'group_data': group_data,
-        'bracket_data': bracket_data,
-        'participants': participants,
-        'search_query': search_query,
-        'status_filter': status_filter,
-        'ratings': ratings,  # HOME PAGE uchun
-        'is_public_view': True,
-    }
-    
-    return render(request, 'index.html', context)
-
-# views.py ga quyidagi funksiyani qo'shing
-def tournament_detail_partial(request, pk):
-    """
-    Turnir ma'lumotlarini qisman yuklash (AJAX uchun)
-    """
-    championship = get_object_or_404(Championship, pk=pk)
-    
-    # Barcha matchlarni olish
-    all_matches = Match.objects.filter(
-        championship=championship
-    ).select_related(
-        'home_user', 'away_user'
-    ).order_by('round_order', 'bracket_position', 'id')
-    
-    # Turnir jadvali (League uchun)
+    # Turnir jadvali
     table_data = []
     if championship.type == 'LEAGUE' and all_matches.exists():
         table_data = get_standings(championship.id)
     
-    # Guruhlar jadvali (Group uchun)
+    # Guruhlar jadvali
     group_data = []
     if championship.type == 'GROUP' and all_matches.exists():
         from championship.services import get_group_standings
         group_data = get_group_standings(championship.id)
     
-    # Playoff setkasi (Playoff uchun)
+    # Playoff setkasi
     bracket_data = []
     if championship.type == 'PLAYOFF' and all_matches.exists():
         rounds_dict = {}
@@ -1446,28 +1541,26 @@ def tournament_detail_partial(request, pk):
                 'away_score': match.away_score,
                 'is_finished': match.is_finished,
                 'winner': winner,
-                'bracket_position': match.bracket_position or 0,
-                'round_order': match.round_order,
             }
             rounds_dict[round_name]['matches'].append(match_data)
         
         bracket_data = sorted(rounds_dict.values(), key=lambda x: x['order'])
-        for round_data in bracket_data:
-            round_data['matches'].sort(key=lambda x: x['bracket_position'])
     
-    # HTML qismlarini render qilish
-    tournament_content_html = render_to_string('tournament_content_partial.html', {
+    html = render_to_string('tournament_content_partial.html', {
         'championship': championship,
         'table': table_data,
         'group_data': group_data,
         'bracket_data': bracket_data,
-        'matches': all_matches,
+        'matches': filtered_matches,
+        'matches_count': filtered_matches.count(),
+        'search_query': search_query,
+        'status_filter': status_filter,
         'is_public_view': True,
     }, request=request)
     
     return JsonResponse({
         'success': True,
-        'html': tournament_content_html,
+        'html': html,
         'championship_name': championship.name,
     })
 

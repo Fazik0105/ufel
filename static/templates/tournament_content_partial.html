@@ -1,0 +1,612 @@
+{% load static %}
+
+<div class="tournaments-container" style="padding: 16px;">
+    <!-- Info Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; backdrop-filter: blur(10px);">
+            <div style="font-size: 12px; color: #94a3b8;">TURNIR TURI</div>
+            <div style="font-size: 24px; font-weight: 700; color: #22d3ee;">{{ championship.get_type_display }}</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px;">
+            <div style="font-size: 12px; color: #94a3b8;">ISHTIROKCHILAR</div>
+            <div style="font-size: 24px; font-weight: 700; color: #22d3ee;">{{ championship.teams_count }}</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px;">
+            <div style="font-size: 12px; color: #94a3b8;">HOLATI</div>
+            <div style="font-size: 24px; font-weight: 700; color: {% if championship.status == 'STARTED' %}#22d3ee{% elif championship.status == 'FINISHED' %}#10b981{% else %}#94a3b8{% endif %};">
+                {{ championship.get_status_display }}
+            </div>
+        </div>
+    </div>
+
+    <!-- LEAGUE TABLE -->
+    {% if championship.type == 'LEAGUE' %}
+        {% if table %}
+        <div class="card" style="background: rgba(255,255,255,0.03); border-radius: 24px; padding: 25px; margin-bottom: 30px;">
+            <h2 style="font-size: 20px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                📊 <span>TURNIR JADVALI</span>
+                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">Ochkolar bo'yicha tartiblangan</span>
+            </h2>
+            <div style="overflow-x: auto;">
+                <table class="modern-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: rgba(0,0,0,0.3);">
+                            <th style="padding: 12px; text-align: left; color: #94a3b8;">#</th>
+                            <th style="padding: 12px; text-align: left; color: #94a3b8;">O'yinchi</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8;">O'yn</th>
+                            <th style="padding: 12px; text-align: center; color: #10b981;">G</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8;">D</th>
+                            <th style="padding: 12px; text-align: center; color: #ef4444;">M</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8;">UG</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8;">O'G</th>
+                            <th style="padding: 12px; text-align: center; color: #22d3ee;">±</th>
+                            <th style="padding: 12px; text-align: center; color: #22d3ee;">OCH</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in table %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {% if forloop.counter == 1 %}rgba(255,215,0,0.05){% elif forloop.counter == 2 %}rgba(192,192,192,0.05){% elif forloop.counter == 3 %}rgba(205,127,50,0.05){% endif %};">
+                            <td style="padding: 15px 12px; text-align: center; font-weight: 700;">
+                                {% if forloop.counter == 1 %}🥇
+                                {% elif forloop.counter == 2 %}🥈
+                                {% elif forloop.counter == 3 %}🥉
+                                {% else %}{{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td style="padding: 15px 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                        {% if entry.user.avatar %}
+                                            <img src="{{ entry.user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+                                        {% else %}
+                                            <span>{% if entry.user.first_name %}{{ entry.user.first_name|slice:":1"|upper }}{% else %}{{ entry.user.username|slice:":1"|upper }}{% endif %}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600;">
+                                            {% if entry.user.get_full_name %}{{ entry.user.get_full_name }}{% else %}{{ entry.user.username }}{% endif %}
+                                        </div>
+                                        <div style="font-size: 11px; color: #64748b;">@{{ entry.user.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 15px 12px; text-align: center;">{{ entry.pld }}</td>
+                            <td style="padding: 15px 12px; text-align: center; color: #10b981;">{{ entry.w }}</td>
+                            <td style="padding: 15px 12px; text-align: center; color: #94a3b8;">{{ entry.d }}</td>
+                            <td style="padding: 15px 12px; text-align: center; color: #ef4444;">{{ entry.l }}</td>
+                            <td style="padding: 15px 12px; text-align: center;">{{ entry.gf }}</td>
+                            <td style="padding: 15px 12px; text-align: center;">{{ entry.ga }}</td>
+                            <td style="padding: 15px 12px; text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% elif entry.gd < 0 %}color: #ef4444;{% endif %}">
+                                {{ entry.gd }}
+                            </td>
+                            <td style="padding: 15px 12px; text-align: center;">
+                                <span style="background: rgba(34,211,238,0.1); padding: 4px 12px; border-radius: 20px; font-weight: 700; color: #22d3ee;">{{ entry.pts }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
+            <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+            <p style="color: #94a3b8;">Hali o'yinlar bo'lmagan</p>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- GROUP STAGE -->
+    {% if championship.type == 'GROUP' and group_data %}
+        <div class="card" style="margin-bottom: 40px;"> 
+            <h2 style="font-size: 18px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <span>📋 GURUHLAR TAQSIMOTI</span>
+                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">{{ championship.group_count }} ta guruh | Har bir guruhdan {{ championship.group_advance_count }} ta jamoa chiqadi</span>
+            </h2>
+
+            <div class="groups-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                {% for group in group_data %}
+                    <div class="group-card" style="background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 24px; padding: 20px; border: 1px solid rgba(124,58,237,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(34,211,238,0.1)); border-radius: 50%;"></div>
+                        
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; position: relative; z-index: 1;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(124,58,237,0.3);">
+                                <span style="font-size: 12px; opacity: 0.9;">GURUH</span>
+                                <span style="font-size: 24px; font-weight: 800;">{{ group.label }}</span>
+                            </div>
+                            <div>
+                                <div style="font-size: 14px; color: #94a3b8;">{{ group.standings|length }} ta jamoa</div>
+                                <div style="font-size: 13px; margin-top: 5px;">
+                                    <span style="color: #22d3ee;">🔝 {{ championship.group_advance_count }} ta</span> keyingi bosqichga
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group-teams" style="display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 1;">
+                            {% for row in group.standings %}
+                                <div class="team-row" style="display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: {% if forloop.counter <= championship.group_advance_count %}rgba(16,185,129,0.1){% else %}rgba(255,255,255,0.02){% endif %}; border-radius: 12px; border: 1px solid {% if forloop.counter <= championship.group_advance_count %}rgba(16,185,129,0.3){% else %}rgba(255,255,255,0.05){% endif %};">
+                                    <div style="width: 30px; text-align: center; font-weight: 700; color: 
+                                        {% if forloop.counter == 1 %}#ffd700
+                                        {% elif forloop.counter == 2 %}#c0c0c0
+                                        {% elif forloop.counter == 3 %}#cd7f32
+                                        {% else %}#64748b
+                                        {% endif %};">
+                                        {{ forloop.counter }}
+                                    </div>
+
+                                    <div class="team-avatar" style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; overflow: hidden;">
+                                        {% if row.user.avatar %}
+                                            <img src="{{ row.user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+                                        {% else %}
+                                            {% if row.user.first_name %}
+                                                {{ row.user.first_name|slice:":1"|upper }}
+                                            {% else %}
+                                                {{ row.user.username|slice:":1"|upper }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="team-name" style="flex: 1; font-weight: 600; font-size: 14px;">
+                                        {% if row.user.get_full_name %}
+                                            {{ row.user.get_full_name }}
+                                        {% else %}
+                                            {{ row.user.username }}
+                                        {% endif %}
+                                    </div>
+
+                                    <div style="background: rgba(34,211,238,0.1); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #22d3ee;">
+                                        {{ row.pts }} pts
+                                    </div>
+
+                                    {% if forloop.counter <= championship.group_advance_count %}
+                                        <div style="color: #10b981; font-size: 16px;">✓</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        <div class="card" style="margin-top: 30px; margin-bottom: 16px;">  <!-- margin-top qo'shildi -->
+            <h2 style="font-size: 18px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                📊 <span>GURUHLAR BATAFSIL JADVALI</span>
+                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">Ochkolar va statistikalar</span>
+            </h2>
+
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                {% for group in group_data %}
+                    <div style="background: rgba(124,58,237,0.05); border-radius: 20px; padding: 20px;">
+                        <!-- Group Header -->
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;">
+                                {{ group.label }}
+                            </div>
+                            <div>
+                                <h3 style="font-size: 18px; margin: 0; color: #fff;">GURUH {{ group.label }}</h3>
+                                <p style="font-size: 13px; color: #94a3b8; margin: 5px 0 0;">
+                                    <span style="color: #22d3ee;">{{ group.standings|length }}</span> ta jamoa | 
+                                    <span style="color: #10b981;">🔝 {{ championship.group_advance_count }}</span> ta saralanadi
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Stats Table -->
+                        <div style="overflow-x: auto;">
+                            <table class="modern-table" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(0,0,0,0.3);">
+                                        <th style="padding: 12px; text-align: left; color: #94a3b8;">#</th>
+                                        <th style="padding: 12px; text-align: left; color: #94a3b8;">O'yinchi</th>
+                                        <th style="padding: 12px; text-align: center; color: #94a3b8;">O'yn</th>
+                                        <th style="padding: 12px; text-align: center; color: #10b981;">G</th>
+                                        <th style="padding: 12px; text-align: center; color: #94a3b8;">D</th>
+                                        <th style="padding: 12px; text-align: center; color: #ef4444;">M</th>
+                                        <th style="padding: 12px; text-align: center; color: #94a3b8;">UG</th>
+                                        <th style="padding: 12px; text-align: center; color: #94a3b8;">O'G</th>
+                                        <th style="padding: 12px; text-align: center; color: #22d3ee;">±</th>
+                                        <th style="padding: 12px; text-align: center; color: #22d3ee; font-weight: 700;">OCH</th>
+                                        <th style="padding: 12px; text-align: center; color: #94a3b8;">Forma</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in group.standings %}
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {% if forloop.counter <= championship.group_advance_count %}linear-gradient(90deg, rgba(16,185,129,0.1), transparent){% endif %};">
+                                            <!-- Rank -->
+                                            <td style="padding: 15px 12px; text-align: center; font-weight: 700; width: 50px;">
+                                                {% if forloop.counter == 1 %}
+                                                    <span style="color: #ffd700;">🥇</span>
+                                                {% elif forloop.counter == 2 %}
+                                                    <span style="color: #c0c0c0;">🥈</span>
+                                                {% elif forloop.counter == 3 %}
+                                                    <span style="color: #cd7f32;">🥉</span>
+                                                {% else %}
+                                                    {{ forloop.counter }}
+                                                {% endif %}
+                                            </td>
+
+                                            <!-- Player -->
+                                            <td style="padding: 15px 12px;">
+                                                <div style="display: flex; align-items: center; gap: 12px;">
+                                                    <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 12px; overflow: hidden;">
+                                                        {% if entry.user.avatar %}
+                                                            <img src="{{ entry.user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+                                                        {% else %}
+                                                            {% if entry.user.first_name %}
+                                                                {{ entry.user.first_name|slice:":1"|upper }}
+                                                            {% else %}
+                                                                {{ entry.user.username|slice:":1"|upper }}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-weight: 600;">
+                                                            {% if entry.user.get_full_name %}
+                                                                {{ entry.user.get_full_name }}
+                                                            {% else %}
+                                                                {{ entry.user.username }}
+                                                            {% endif %}
+                                                        </div>
+                                                        <div style="font-size: 11px; color: #64748b;">@{{ entry.user.username }}</div>
+                                                    </div>
+                                                    {% if forloop.counter <= championship.group_advance_count %}
+                                                        <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-left: 10px;">NEXT</span>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+
+                                            <!-- Stats -->
+                                            <td style="padding: 15px 12px; text-align: center; font-weight: 600;">{{ entry.pld }}</td>
+                                            <td style="padding: 15px 12px; text-align: center; color: #10b981; font-weight: 600;">{{ entry.w }}</td>
+                                            <td style="padding: 15px 12px; text-align: center; color: #94a3b8;">{{ entry.d }}</td>
+                                            <td style="padding: 15px 12px; text-align: center; color: #ef4444;">{{ entry.l }}</td>
+                                            <td style="padding: 15px 12px; text-align: center;">{{ entry.gf }}</td>
+                                            <td style="padding: 15px 12px; text-align: center;">{{ entry.ga }}</td>
+                                            <td style="padding: 15px 12px; text-align: center; font-weight: 600; color: 
+                                                {% if entry.gd > 0 %}#22d3ee
+                                                {% elif entry.gd < 0 %}#ef4444
+                                                {% else %}#94a3b8
+                                                {% endif %};">
+                                                {{ entry.gd }}
+                                            </td>
+                                            <td style="padding: 15px 12px; text-align: center;">
+                                                <span style="background: rgba(34,211,238,0.1); padding: 4px 12px; border-radius: 20px; font-weight: 700; color: #22d3ee;">{{ entry.pts }}</span>
+                                            </td>
+
+                                            <!-- Form (last 5 matches) - simplified -->
+                                            <td style="padding: 15px 12px; text-align: center;">
+                                                <div style="display: flex; gap: 3px; justify-content: center;">
+                                                    {% with total=entry.pld %}
+                                                        {% for i in "12345"|make_list %}
+                                                            {% if forloop.counter <= entry.w %}
+                                                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                                                            {% elif forloop.counter <= entry.w|add:entry.d %}
+                                                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block;"></span>
+                                                            {% elif forloop.counter <= total %}
+                                                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+                                                            {% else %}
+                                                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #334155; display: inline-block;"></span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endwith %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Group Summary -->
+                        <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px;">
+                            {% with total_pld=0 total_gf=0 total_ga=0 %}
+                                {% for entry in group.standings %}
+                                    {% with total_pld=total_pld|add:entry.pld %}
+                                    {% endwith %}
+                                    {% with total_gf=total_gf|add:entry.gf %}
+                                    {% endwith %}
+                                    {% with total_ga=total_ga|add:entry.ga %}
+                                    {% endwith %}
+                                {% endfor %}
+                                <div><span style="color: #94a3b8;">⚽ Jami o'yinlar:</span> <span style="color: #22d3ee; font-weight: 600;">{{ total_pld }} ta</span></div>
+                                <div><span style="color: #94a3b8;">🎯 Jami gollar:</span> <span style="color: #22d3ee; font-weight: 600;">{{ total_gf }}</span></div>
+                                <div><span style="color: #94a3b8;">🥅 O'tkazilgan gollar:</span> <span style="color: #ef4444; font-weight: 600;">{{ total_ga }}</span></div>
+                            {% endwith %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div style="text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.02); border-radius: 16px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+                        <p style="color: #94a3b8; font-size: 16px;">Guruhlar jadvali uchun ma'lumot yo'q</p>
+                        <p style="color: #64748b; font-size: 14px; margin-top: 10px;">O'yinlar tugagandan so'ng statistika ko'rinadi</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- PLAYOFF BRACKET -->
+    {% if championship.type == 'PLAYOFF' %}
+        {% if bracket_data %}
+        <div class="card" style="background: rgba(255,255,255,0.03); border-radius: 24px; padding: 25px; margin-bottom: 30px;">
+            <h2 style="font-size: 20px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                🏆 <span>TURNIR SETKASI</span>
+            </h2>
+            
+            <div style="display: flex; gap: 30px; overflow-x: auto; padding: 20px 0;">
+                {% for round in bracket_data %}
+                <div style="min-width: 280px;">
+                    <div style="text-align: center; background: linear-gradient(135deg, #7c3aed, #22d3ee); color: white; padding: 12px; border-radius: 14px; font-weight: 700; margin-bottom: 20px;">
+                        {{ round.name }}
+                    </div>
+                    
+                    {% for match in round.matches %}
+                    <div style="background: linear-gradient(145deg, #0f172a, #1e293b); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 15px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px; {% if match.winner and match.home_user and match.winner.id == match.home_user.id %}background: rgba(16,185,129,0.12); border-radius: 10px;{% endif %}">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#7c3aed,#22d3ee); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                    {% if match.home_user %}
+                                        {% if match.home_user.avatar %}
+                                            <img src="{{ match.home_user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+                                        {% else %}
+                                            <span>{% if match.home_user.first_name %}{{ match.home_user.first_name|slice:":1"|upper }}{% else %}{{ match.home_user.username|slice:":1"|upper }}{% endif %}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        ?
+                                    {% endif %}
+                                </div>
+                                <span style="font-weight: 600;">
+                                    {% if match.home_user %}
+                                        {% if match.home_user.first_name %}{{ match.home_user.first_name }}{% else %}{{ match.home_user.username }}{% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div style="background: #0f172a; padding: 4px 12px; border-radius: 20px; font-weight: 700; border: 1px solid #334155;">{{ match.home_score }}</div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; margin: 5px 0;">
+                            <div style="flex: 1; height: 1px; background: linear-gradient(90deg, transparent, #22d3ee);"></div>
+                            <span style="font-size: 11px; color: #94a3b8; padding: 0 10px;">VS</span>
+                            <div style="flex: 1; height: 1px; background: linear-gradient(90deg, #22d3ee, transparent);"></div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px; {% if match.winner and match.away_user and match.winner.id == match.away_user.id %}background: rgba(16,185,129,0.12); border-radius: 10px;{% endif %}">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#7c3aed,#22d3ee); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                    {% if match.away_user %}
+                                        {% if match.away_user.avatar %}
+                                            <img src="{{ match.away_user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+                                        {% else %}
+                                            <span>{% if match.away_user.first_name %}{{ match.away_user.first_name|slice:":1"|upper }}{% else %}{{ match.away_user.username|slice:":1"|upper }}{% endif %}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        ?
+                                    {% endif %}
+                                </div>
+                                <span style="font-weight: 600;">
+                                    {% if match.away_user %}
+                                        {% if match.away_user.first_name %}{{ match.away_user.first_name }}{% else %}{{ match.away_user.username }}{% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div style="background: #0f172a; padding: 4px 12px; border-radius: 20px; font-weight: 700; border: 1px solid #334155;">{{ match.away_score }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🏆</div>
+            <p style="color: #94a3b8;">Hali playoff o'yinlari yo'q</p>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- MATCHES LIST - TO'G'RILANGAN QISM -->
+    {% if matches %}
+        <div class="card" style="background: rgba(255,255,255,0.03); border-radius: 24px; padding: 25px;">
+            <h2 style="font-size: 20px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                🎮 <span>O'YINLAR RO'YXATI</span>
+                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">Jami: {{ matches|length }} ta o'yin</span>
+            </h2>
+            
+            <!-- Filter Section -->
+            <div style="margin-bottom: 25px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; width: 100%; box-sizing: border-box;">
+                <form method="GET" action="#" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; width: 100%;">
+                    <div style="flex: 2; min-width: 200px; width: 100%; box-sizing: border-box;">
+                        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">O'yinchi nomi</label>
+                        <input type="text" name="search" placeholder="O'yinchi nomi..." value="{{ search_query }}" 
+                            style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; box-sizing: border-box;">
+                    </div>
+                    
+                    <div style="flex: 1; min-width: 150px; width: 100%; box-sizing: border-box;">
+                        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">Holati</label>
+                        <select name="status" style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #f8fafc;">
+                            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Barcha o'yinlar</option>
+                            <option value="finished" {% if status_filter == 'finished' %}selected{% endif %}>Tugagan o'yinlar</option>
+                            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Kutilayotgan o'yinlar</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center; margin-left: auto;">
+                        <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #7c3aed, #22d3ee); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; height: 42px; line-height: 22px; white-space: nowrap;">
+                            FILTERLASH
+                        </button>
+                        
+                        <a href="?search=&status=all" style="padding: 10px 20px; background: transparent; color: #94a3b8; border: 1px solid #334155; border-radius: 8px; text-decoration: none; display: inline-block; height: 42px; line-height: 22px; white-space: nowrap;">
+                            TOZALASH
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <style>
+                @media (max-width: 768px) {
+                    form[style*="display: flex"] {
+                        flex-direction: column !important;
+                        gap: 15px !important;
+                    }
+                    
+                    form[style*="display: flex"] > div[style*="flex: 2"],
+                    form[style*="display: flex"] > div[style*="flex: 1"] {
+                        width: 100% !important;
+                        min-width: 100% !important;
+                        flex: none !important;
+                    }
+                    
+                    form[style*="display: flex"] > div[style*="display: flex"] {
+                        width: 100% !important;
+                        flex-direction: column !important;
+                        margin-left: 0 !important;
+                    }
+                    
+                    form[style*="display: flex"] > div[style*="display: flex"] button,
+                    form[style*="display: flex"] > div[style*="display: flex"] a {
+                        width: 100% !important;
+                        text-align: center !important;
+                        height: 48px !important;
+                        line-height: 28px !important;
+                        box-sizing: border-box !important;
+                    }
+                }
+            </style>
+            
+            <!-- Matches List - To'g'rilangan struktur -->
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                {% for match in matches %}
+                <div id="match-{{ match.id }}" class="match-item" style="display: flex; flex-direction: column; padding: 16px; background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(34,211,238,0.05)); border-radius: 18px; border-left: 5px solid {% if match.is_finished %}#10b981{% else %}#f59e0b{% endif %};">
+                    
+                    <!-- Round Info va Raqamlar qatori -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div>
+                            <span style="font-size: 12px; color: #94a3b8;">Raund</span>
+                            <span style="font-weight: 600; margin-left: 8px;">{{ match.round_name|default:"Guruh bosqichi" }}</span>
+                        </div>
+                        
+                        {% if match.leg %}
+                        <div>
+                            <span style="background: rgba(34,211,238,0.1); padding: 2px 10px; border-radius: 20px; font-size: 11px; color: #22d3ee;">
+                                {{ match.leg }}-davra
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Asosiy match ma'lumotlari -->
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
+                        
+                        <!-- Home Team -->
+                        <div style="display: flex; align-items: center; gap: 12px; {% if match.is_finished and match.home_score > match.away_score %}background: rgba(16,185,129,0.1); padding: 8px; border-radius: 12px;{% endif %}">
+                            <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                                {% if match.home_user %}
+                                    {% if match.home_user.avatar %}
+                                        <img src="{{ match.home_user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+                                    {% else %}
+                                        <span style="font-size: 18px; font-weight: bold;">
+                                            {% if match.home_user.first_name %}
+                                                {{ match.home_user.first_name|slice:":1"|upper }}
+                                            {% else %}
+                                                {{ match.home_user.username|slice:":1"|upper }}
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span style="font-size: 18px;">?</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 16px;">
+                                    {% if match.home_user %}
+                                        {% if match.home_user.first_name %}
+                                            {{ match.home_user.first_name }}
+                                        {% else %}
+                                            {{ match.home_user.username }}
+                                        {% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 11px; color: #64748b;">
+                                    @{% if match.home_user %}{{ match.home_user.username }}{% else %}???{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Score -->
+                        <div style="text-align: center; min-width: 100px;">
+                            <div style="font-size: 32px; font-weight: 800; color: #22d3ee; line-height: 1;">
+                                {{ match.home_score|default:"0" }} : {{ match.away_score|default:"0" }}
+                            </div>
+                            <div style="font-size: 11px; color: #94a3b8; margin-top: 5px;">
+                                {% if match.is_finished %}
+                                    <span style="color: #10b981;">✅ Tugagan</span>
+                                {% else %}
+                                    <span style="color: #f59e0b;">⏳ Kutilmoqda</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Away Team -->
+                        <div style="display: flex; align-items: center; gap: 12px; justify-content: flex-end; {% if match.is_finished and match.away_score > match.home_score %}background: rgba(16,185,129,0.1); padding: 8px; border-radius: 12px;{% endif %}">
+                            <div style="text-align: right; order: 2;">
+                                <div style="font-weight: 700; font-size: 16px;">
+                                    {% if match.away_user %}
+                                        {% if match.away_user.first_name %}
+                                            {{ match.away_user.first_name }}
+                                        {% else %}
+                                            {{ match.away_user.username }}
+                                        {% endif %}
+                                    {% else %}
+                                        TBD
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 11px; color: #64748b;">
+                                    @{% if match.away_user %}{{ match.away_user.username }}{% else %}???{% endif %}
+                                </div>
+                            </div>
+                            <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; order: 1;">
+                                {% if match.away_user %}
+                                    {% if match.away_user.avatar %}
+                                        <img src="{{ match.away_user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+                                    {% else %}
+                                        <span style="font-size: 18px; font-weight: bold;">
+                                            {% if match.away_user.first_name %}
+                                                {{ match.away_user.first_name|slice:":1"|upper }}
+                                            {% else %}
+                                                {{ match.away_user.username|slice:":1"|upper }}
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span style="font-size: 18px;">?</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Qo'shimcha ma'lumotlar (agar kerak bo'lsa) -->
+                    {% if match.group_name %}
+                    <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 11px; color: #94a3b8; text-align: center;">
+                        <span>Guruh {{ match.group_name }}</span>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
+            <div style="font-size: 48px; margin-bottom: 20px;">⚽</div>
+            <p style="color: #94a3b8;">Bu turnir uchun hali o'yinlar yo'q</p>
+        </div>
+    {% endif %}
+
+</div>

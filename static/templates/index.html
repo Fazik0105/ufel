@@ -5,17 +5,14 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UFEL</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'js/app.js' %}"></script>
+    <!-- <script src="{% static 'js/app.js' %}"></script> -->
     
     <!-- App -->
-    <script src="{% static 'JavaScripts/tournaments.js' %}"></script>
+    <!-- <script src="{% static 'JavaScripts/tournaments.js' %}"></script> -->
 
 </head>
 
@@ -117,50 +114,34 @@
         </div>
     </div>
 
-    <h6 class="end-text">© 2026 UFeL | All Rights Reserved</h6>
+    <h6 class="end-text" style="margin-top: 16px;">© 2026 UFeL | All Rights Reserved</h6>
 
   </div>
 </section>
 
 <!-- TOURNAMENTS PAGE -->
 <section id="tournaments" class="page">
-      <div class="tournaments-liga">
+    <div class="tournaments-liga">
         {% for champ in championships %}
-        <a href="{% url 'tournament_public_view' champ.id %}"
-          class="liga-tab {% if latest_champ and champ.id == latest_champ.id %}active{% endif %}">
-          <h1 class="liga-tab-text">{{ champ.name }}</h1>
-          <div class="liga-line"></div>
+        <a href="#" 
+           class="liga-tab {% if latest_champ and champ.id == latest_champ.id %}active{% endif %}" 
+           data-champ-id="{{ champ.id }}">
+            <h1 class="liga-tab-text">{{ champ.name }}</h1>
+            <div class="liga-line"></div>
         </a>
         {% endfor %}
-      </div>
-
-   
-
-
-<div class="tournaments-container">
-    <div class="table-header">
-        <h3 class="table-title">Turnir Jadvali</h3>
-        <div class="table-badge">{{ latest_champ.name }}</div>
-    </div>
-    
-    <div class="modern-table-wrapper">
-        <table class="modern-table">
-            <thead>
-                <tr>
-                    <th class="col-rank">#</th>
-                    <th class="col-player">O'yinchi / Jamoa</th>
-                    <th class="col-stat">PLD</th>
-                    <th class="col-stat">GD</th>
-                    <th class="col-stat highlight">PTS</th>
-                </tr>
-            </thead>
-            <tbody id="tournament-table-body">
-            {% include 'tournament_table_rows.html' %}
-        </tbody>
-        </table>
     </div>
 
-</div>
+    <!-- Loading indicator -->
+    <div id="tournament-loading" style="display: none; text-align: center; padding: 40px;">
+        <div style="width: 50px; height: 50px; border: 3px solid rgba(34,211,238,0.1); border-top-color: #22d3ee; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+        <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+    </div>
+
+    <!-- Tournament content container -->
+    <div id="tournament-content">
+        {% include 'tournament_content_partial.html' %}
+    </div>
 </section>
 
 <!--CHAMPIONS PAGE-->
@@ -340,141 +321,772 @@
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Faqat bookmark listi bor sahifalarda ishlaydi
-    if (document.getElementById('bookmarks-list')) {
-        loadUserBookmarks();
-    }
+// IIFE - global namespace ni toza saqlash uchun
+(function() {
+    'use strict';
     
-    // Liga tablar uchun event listener
-    document.querySelectorAll('.liga-tab').forEach(tab => {
-        tab.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelectorAll('.liga-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            const champId = this.getAttribute('data-liga');
-            
-            document.getElementById('tournament-table-body').style.opacity = '0.5';
+    // Konfiguratsiya
+    const CONFIG = {
+        BOOKMARK_LIMIT: 3,
+        ANIMATION_DURATION: 300,
+        NOTIFICATION_DURATION: 3000,
+        API_ENDPOINTS: {
+            BOOKMARKS: '/app/get-bookmarks/',
+            TOURNAMENT_PARTIAL: '/app/tournament-detail/'
+        }
+    };
 
-            fetch(`/app/get-championship-data/${champId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('tournament-table-body').innerHTML = data.table_html;
-                        document.getElementById('active-champ-name').innerText = data.champ_name;
-                        
-                        const adminWrapper = document.getElementById('admin-section-wrapper');
-                        if (adminWrapper) {
-                            adminWrapper.innerHTML = data.admin_html;
-                        }
-                    }
-                })
-                .catch(error => console.error('Error:', error))
-                .finally(() => {
-                    document.getElementById('tournament-table-body').style.opacity = '1';
+    // Cache management
+    const cache = {
+        tournamentData: new Map(), // champId -> {html, search, status, timestamp}
+        maxAge: 5 * 60 * 1000, // 5 daqiqa cache muddati
+        maxSize: 10, // Maksimum 10 ta turnir cache'da saqlansin
+        
+        // Cachega ma'lumot qo'shish
+        set(champId, data, search = '', status = 'all') {
+            // Agar cache limiti to'lgan bo'lsa, eng eski ma'lumotni o'chirish
+            if (this.tournamentData.size >= this.maxSize) {
+                const oldestKey = this.getOldestKey();
+                if (oldestKey) {
+                    this.tournamentData.delete(oldestKey);
+                }
+            }
+            
+            this.tournamentData.set(champId, {
+                html: data.html,
+                search: search,
+                status: status,
+                timestamp: Date.now(),
+                fullData: data // To'liq ma'lumotni ham saqlash (kerak bo'lsa)
+            });
+        },
+        
+        // Cachedan ma'lumot olish
+        get(champId, search = '', status = 'all') {
+            const cached = this.tournamentData.get(champId);
+            
+            if (!cached) return null;
+            
+            // Cache muddatini tekshirish
+            if (Date.now() - cached.timestamp > this.maxAge) {
+                this.tournamentData.delete(champId);
+                return null;
+            }
+            
+            // Filter parametrlarini tekshirish
+            if (cached.search !== search || cached.status !== status) {
+                return null;
+            }
+            
+            return cached;
+        },
+        
+        // Eng eski cache keyni topish
+        getOldestKey() {
+            let oldestKey = null;
+            let oldestTime = Infinity;
+            
+            for (const [key, value] of this.tournamentData.entries()) {
+                if (value.timestamp < oldestTime) {
+                    oldestTime = value.timestamp;
+                    oldestKey = key;
+                }
+            }
+            
+            return oldestKey;
+        },
+        
+        // Cacheni tozalash
+        clear() {
+            this.tournamentData.clear();
+        },
+        
+        // Muayyan turnir cache'ini o'chirish
+        invalidate(champId) {
+            this.tournamentData.delete(champId);
+        },
+        
+        // Cache statistikasi
+        getStats() {
+            return {
+                size: this.tournamentData.size,
+                keys: Array.from(this.tournamentData.keys()),
+                maxSize: this.maxSize,
+                maxAge: this.maxAge
+            };
+        }
+    };
+
+    // State management
+    const state = {
+        currentChampId: null,
+        currentSearch: '',
+        currentStatus: 'all',
+        filterFormHandler: null,
+        isLoading: false,
+        initialLoadDone: false,
+        lastLoadedChamp: null // Oxirgi yuklangan turnirni eslab qolish
+    };
+
+    // DOM elementlarini cache qilish
+    const elements = {
+        bookmarksList: document.getElementById('bookmarks-list'),
+        tournamentContent: document.getElementById('tournament-content'),
+        tournamentLoading: document.getElementById('tournament-loading'),
+        ligaTabs: document.querySelectorAll('.liga-tab'),
+        homePage: document.getElementById('home'),
+        tournamentsPage: document.getElementById('tournaments'),
+        navLinks: document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]'),
+        homeButtons: document.querySelectorAll('.home-btn[data-page]')
+    };
+
+    // Scroll buttons functionality
+    function initScrollableTabs() {
+        const container = document.querySelector('.tabs-container');
+        if (!container) return;
+        
+        const scrollLeftBtn = document.querySelector('.scroll-left');
+        const scrollRightBtn = document.querySelector('.scroll-right');
+        
+        if (scrollLeftBtn && scrollRightBtn) {
+            scrollLeftBtn.addEventListener('click', () => {
+                container.scrollBy({
+                    left: -200,
+                    behavior: 'smooth'
                 });
+            });
+            
+            scrollRightBtn.addEventListener('click', () => {
+                container.scrollBy({
+                    left: 200,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Hide/show scroll buttons based on scroll position
+            container.addEventListener('scroll', () => {
+                const maxScroll = container.scrollWidth - container.clientWidth;
+                
+                if (container.scrollLeft <= 10) {
+                    scrollLeftBtn.style.opacity = '0.3';
+                    scrollLeftBtn.style.pointerEvents = 'none';
+                } else {
+                    scrollLeftBtn.style.opacity = '1';
+                    scrollLeftBtn.style.pointerEvents = 'auto';
+                }
+                
+                if (container.scrollLeft >= maxScroll - 10) {
+                    scrollRightBtn.style.opacity = '0.3';
+                    scrollRightBtn.style.pointerEvents = 'none';
+                } else {
+                    scrollRightBtn.style.opacity = '1';
+                    scrollRightBtn.style.pointerEvents = 'auto';
+                }
+            });
+        }
+        
+        // Mouse wheel horizontal scroll
+        container.addEventListener('wheel', (e) => {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                container.scrollBy({
+                    left: e.deltaY > 0 ? 100 : -100,
+                    behavior: 'smooth'
+                });
+            }
         });
-    });
-});
+        
+        // Mouse follow glow effect
+        document.querySelectorAll('.liga-tab').forEach(tab => {
+            tab.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                this.style.setProperty('--x', `${x}%`);
+                this.style.setProperty('--y', `${y}%`);
+            });
+        });
+    }
 
-function loadUserBookmarks() {
-    fetch('/app/get-bookmarks/')
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error('Error:', data.error);
+    // CSS animatsiyalarni bir marta qo'shish
+    function initStyles() {
+        if (!document.getElementById('tournament-styles')) {
+            const style = document.createElement('style');
+            style.id = 'tournament-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                .tournament-loading-spinner {
+                    width: 50px;
+                    height: 50px;
+                    border: 3px solid rgba(34,211,238,0.1);
+                    border-top-color: #22d3ee;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto;
+                }
+                .custom-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: 600;
+                    z-index: 9999;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                }
+                .custom-notification.success { background: #10b981; }
+                .custom-notification.error { background: #ef4444; }
+                .custom-notification.warning { background: #f59e0b; }
+                .custom-notification.info { background: #22d3ee; }
+                
+                .fade-enter {
+                    animation: fadeIn 0.3s ease;
+                }
+                
+                .cache-badge {
+                    position: fixed;
+                    bottom: 10px;
+                    left: 10px;
+                    background: rgba(0,0,0,0.7);
+                    color: #22d3ee;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    z-index: 999;
+                    border: 1px solid #22d3ee33;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
+    // Sahifa almashish funksiyasi
+    function switchPage(pageId) {
+        // Barcha sectionlarni yashirish
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        
+        // Tanlangan sectionni ko'rsatish
+        const selectedPage = document.getElementById(pageId);
+        if (selectedPage) {
+            selectedPage.classList.add('active');
+        }
+        
+        // Navigatsiya linklarini yangilash
+        document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
+            if (link.dataset.page === pageId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+        
+        // Agar tournaments sahifasi ochilgan bo'lsa va oxirgi ko'rilgan turnir bo'lsa
+        if (pageId === 'tournaments' && state.lastLoadedChamp) {
+            const tab = document.querySelector(`.liga-tab[data-champ-id="${state.lastLoadedChamp}"]`);
+            if (tab) {
+                // Active classni yangilash
+                elements.ligaTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Cachedan ko'rsatish
+                loadTournamentContent(state.lastLoadedChamp, state.currentSearch, state.currentStatus, true);
+            }
+        }
+    }
+
+    // Initialize
+    function init() {
+        initStyles();
+        initScrollableTabs();
+        
+        // Navigatsiya linklariga event listener qo'shish
+        elements.navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.dataset.page;
+                if (pageId) {
+                    switchPage(pageId);
+                }
+            });
+        });
+        
+        // Home page buttons
+        elements.homeButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = btn.dataset.page;
+                if (pageId) {
+                    switchPage(pageId);
+                }
+            });
+        });
+        
+        // Bookmarklarni yuklash
+        if (elements.bookmarksList) {
+            loadUserBookmarks();
+        }
+        
+        // Tournament tablar uchun event listener
+        if (elements.ligaTabs.length) {
+            elements.ligaTabs.forEach(tab => {
+                tab.addEventListener('click', handleTabClick);
+            });
+        }
+        
+        // URL parametrini tekshirish
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageParam = urlParams.get('page');
+        const champId = urlParams.get('champ');
+        const searchParam = urlParams.get('search') || '';
+        const statusParam = urlParams.get('status') || 'all';
+        
+        if (pageParam) {
+            switchPage(pageParam);
+        }
+        
+        // Agar tournaments sahifasi active bo'lsa yoki champ parametri bo'lsa
+        if (document.getElementById('tournaments').classList.contains('active') || champId) {
+            setTimeout(() => {
+                if (champId) {
+                    const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
+                    if (tab) {
+                        tab.click();
+                        // Filter parametrlarini saqlash
+                        state.currentSearch = searchParam;
+                        state.currentStatus = statusParam;
+                    } else if (elements.ligaTabs.length > 0) {
+                        elements.ligaTabs[0].click();
+                    }
+                } else if (elements.ligaTabs.length > 0) {
+                    elements.ligaTabs[0].click();
+                }
+            }, 100);
+        }
+        
+        // History API ni boshqarish
+        window.addEventListener('popstate', handlePopState);
+        
+        // Cache statistikasini ko'rsatish (development uchun)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            showCacheStats();
+        }
+    }
+
+    // Tab click handler
+    function handleTabClick(e) {
+        e.preventDefault();
+        
+        const champId = e.currentTarget.dataset.champId;
+        if (!champId || state.isLoading) return;
+        
+        // Active classni yangilash
+        elements.ligaTabs.forEach(t => t.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        
+        // URL dan filter parametrlarini olish
+        const urlParams = new URLSearchParams(window.location.search);
+        const search = urlParams.get('search') || '';
+        const status = urlParams.get('status') || 'all';
+        
+        // Turnir ma'lumotlarini yuklash (cache bilan)
+        loadTournamentContent(champId, search, status);
+    }
+
+    // History popstate handler
+    function handlePopState() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageParam = urlParams.get('page');
+        const champId = urlParams.get('champ');
+        const search = urlParams.get('search') || '';
+        const status = urlParams.get('status') || 'all';
+        
+        if (pageParam) {
+            switchPage(pageParam);
+        }
+        
+        if (champId && champId !== state.currentChampId) {
+            const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
+            if (tab) {
+                tab.click();
+                loadTournamentContent(champId, search, status);
+            }
+        }
+    }
+
+    // Tournament content yuklash (cache bilan)
+    async function loadTournamentContent(champId, search = '', status = 'all', skipCache = false) {
+        if (!elements.tournamentContent || !elements.tournamentLoading) return;
+        
+        // Rate limiting - bir vaqtning o'zida faqat bitta request
+        if (state.isLoading) return;
+        
+        // Cachedan tekshirish
+        if (!skipCache) {
+            const cached = cache.get(champId, search, status);
+            if (cached) {
+                console.log(`⚡ Loading tournament ${champId} from cache`);
+                
+                // Contentni cachedan ko'rsatish
+                elements.tournamentContent.innerHTML = cached.html;
+                elements.tournamentContent.classList.add('fade-enter');
+                setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
+                
+                // State ni yangilash
+                state.currentChampId = champId;
+                state.currentSearch = search;
+                state.currentStatus = status;
+                state.lastLoadedChamp = champId;
+                
+                // Filter formni sozlash
+                setupFilterForm(champId);
+                
+                // Cache badge qo'shish
+                addCacheBadge(champId);
+                
                 return;
             }
-            updateBookmarksList(data.bookmarks);
-        })
-        .catch(error => {
-            console.error('Error loading bookmarks:', error);
-            const container = document.getElementById('bookmarks-list');
-            if (container) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                        <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
-                        <p style="color: #64748b; font-size: 12px; margin-top: 8px;">Qaytadan urinib ko'ring</p>
-                    </div>
-                `;
-            }
-        });
-}
-
-function updateBookmarksList(bookmarks) {
-    const container = document.getElementById('bookmarks-list');
-    const counterSpan = document.getElementById('bookmark-counter');
-    
-    if (!container) return;
-    
-    if (counterSpan) {
-        counterSpan.textContent = `(${bookmarks?.length || 0}/3)`;
-    }
-    
-    if (!bookmarks || bookmarks.length === 0) {
-        container.innerHTML = `
-            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
-                <p style="color: #64748b; font-size: 12px; margin-top: 8px;">Turnirlardagi o'yinlarni bookmark qilib qo'ying</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = `
-        <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
-            <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
-                ⭐ TOP O'yinlar
-            </span>
-        </div>
-    `;
-    bookmarks.forEach(bm => {
-        const homeName = bm.home_user?.name || 'TBD';
-        const awayName = bm.away_user?.name || 'TBD';
-        const homeAvatar = bm.home_user?.avatar || null;
-        const awayAvatar = bm.away_user?.avatar || null;
+        }
         
-        html += `
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; transition: all 0.3s ease;">
-                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-                    <!-- Home team avatar -->
-                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${bm.is_finished ? '#10b981' : '#f59e0b'};">
-                        ${homeAvatar ? 
-                            `<img src="${homeAvatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                            `<span>${homeName.charAt(0)}</span>`}
-                    </div>
-                    
-                   <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center; ">
-                      <div style="font-size: 13px; color: #94a3b8; margin-bottom: 4px;">
-                          ${bm.championship_name} • ${bm.round_name}
-                      </div>
-                      <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
-                          <span style="color: #f8fafc;">${homeName}</span>
-                          <span style="color: #22d3ee; font-weight: 700;">${bm.score}</span>
-                          <span style="color: #f8fafc;">${awayName}</span>
-                      </div>
-                  </div>
-                    
-                    <!-- Away team avatar -->
-                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${bm.is_finished ? '#10b981' : '#f59e0b'};">
-                        ${awayAvatar ? 
-                            `<img src="${awayAvatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                            `<span>${awayName.charAt(0)}</span>`}
-                    </div>
-                </div>
-            </div>
+        try {
+            state.isLoading = true;
+            state.currentChampId = champId;
+            state.currentSearch = search;
+            state.currentStatus = status;
             
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span style="font-size: 8px; letter-spacing: 1px; color: ${bm.is_finished ? '#10b981' : '#f59e0b'}; opacity: 0.8;">
-                            ${bm.is_finished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
+            // Loading UI
+            elements.tournamentContent.style.opacity = '0.5';
+            elements.tournamentLoading.style.display = 'block';
+            
+            // URL yaratish
+            const url = new URL(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`, window.location.origin);
+            if (search || status !== 'all') {
+                url.searchParams.append('search', search);
+                url.searchParams.append('status', status);
+            }
+            
+            console.log(`🌐 Loading tournament ${champId} from server`);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Contentni yangilash
+                elements.tournamentContent.innerHTML = data.html;
+                elements.tournamentContent.classList.add('fade-enter');
+                setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
+                
+                // Cachesaqlash
+                cache.set(champId, data, search, status);
+                state.lastLoadedChamp = champId;
+                
+                // Filter formni sozlash
+                setupFilterForm(champId);
+                
+                // URL ni yangilash
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('page', 'tournaments');
+                newUrl.searchParams.set('champ', champId);
+                if (search) newUrl.searchParams.set('search', search);
+                else newUrl.searchParams.delete('search');
+                
+                if (status !== 'all') newUrl.searchParams.set('status', status);
+                else newUrl.searchParams.delete('status');
+                
+                history.pushState({}, '', newUrl);
+                
+            } else {
+                throw new Error(data.error || 'Unknown error');
+            }
+        } catch (error) {
+            console.error('Error loading tournament:', error);
+            showNotification(error.message || 'Server bilan bog\'lanishda xatolik', 'error');
+            
+            // Error UI
+            elements.tournamentContent.innerHTML = `
+                <div style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                    <p style="color: #ef4444;">Xatolik yuz berdi</p>
+                    <p style="color: #64748b; font-size: 14px; margin-top: 10px;">Qaytadan urinib ko'ring</p>
+                    <button onclick="window.location.reload()" style="margin-top: 20px; padding: 10px 30px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        Qayta yuklash
+                    </button>
+                </div>
+            `;
+        } finally {
+            // Loading UI ni yashirish
+            elements.tournamentContent.style.opacity = '1';
+            elements.tournamentLoading.style.display = 'none';
+            state.isLoading = false;
+        }
+    }
+
+    // Cache badge qo'shish
+    function addCacheBadge(champId) {
+        // Eski badge ni o'chirish
+        const oldBadge = document.querySelector('.cache-badge');
+        if (oldBadge) oldBadge.remove();
+        
+        // Yangi badge yaratish
+        const badge = document.createElement('div');
+        badge.className = 'cache-badge';
+        badge.innerHTML = `⚡ Cache: ${champId} | ${cache.tournamentData.size}/${cache.maxSize}`;
+        
+        // Badge ga click event - cache statistikasini ko'rsatish
+        badge.addEventListener('click', () => {
+            const stats = cache.getStats();
+            showNotification(`Cache: ${stats.size}/${stats.maxSize} | Keys: ${stats.keys.join(', ')}`, 'info');
+        });
+        
+        document.body.appendChild(badge);
+        
+        // 3 sekunddan keyin badgeni yashirish
+        setTimeout(() => {
+            if (badge.parentNode) {
+                badge.remove();
+            }
+        }, 3000);
+    }
+
+    // Cache statistikasini ko'rsatish
+    function showCacheStats() {
+        const stats = cache.getStats();
+        console.log('📊 Cache Stats:', stats);
+    }
+
+    // Filter form sozlash
+    function setupFilterForm(champId) {
+        const filterForm = document.querySelector('#tournament-content form');
+        if (!filterForm) return;
+        
+        // Eski event listener ni o'chirish
+        if (state.filterFormHandler) {
+            filterForm.removeEventListener('submit', state.filterFormHandler);
+        }
+        
+        // Yangi handler yaratish
+        state.filterFormHandler = function(e) {
+            e.preventDefault();
+            
+            const searchInput = this.querySelector('input[name="search"]');
+            const statusSelect = this.querySelector('select[name="status"]');
+            
+            if (!searchInput || !statusSelect) return;
+            
+            const search = searchInput.value.trim();
+            const status = statusSelect.value;
+            
+            // Cachedan tekshirish (skipCache = false - cache dan foydalanadi)
+            loadTournamentContent(champId, search, status, false);
+        };
+        
+        // Event listener qo'shish
+        filterForm.addEventListener('submit', state.filterFormHandler);
+        
+        // Reset button ni sozlash (agar mavjud bo'lsa)
+        const resetBtn = filterForm.querySelector('a[href*="search"]');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                loadTournamentContent(champId, '', 'all', false);
+            });
+        }
+    }
+
+    // Bookmarklarni yuklash
+    async function loadUserBookmarks() {
+        if (!elements.bookmarksList) return;
+        
+        try {
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                    <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
+                    Yuklanmoqda...
+                </div>
+            `;
+            
+            const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            updateBookmarksList(data.bookmarks);
+        } catch (error) {
+            console.error('Error loading bookmarks:', error);
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                    <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
+                    <p style="color: #64748b; font-size: 12px; margin-top: 8px;">${error.message}</p>
+                    <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
+                        Qayta urinish
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // Bookmarklarni yangilash
+    function updateBookmarksList(bookmarks) {
+        if (!elements.bookmarksList) return;
+        
+        if (!bookmarks || bookmarks.length === 0) {
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                    <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
+                    <p style="color: #64748b; font-size: 12px; margin-top: 8px;">Turnirlardagi o'yinlarni bookmark qilib qo'ying</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `
+            <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
+                <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
+                    ⭐ TOP O'yinlar
                 </span>
             </div>
         `;
-    });
-    
-    container.innerHTML = html;
+        
+        bookmarks.forEach(bm => {
+            const homeName = bm.home_user?.name || 'TBD';
+            const awayName = bm.away_user?.name || 'TBD';
+            const homeInitial = homeName.charAt(0).toUpperCase();
+            const awayInitial = awayName.charAt(0).toUpperCase();
+            const isFinished = bm.is_finished || false;
+            
+            html += `
+                <div class="bookmark-item" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'" 
+                     style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
+                     onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                        <!-- Home team avatar -->
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
+                            ${bm.home_user?.avatar ? 
+                                `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                                `<span>${homeInitial}</span>`}
+                        </div>
+                        
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
+                                ${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                                <span style="color: #f8fafc; font-size: 13px;">${homeName}</span>
+                                <span style="color: #22d3ee; font-weight: 700;">${bm.score || '0:0'}</span>
+                                <span style="color: #f8fafc; font-size: 13px;">${awayName}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Away team avatar -->
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
+                            ${bm.away_user?.avatar ? 
+                                `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                                `<span>${awayInitial}</span>`}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: ${isFinished ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${isFinished ? '#10b981' : '#f59e0b'};">
+                            ${isFinished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        elements.bookmarksList.innerHTML = html;
+    }
+
+    // Notification ko'rsatish
+    function showNotification(message, type = 'info') {
+        const oldNotification = document.querySelector('.custom-notification');
+        if (oldNotification) oldNotification.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = `custom-notification ${type}`;
+        notification.textContent = message;
+        notification.style.animation = 'slideIn 0.3s ease';
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, CONFIG.NOTIFICATION_DURATION);
+    }
+
+    // CSRF token olish
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Cache API ni global qilish (debugging uchun)
+    window.tournamentCache = cache;
+
+    // Global funksiyalarni expose qilish
+    window.loadUserBookmarks = loadUserBookmarks;
+    window.showNotification = showNotification;
+    window.getCookie = getCookie;
+    window.switchPage = switchPage;
+    window.clearTournamentCache = () => {
+        cache.clear();
+        showNotification('Cache tozalandi', 'success');
+    };
+
+    // Initialize
+    init();
+})();
+
+function adjustForMobile() {
+    if (window.innerWidth <= 768) {
+        // Jadval ustunlarini qisqartirish
+        document.querySelectorAll('.player-name').forEach(el => {
+            const text = el.textContent;
+            if (text.length > 15) {
+                el.textContent = text.substring(0, 12) + '...';
+            }
+        });
+        
+        // Ortiqcha columnlarni yashirish
+        document.querySelectorAll('.extra-col').forEach(el => {
+            el.style.display = 'none';
+        });
+    }
 }
 
+window.addEventListener('resize', adjustForMobile);
+adjustForMobile();
 </script>
 </html>

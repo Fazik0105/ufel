@@ -32,5 +32,5 @@ urlpatterns = [
     path('toggle-bookmark/<int:match_id>/', views.toggle_bookmark, name='toggle_bookmark'),
     path('get-bookmarks/', views.get_user_bookmarks, name='get_user_bookmarks'),
     path('tournament/<int:pk>/', views.tournament_public_view, name='tournament_public_view'),
-    path('api/tournament/<int:pk>/', views.tournament_detail_partial, name='tournament_detail_partial'),
+    path('tournament-detail/<int:pk>/partial/', views.tournament_detail_partial, name='tournament_detail_partial'),
 ]

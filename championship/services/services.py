@@ -238,18 +238,12 @@ def generate_playoff_matches(championship, users):
     random.shuffle(users)
     
     total_teams = len(users)
-    print(f"Total teams: {total_teams}")
     
     # Raundlar haqida ma'lumot
     rounds_info = get_playoff_rounds_info(total_teams)
-    print(f"Rounds info: {rounds_info}")
     
     # Barcha matchlarni yaratish
     all_matches = create_playoff_structure(championship, users, rounds_info)
-    
-    print(f"Created {len(all_matches)} matches")
-    for match in all_matches:
-        print(f"Match {match.id}: {match.round_name}, order={match.round_order}, pos={match.bracket_position}")
     
     return all_matches
 
@@ -260,16 +254,12 @@ def get_playoff_rounds_info(total_teams):
     """
     if total_teams < 2: 
         return []
-    
-    print(f"Calculating rounds for {total_teams} teams")
-    
+        
     # Eng yaqin kichik 2 ning darajasini topamiz
     next_power_of_2 = 2 ** int(math.log2(total_teams))
-    print(f"Next power of 2: {next_power_of_2}")
     
     # 1-raunddagi o'yinlar soni (Play-in)
     first_round_matches = total_teams - next_power_of_2
-    print(f"First round matches: {first_round_matches}")
     
     rounds = []
     
@@ -283,11 +273,9 @@ def get_playoff_rounds_info(total_teams):
         })
         current_round_teams = next_power_of_2
         start_order = 2
-        print(f"Added Play-in round with {first_round_matches} matches")
     else:
         current_round_teams = total_teams
         start_order = 1
-        print("No Play-in round needed")
 
     # 2. ASOSIY TO'R
     temp_teams = current_round_teams
@@ -319,13 +307,11 @@ def get_playoff_rounds_info(total_teams):
             'matches_count': m_count,
             'is_preliminary': False
         })
-        print(f"Added round {order}: {name} with {m_count} matches")
         
         temp_teams //= 2
         order += 1
         round_number += 1
     
-    print(f"Total rounds: {len(rounds)}")
     return rounds
 
 def create_playoff_structure(championship, users, rounds_info):
@@ -367,14 +353,12 @@ def create_playoff_structure(championship, users, rounds_info):
                 target_match = next_matches[j]
                 match.next_match = target_match
                 match.next_match_position = 1  # Away pozitsiyasiga
-                print(f"Linking Play-in match {match.id} (pos {j}) to next match {target_match.id} as AWAY")
             else:
                 # Standart 2->1 ulanish
                 target_index = j // 2
                 target_match = next_matches[target_index]
                 match.next_match = target_match
                 match.next_match_position = j % 2  # 0-home, 1-away
-                print(f"Linking match {match.id} (pos {j}) to next match {target_match.id} as {'HOME' if j%2==0 else 'AWAY'}")
             match.save()
 
     # 3. Jamoalarni taqsimlash - TO'G'RILANGAN QISM
@@ -391,7 +375,6 @@ def create_playoff_structure(championship, users, rounds_info):
         # Play-in matchlarini to'ldirish
         play_in_matches_count = len(first_round_matches)
         play_in_players_count = play_in_matches_count * 2
-        print(f"Play-in players count: {play_in_players_count}")
         
         for m in first_round_matches:
             if user_idx < total_teams:
@@ -401,10 +384,8 @@ def create_playoff_structure(championship, users, rounds_info):
                 m.away_user = users[user_idx]
                 user_idx += 1
             m.save()
-            print(f"Play-in match {m.id}: {m.home_user} vs {m.away_user}")
         
         seed_teams_count = total_teams - play_in_players_count
-        print(f"Seed teams count: {seed_teams_count}")
         
         if seed_teams_count > 0 and len(rounds_info) > 1:
             second_round = rounds_info[1]  # 1/4 Final
@@ -418,11 +399,9 @@ def create_playoff_structure(championship, users, rounds_info):
                     if i < len(second_round_matches):
                         # Birinchi 4 ta seed HOME ga
                         m.home_user = users[user_idx]
-                        print(f"Seed match {m.id}: home_user = {users[user_idx]} (seed {i+1})")
                     else:
                         # Qolgan seed jamoalar AWAY ga
                         m.away_user = users[user_idx]
-                        print(f"Seed match {m.id}: away_user = {users[user_idx]} (seed {i+1})")
                     
                     user_idx += 1
                     m.save()
@@ -442,7 +421,6 @@ def create_playoff_structure(championship, users, rounds_info):
                 m.away_user = users[user_idx]
                 user_idx += 1
             m.save()
-            print(f"First round match {m.id}: {m.home_user} vs {m.away_user}")
 
     return all_matches
 
@@ -590,37 +568,26 @@ def update_playoff_bracket(match):
     winner = match.winner()
     if not winner:
         return
-    
-    print(f"Match {match.id} finished. Winner: {winner.username if winner else 'None'}")
-    
+        
     if not match.next_match:
         # Final match tugagan bo'lsa, turnirni yakunlash
         if match.round_name == "Final" and match.is_finished:
             match.championship.status = "FINISHED"
             match.championship.save()
-            print(f"Tournament finished!")
         return
     
     try:
         next_match = match.next_match
-        print(f"Next match {next_match.id} before update: home={next_match.home_user}, away={next_match.away_user}")
         
         # G'olibni keyingi matchga qo'yish
         if match.next_match_position == 0:  # Home pozitsiyasiga
             next_match.home_user = winner
-            print(f"Setting winner to HOME position in match {next_match.id}")
         else:  # Away pozitsiyasiga
             next_match.away_user = winner
-            print(f"Setting winner to AWAY position in match {next_match.id}")
         
         next_match.save()
-        
-        # Agar keyingi matchda ikkala jamoa ham bo'lsa
-        if next_match.home_user and next_match.away_user:
-            print(f"Match {next_match.id} now has both teams ready!")
-            
+
     except Exception as e:
-        print(f"Error updating bracket: {e}")
         import traceback
         traceback.print_exc()
 
@@ -729,12 +696,12 @@ def get_group_standings(championship_id):
         championship = Championship.objects.get(id=championship_id)
     except Championship.DoesNotExist:
         return []
-    
+        
     # Guruh o'yinlarini olish (tugagan va tugamagan)
     matches = Match.objects.filter(
         championship=championship
     ).exclude(group_label__isnull=True).exclude(group_label='')
-    
+        
     # Guruhlar bo'yicha guruhlash
     groups = {}
     
@@ -744,21 +711,23 @@ def get_group_standings(championship_id):
             groups[match.group_label] = {}
         
         # Home user
-        if match.home_user and match.home_user.id not in groups[match.group_label]:
-            groups[match.group_label][match.home_user.id] = {
-                'user': match.home_user,
-                'pld': 0, 'w': 0, 'd': 0, 'l': 0,
-                'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
-            }
+        if match.home_user:
+            if match.home_user.id not in groups[match.group_label]:
+                groups[match.group_label][match.home_user.id] = {
+                    'user': match.home_user,
+                    'pld': 0, 'w': 0, 'd': 0, 'l': 0,
+                    'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
+                }
         
         # Away user
-        if match.away_user and match.away_user.id not in groups[match.group_label]:
-            groups[match.group_label][match.away_user.id] = {
-                'user': match.away_user,
-                'pld': 0, 'w': 0, 'd': 0, 'l': 0,
-                'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
-            }
-    
+        if match.away_user:
+            if match.away_user.id not in groups[match.group_label]:
+                groups[match.group_label][match.away_user.id] = {
+                    'user': match.away_user,
+                    'pld': 0, 'w': 0, 'd': 0, 'l': 0,
+                    'gf': 0, 'ga': 0, 'gd': 0, 'pts': 0
+                }
+        
     # Faqat tugagan o'yinlar uchun statistikani hisoblash
     finished_matches = matches.filter(is_finished=True)
     
@@ -785,7 +754,7 @@ def get_group_standings(championship_id):
                     stats['pts'] += 1
                 else:
                     stats['l'] += 1
-        
+                        
         # Away user statistikasi
         if match.away_user:
             away_id = match.away_user.id
@@ -803,7 +772,7 @@ def get_group_standings(championship_id):
                     stats['pts'] += 1
                 else:
                     stats['l'] += 1
-    
+                    
     # GD hisoblash
     for group_label, users_dict in groups.items():
         for user_id, stats in users_dict.items():
@@ -836,12 +805,9 @@ def generate_group_matches(championship, users):
     if group_count <= 0:
         group_count = 4  # Default
     
-    print(f"Generating groups: {group_count} groups, {total_users} users")
-    print(f"Users before shuffling: {[u.username for u in users]}")
     
     # Jamoalarni random tartiblash - BU MUHIM!
     random.shuffle(users)
-    print(f"Users after shuffling: {[u.username for u in users]}")
     
     # Guruhlarga ajratish (teng taqsimlash)
     groups = []
@@ -855,9 +821,7 @@ def generate_group_matches(championship, users):
             group_sizes.append(base_size + 1)
         else:
             group_sizes.append(base_size)
-    
-    print(f"Group sizes: {group_sizes}")
-    
+        
     # Jamoalarni guruhlarga random taqsimlash
     # Buning uchun users ro'yxatini random tartiblab, keyin ketma-ket guruhlarga joylaymiz
     start_idx = 0
@@ -879,22 +843,17 @@ def generate_group_matches(championship, users):
             'users': group_users,
             'size': group_size
         })
-        
-        print(f"Group {group_label}: {[u.username for u in group_users]}")
-        
+                
         start_idx = end_idx
     
     # Qolgan jamoalarni tekshirish
     if start_idx < total_users:
-        print(f"Warning: {total_users - start_idx} users left unassigned!")
         # Qolgan jamoalarni random guruhlarga qo'shish
         remaining_users = users[start_idx:]
         for i, user in enumerate(remaining_users):
             group_idx = i % group_count
             groups[group_idx]['users'].append(user)
-            groups[group_idx]['size'] += 1
-            print(f"Added {user.username} to group {groups[group_idx]['label']}")
-    
+            groups[group_idx]['size'] += 1    
     # Har bir guruh uchun o'yinlar yaratish
     total_matches = 0
     round_order = 1  # Barcha guruh o'yinlari 1-raund deb hisoblanadi
@@ -903,12 +862,9 @@ def generate_group_matches(championship, users):
         group_users = group['users']
         group_label = group['label']
         n = len(group_users)
-        
-        print(f"Creating matches for Group {group_label} with {n} teams: {[u.username for u in group_users]}")
-        
+                
         # Guruhdagi jamoalar soni kamida 2 bo'lishi kerak
         if n < 2:
-            print(f"Group {group_label} has less than 2 teams, skipping")
             continue
         
         # Guruh ichida random o'yinlar tartibini yaratish
@@ -935,7 +891,6 @@ def generate_group_matches(championship, users):
         
         # O'yinlar tartibini randomlashtirish
         random.shuffle(matches_list)
-        print(f"Group {group_label}: Created {len(matches_list)} matches in random order")
         
         # O'yinlarni yaratish
         for match_data in matches_list:
@@ -952,5 +907,4 @@ def generate_group_matches(championship, users):
             )
             total_matches += 1
     
-    print(f"Total matches created: {total_matches}")
     return total_matches

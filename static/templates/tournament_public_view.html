@@ -599,139 +599,171 @@
         </div>
         {% endif %}
         
-        <!-- GROUP STAGE -->
-        {% if championship.type == 'GROUP' and group_data %}
+       <!-- Guruhlar jadvali bo'limi -->
+        {% if championship.type == 'GROUP' %}
         <div class="card">
             <div class="card-title">
                 <span>📋 GURUHLAR BOSQICHI</span>
                 <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">
-                    {{ championship.group_count }} ta guruh | Har bir guruhdan {{ championship.group_advance_count }} ta jamoa chiqadi
+                    {{ group_stats.total_groups }} ta guruh | 
+                    Har bir guruhdan {{ group_stats.advance_count }} ta jamoa chiqadi
                 </span>
             </div>
             
-            <div class="groups-grid">
-                {% for group in group_data %}
-                <div class="group-card">
-                    <div class="group-header">
-                        <div class="group-badge">
-                            <span>GURUH</span>
-                            <span>{{ group.label }}</span>
+            {% if group_data %}
+                <!-- Groups Grid Preview -->
+                <div class="groups-grid">
+                    {% for group in group_data %}
+                    <div class="group-card">
+                        <!-- Group header -->
+                        <div class="group-header">
+                            <div class="group-badge">
+                                <span>GURUH</span>
+                                <span>{{ group.label }}</span>
+                            </div>
+                            <div>
+                                <div style="font-size: 14px; color: #94a3b8;">{{ group.standings|length }} ta jamoa</div>
+                                <div style="font-size: 13px; margin-top: 5px; color: #22d3ee;">🔝 {{ group_stats.advance_count }} ta saralanadi</div>
+                            </div>
                         </div>
-                        <div>
-                            <div style="font-size: 14px; color: #94a3b8;">{{ group.standings|length }} ta jamoa</div>
-                            <div style="font-size: 13px; margin-top: 5px; color: #22d3ee;">🔝 {{ championship.group_advance_count }} ta saralanadi</div>
+                        
+                        <!-- Top 3 teams preview -->
+                        <div style="margin-top: 15px;">
+                            {% for entry in group.standings|slice:":3" %}
+                            <div class="group-team-row {% if forloop.counter <= group_stats.advance_count %}qualified{% endif %}">
+                                <!-- Team info -->
+                                <div style="width: 30px; text-align: center; font-weight: 700;">
+                                    {{ forloop.counter }}
+                                </div>
+                                
+                                <div class="player-avatar" style="width: 32px; height: 32px;">
+                                    {% if entry.user.avatar %}
+                                        <img src="{{ entry.user.avatar.url }}" alt="">
+                                    {% else %}
+                                        <span>{{ entry.user.username|slice:":1"|upper }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div style="flex: 1; font-weight: 600; font-size: 14px;">
+                                    {{ entry.user.get_full_name|default:entry.user.username }}
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="font-size: 12px; color: #94a3b8;">{{ entry.pld }} o'yn</div>
+                                    <div class="pts-badge">{{ entry.pts }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            {% if group.standings|length > 3 %}
+                            <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #64748b;">
+                                + {{ group.standings|length|add:"-3" }} ta jamoa
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
-                    
-                    <div style="margin-top: 15px;">
-                        {% for entry in group.standings %}
-                        <div class="group-team-row {% if forloop.counter <= championship.group_advance_count %}qualified{% endif %}">
-                            <div style="width: 30px; text-align: center; font-weight: 700; color: 
-                                {% if forloop.counter == 1 %}#ffd700
-                                {% elif forloop.counter == 2 %}#c0c0c0
-                                {% elif forloop.counter == 3 %}#cd7f32
-                                {% else %}#64748b
-                                {% endif %};">
-                                {{ forloop.counter }}
-                            </div>
-                            
-                            <div class="player-avatar" style="width: 32px; height: 32px;">
-                                {% if entry.user.avatar %}
-                                    <img src="{{ entry.user.avatar.url }}" alt="">
-                                {% else %}
-                                    <span>{% if entry.user.first_name %}{{ entry.user.first_name|slice:":1"|upper }}{% else %}{{ entry.user.username|slice:":1"|upper }}{% endif %}</span>
-                                {% endif %}
-                            </div>
-                            
-                            <div style="flex: 1; font-weight: 600; font-size: 14px;">
-                                {% if entry.user.get_full_name %}{{ entry.user.get_full_name }}{% else %}{{ entry.user.username }}{% endif %}
-                            </div>
-                            
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="font-size: 12px; color: #94a3b8;">{{ entry.pld }} o'yn</div>
-                                <div class="pts-badge" style="padding: 2px 8px;">{{ entry.pts }}</div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            
-            <!-- Detailed Group Tables -->
-            <div style="margin-top: 30px;">
-                {% for group in group_data %}
-                <div style="background: rgba(124,58,237,0.05); border-radius: 20px; padding: 20px; margin-bottom: 25px;">
-                    <h3 style="margin-top: 0; margin-bottom: 20px; color: #22d3ee;">GURUH {{ group.label }} - Batafsil statistika</h3>
+                
+                <!-- Detailed Group Tables -->
+                <div style="margin-top: 30px;">
+                    <h2 style="font-size: 18px; color: #22d3ee; margin-bottom: 20px;">
+                        📊 GURUHLAR BATAFSIL JADVALI
+                    </h2>
                     
-                    <div style="overflow-x: auto;">
-                        <table class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px;">#</th>
-                                    <th style="text-align: left;">O'yinchi</th>
-                                    <th style="text-align: center;">O'yn</th>
-                                    <th style="text-align: center; color: #10b981;">G</th>
-                                    <th style="text-align: center; color: #94a3b8;">D</th>
-                                    <th style="text-align: center; color: #ef4444;">M</th>
-                                    <th style="text-align: center;">UG</th>
-                                    <th style="text-align: center;">O'G</th>
-                                    <th style="text-align: center;">±</th>
-                                    <th style="text-align: center;">OCH</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for entry in group.standings %}
-                                <tr style="background: {% if forloop.counter <= championship.group_advance_count %}rgba(16,185,129,0.05){% endif %};">
-                                    <td style="text-align: center; font-weight: 700;">
-                                        {% if forloop.counter == 1 %}🥇
-                                        {% elif forloop.counter == 2 %}🥈
-                                        {% elif forloop.counter == 3 %}🥉
-                                        {% else %}{{ forloop.counter }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                            <div class="player-avatar" style="width: 35px; height: 35px;">
-                                                {% if entry.user.avatar %}
-                                                    <img src="{{ entry.user.avatar.url }}" alt="">
-                                                {% else %}
-                                                    <span>{% if entry.user.first_name %}{{ entry.user.first_name|slice:":1"|upper }}{% else %}{{ entry.user.username|slice:":1"|upper }}{% endif %}</span>
+                    {% for group in group_data %}
+                    <div style="background: rgba(124,58,237,0.05); border-radius: 20px; padding: 20px; margin-bottom: 20px;">
+                        <!-- Group Header -->
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;">
+                                {{ group.label }}
+                            </div>
+                            <div>
+                                <h3 style="font-size: 18px; margin: 0;">GURUH {{ group.label }}</h3>
+                                <p style="font-size: 13px; color: #94a3b8; margin: 5px 0 0;">
+                                    {{ group.standings|length }} ta jamoa | 
+                                    🔝 {{ group_stats.advance_count }} ta saralanadi
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Stats Table -->
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(0,0,0,0.3);">
+                                        <th style="padding: 12px; text-align: left;">#</th>
+                                        <th style="padding: 12px; text-align: left;">O'yinchi</th>
+                                        <th style="padding: 12px; text-align: center;">O'yn</th>
+                                        <th style="padding: 12px; text-align: center; color: #10b981;">G</th>
+                                        <th style="padding: 12px; text-align: center; color: #94a3b8;">D</th>
+                                        <th style="padding: 12px; text-align: center; color: #ef4444;">M</th>
+                                        <th style="padding: 12px; text-align: center;">UG</th>
+                                        <th style="padding: 12px; text-align: center;">O'G</th>
+                                        <th style="padding: 12px; text-align: center; color: #22d3ee;">±</th>
+                                        <th style="padding: 12px; text-align: center; color: #22d3ee;">OCH</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in group.standings %}
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {% if forloop.counter <= group_stats.advance_count %}rgba(16,185,129,0.1){% endif %};">
+                                        <td style="padding: 15px 12px; text-align: center; font-weight: 700;">
+                                            {% if forloop.counter == 1 %}🥇
+                                            {% elif forloop.counter == 2 %}🥈
+                                            {% elif forloop.counter == 3 %}🥉
+                                            {% else %}{{ forloop.counter }}
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <td style="padding: 15px 12px;">
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center;">
+                                                    {% if entry.user.avatar %}
+                                                        <img src="{{ entry.user.avatar.url }}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                                                    {% else %}
+                                                        {{ entry.user.username|slice:":1"|upper }}
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <div style="font-weight: 600;">{{ entry.user.get_full_name|default:entry.user.username }}</div>
+                                                    <div style="font-size: 11px; color: #64748b;">@{{ entry.user.username }}</div>
+                                                </div>
+                                                {% if forloop.counter <= group_stats.advance_count %}
+                                                <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px;">NEXT</span>
                                                 {% endif %}
                                             </div>
-                                            <div>
-                                                <div style="font-weight: 600;">
-                                                    {% if entry.user.get_full_name %}{{ entry.user.get_full_name }}{% else %}{{ entry.user.username }}{% endif %}
-                                                </div>
-                                                <div style="font-size: 11px; color: #64748b;">@{{ entry.user.username }}</div>
-                                            </div>
-                                            {% if forloop.counter <= championship.group_advance_count %}
-                                            <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-left: 10px;">NEXT</span>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td style="text-align: center;">{{ entry.pld }}</td>
-                                    <td style="text-align: center; color: #10b981;">{{ entry.w }}</td>
-                                    <td style="text-align: center; color: #94a3b8;">{{ entry.d }}</td>
-                                    <td style="text-align: center; color: #ef4444;">{{ entry.l }}</td>
-                                    <td style="text-align: center;">{{ entry.gf }}</td>
-                                    <td style="text-align: center;">{{ entry.ga }}</td>
-                                    <td style="text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% elif entry.gd < 0 %}color: #ef4444;{% endif %}">
-                                        {{ entry.gd }}
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <span class="pts-badge">{{ entry.pts }}</span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                        </td>
+                                        
+                                        <td style="padding: 15px 12px; text-align: center;">{{ entry.pld }}</td>
+                                        <td style="padding: 15px 12px; text-align: center; color: #10b981;">{{ entry.w }}</td>
+                                        <td style="padding: 15px 12px; text-align: center;">{{ entry.d }}</td>
+                                        <td style="padding: 15px 12px; text-align: center; color: #ef4444;">{{ entry.l }}</td>
+                                        <td style="padding: 15px 12px; text-align: center;">{{ entry.gf }}</td>
+                                        <td style="padding: 15px 12px; text-align: center;">{{ entry.ga }}</td>
+                                        <td style="padding: 15px 12px; text-align: center; font-weight: 600; color: {% if entry.gd > 0 %}#22d3ee{% elif entry.gd < 0 %}#ef4444{% else %}#94a3b8{% endif %};">
+                                            {{ entry.gd }}
+                                        </td>
+                                        <td style="padding: 15px 12px; text-align: center;">
+                                            <span style="background: rgba(34,211,238,0.1); padding: 4px 12px; border-radius: 20px; font-weight: 700; color: #22d3ee;">{{ entry.pts }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
+            {% else %}
+                <div style="text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.02); border-radius: 16px;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+                    <p style="color: #94a3b8; font-size: 16px;">Guruhlar jadvali uchun ma'lumot yo'q</p>
+                    <p style="color: #64748b; font-size: 14px; margin-top: 10px;">O'yinlar tugagandan so'ng statistika ko'rinadi</p>
+                </div>
+            {% endif %}
         </div>
         {% endif %}
+
         
         <!-- PLAYOFF BRACKET -->
         {% if championship.type == 'PLAYOFF' and bracket_data %}
@@ -929,7 +961,7 @@
         
         <!-- Footer -->
         <div style="text-align: center; margin-top: 30px; padding: 20px; color: #64748b; font-size: 12px;">
-            © 2024 UFEL | Barcha ma'lumotlar faqat o'qish uchun
+            © 2026 UFEL | Barcha ma'lumotlar faqat o'qish uchun
         </div>
     </div>
 </body>
