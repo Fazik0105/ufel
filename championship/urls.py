@@ -33,4 +33,10 @@ urlpatterns = [
     path('get-bookmarks/', views.get_user_bookmarks, name='get_user_bookmarks'),
     path('tournament/<int:pk>/', views.tournament_public_view, name='tournament_public_view'),
     path('tournament-detail/<int:pk>/partial/', views.tournament_detail_partial, name='tournament_detail_partial'),
+    path('update-ratings/', views.update_ratings, name='update_ratings'),
+    
+    path('champions/data/', views.champions_page_data, name='champions_data'),
+    path('champions/', views.champions_page, name='champions_page'),
+    path('admin/champions/add/', views.add_manual_champion, name='add_manual_champion'),
+    path('admin/championship/<int:pk>/finish/', views.finish_championship, name='finish_championship'),
 ]

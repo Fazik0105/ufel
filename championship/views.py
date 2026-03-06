@@ -1,3 +1,4 @@
+from datetime import timezone
 from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
@@ -20,8 +21,6 @@ def index(request):
         status__in=['STARTED','FINISHED']
     ).order_by('-created_at')
 
-    users = User.objects.filter(role='USER')
-
     if request.user.is_authenticated and request.user.role == 'ADMIN':
         championships = Championship.objects.all().order_by('-created_at')
     else:
@@ -29,34 +28,22 @@ def index(request):
             status__in=['STARTED','FINISHED',]
         ).order_by('-created_at')
 
+    all_users = User.objects.filter(role='USER')
+    
     ratings = []
-    for user in users:
-        home_matches = Match.objects.filter(home_user=user, is_finished=True)
-        away_matches = Match.objects.filter(away_user=user, is_finished=True)
-        total_pld = home_matches.count() + away_matches.count()
-        total_pts = 0
+    for user in all_users:
+        rating, created = UserRating.objects.get_or_create(
+            user=user,
+            defaults={
+                'games_played': 0,
+                'points': 0
+            }
+        )
+        ratings.append(rating)
+    
+    ratings = sorted(ratings, key=lambda x: (-x.points, -x.games_played))
 
-        for m in home_matches:
-            if m.home_score > m.away_score:
-                total_pts += 3
-            elif m.home_score == m.away_score:
-                total_pts += 1
-
-        for m in away_matches:
-            if m.away_score > m.home_score:
-                total_pts += 3
-            elif m.home_score == m.away_score:
-                total_pts += 1
-
-        ratings.append({
-            'user': user,
-            'pld': total_pld,
-            'pts': total_pts
-        })
-
-    ratings = sorted(ratings, key=lambda x: x['pts'], reverse=True)
-
-    # 🔹 Turnir tanlash
+    # Turnir tanlash
     selected_id = request.GET.get("champ")
 
     if selected_id:
@@ -67,7 +54,6 @@ def index(request):
     table_data = []
     participants = []
     available_users = []
-
     matches = []
 
     if latest_champ:
@@ -251,24 +237,27 @@ def admin_users(request):
         username = request.POST.get('username')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
+        nation = request.POST.get('nation') 
         avatar = request.FILES.get('avatar')
 
-        # 1. Username bazada bor-yo'qligini tekshirish
+        # Username bazada bor-yo'qligini tekshirish
         if User.objects.filter(username=username).exists():
             messages.error(request, f"Xato: '{username}' nomli username band. Boshqa tanlang.")
             return redirect('admin_users')
 
         if username:
             try:
-                # 2. Foydalanuvchini yaratish
+                # Foydalanuvchini yaratish
                 user = User.objects.create(
                     username=username,
                     first_name=first_name,
                     last_name=last_name,
                     role='USER',
-                    avatar=avatar, # Agar avatar bo'lsa saqlaydi, bo'lmasa null ketadi
+                    nation=nation,
+                    avatar=avatar,
                     password=make_password(str(uuid.uuid4())) 
                 )
+                
                 messages.success(request, f"O'yinchi {first_name} muvaffaqiyatli qo'shildi!")
                 return redirect('admin_users')
             except Exception as e:
@@ -283,23 +272,34 @@ def admin_user_detail(request, pk):
     target_user = get_object_or_404(User, pk=pk)
 
     if request.method == 'POST':
-        new_username = request.POST.get('username')
+        new_username = request.POST.get('username', '').strip()
         
-        # Username boshqa bironta foydalanuvchiga tegishli emasligini tekshirish
-        if User.objects.filter(username=new_username).exclude(pk=pk).exists():
-            messages.error(request, f"Xato: '{new_username}' nomli username allaqachon band.")
-            return redirect('admin_user_detail', pk=pk)
-
-        target_user.username = new_username
-        target_user.first_name = request.POST.get('first_name', target_user.first_name)
-        target_user.last_name = request.POST.get('last_name', target_user.last_name)
+        # Agar username bo'sh bo'lsa, eski username ni saqlash
+        if new_username:
+            if User.objects.filter(username=new_username).exclude(pk=pk).exists():
+                messages.error(request, f"Xato: '{new_username}' nomli username allaqachon band.")
+                return redirect('admin_user_detail', pk=pk)
+            target_user.username = new_username
+        
+        # Faqat kiritilgan qiymatlarni yangilash
+        first_name = request.POST.get('first_name', '').strip()
+        if first_name:
+            target_user.first_name = first_name
+            
+        last_name = request.POST.get('last_name', '').strip()
+        if last_name:
+            target_user.last_name = last_name
+            
+        nation = request.POST.get('nation', '').strip()
+        if nation:
+            target_user.nation = nation
         
         # Rasmni tekshirish
         if 'avatar' in request.FILES:
             target_user.avatar = request.FILES['avatar']
             
         target_user.save()
-        messages.success(request, f"{target_user.first_name} ma'lumotlari yangilandi!")
+        messages.success(request, f"{target_user.first_name or target_user.username} ma'lumotlari yangilandi!")
         return redirect('admin_dashboard')
     
     return render(request, 'admin_user_detail.html', {'target_user': target_user})
@@ -642,6 +642,7 @@ def admin_dashboard(request):
         username = request.POST.get('username') 
         first_name = request.POST.get('first_name', '')
         last_name = request.POST.get('last_name', '')
+        nation = request.POST.get('nation', 'UZ')
         avatar = request.FILES.get('avatar')
 
         if not username or username.strip() == "":
@@ -656,14 +657,16 @@ def admin_dashboard(request):
             return redirect('admin_dashboard')
 
         try:
-            User.objects.create(
+            user = User.objects.create(
                 username=username,
                 first_name=first_name,
                 last_name=last_name,
                 role='USER',
+                nation=nation,  # MUHIM: nation ni qo'shish
                 avatar=avatar,
                 password=make_password(str(uuid.uuid4()))
             )
+
             messages.success(request, f"{first_name or username} muvaffaqiyatli qo'shildi!")
         except Exception as e:
             messages.error(request, f"Kutilmagan xato: {e}")
@@ -677,7 +680,6 @@ def admin_dashboard(request):
         "users": users,
         "championships": championships
     })
-
 @admin_only
 def remove_participant(request, pk, user_id):
     championship = get_object_or_404(Championship, pk=pk)
@@ -1256,12 +1258,6 @@ def get_user_bookmarks(request):
         }, status=500)
 
 def tournament_public_view(request, pk):
-    """
-    Turnir ma'lumotlarini faqat o'qish rejimida ko'rsatish (public view)
-    - Hech qanday forma, input yoki o'zgartirish imkoniyati yo'q
-    - Faqat jadvallar, setkalar va o'yinlar ro'yxati ko'rinadi
-    - Barcha userlar (hatto login qilmaganlar ham) ko'ra oladi
-    """
     championship = get_object_or_404(Championship, pk=pk)
     
     # Faqat DRAFT turnirlarni adminlardan boshqalar ko'rmasligi uchun
@@ -1577,5 +1573,232 @@ def tournament_detail_partial(request, pk):
         'success': True,
         'html': html,
         'championship_name': championship.name,
+    })
+
+@admin_only
+@require_POST
+def update_ratings(request):
+    """Reytinglarni ommaviy yangilash - None qiymatlarni bazaga yozmaslik"""
+    try:
+        user_ids = request.POST.getlist('user_ids') or request.POST.getlist('user_ids[]')
+        games_played = request.POST.getlist('games_played') or request.POST.getlist('games_played[]')
+        points = request.POST.getlist('points') or request.POST.getlist('points[]')
+        
+        print(f"Received - user_ids: {user_ids}, games: {games_played}, points: {points}")  # Debug
+        
+        updated_count = 0
+        for i in range(len(user_ids)):
+            if user_ids[i]:  # user_id bo'lishi shart
+                # None yoki bo'sh qiymatlarni tekshirish
+                games_value = games_played[i] if i < len(games_played) else None
+                points_value = points[i] if i < len(points) else None
+                
+                # Agar ikkala qiymat ham None yoki bo'sh bo'lsa, o'tkazib yuborish
+                if (games_value is None or games_value == '') and (points_value is None or points_value == ''):
+                    print(f"Skipping user {user_ids[i]} - both values are empty")
+                    continue
+                
+                # Default qiymatlar (agar None bo'lsa, mavjud qiymatni saqlash yoki 0)
+                try:
+                    rating = UserRating.objects.get(user_id=user_ids[i])
+                    current_games = rating.games_played
+                    current_points = rating.points
+                except UserRating.DoesNotExist:
+                    current_games = 0
+                    current_points = 0
+                
+                # Faqat kiritilgan qiymatlarni yangilash
+                update_data = {}
+                
+                # games_played ni tekshirish
+                if games_value is not None and games_value != '':
+                    try:
+                        games_int = int(games_value)
+                        update_data['games_played'] = games_int
+                    except (ValueError, TypeError):
+                        pass  # Noto'g'ri formatda bo'lsa, o'tkazib yuborish
+                
+                # points ni tekshirish
+                if points_value is not None and points_value != '':
+                    try:
+                        points_int = int(points_value)
+                        update_data['points'] = points_int
+                    except (ValueError, TypeError):
+                        pass  # Noto'g'ri formatda bo'lsa, o'tkazib yuborish
+                
+                # Agar hech qanday o'zgarish bo'lmasa, o'tkazib yuborish
+                if not update_data:
+                    print(f"No valid data to update for user {user_ids[i]}")
+                    continue
+                
+                # Yangilash yoki yaratish
+                rating, created = UserRating.objects.update_or_create(
+                    user_id=user_ids[i],
+                    defaults=update_data
+                )
+                updated_count += 1
+                print(f"Updated user {user_ids[i]}: {update_data}")  # Debug
+        
+        return JsonResponse({
+            'success': True,
+            'message': f"{updated_count} ta reyting yangilandi",
+            'updated_count': updated_count
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+    
+@admin_only
+def finish_championship(request, pk):
+    """Turnirni yakunlash va chempionlarni avtomatik qo'shish"""
+    championship = get_object_or_404(Championship, pk=pk)
+    
+    if request.method == 'POST':
+        championship.status = 'FINISHED'
+        championship.save()
+        
+        # Signal avtomatik ravishda chempionlarni qo'shadi
+        messages.success(request, f"Turnir '{championship.name}' yakunlandi va chempionlar qo'shildi!")
+        
+    return redirect('admin_championship_detail', pk=pk)
+
+def champions_page_data(request):
+    """Champions sahifasi uchun ma'lumotlarni qaytarish (AJAX)"""
+    try:
+        # Debug uchun - nechta champion borligini ko'raylik
+        champion_count = Champion.objects.count()
+        print(f"Total champions in DB: {champion_count}")
+        
+        # Barcha championlarni olish
+        champions = Champion.objects.select_related(
+            'user', 'championship'
+        ).order_by('-year', 'position')
+        
+        # Debug - har bir champion ma'lumotini ko'raylik
+        for champ in champions:
+            print(f"Champion: {champ.id}, User: {champ.user.username}, Year: {champ.year}, Position: {champ.position}")
+        
+        # Yillar bo'yicha guruhlash
+        years_data = {}
+        for champ in champions:
+            if champ.year not in years_data:
+                years_data[champ.year] = []
+            
+            # User ma'lumotlarini to'g'ri formatlash
+            user_data = {
+                'id': champ.user.id,
+                'name': str(champ.user),
+                'first_name': champ.user.first_name or '',
+                'last_name': champ.user.last_name or '',
+                'username': champ.user.username or '',
+                'avatar': champ.user.avatar.url if champ.user.avatar else None,
+            }
+            
+            # Turnir rasmini olish
+            tournament_image = None
+            if champ.get_tournament_image():
+                tournament_image = champ.get_tournament_image().url
+            
+            years_data[champ.year].append({
+                'id': champ.id,
+                'user': user_data,
+                'position': champ.position,
+                'position_display': champ.get_position_display_with_emoji(),
+                'tournament_name': champ.get_tournament_display_name(),
+                'tournament_image': tournament_image,
+                'is_manual': champ.is_manual,
+            })
+        
+        # Yillarni kamayish tartibida saralash
+        sorted_years = sorted(years_data.items(), key=lambda x: x[0], reverse=True)
+        
+        response_data = {
+            'success': True,
+            'years': [{'year': year, 'champions': champs} for year, champs in sorted_years],
+            'debug': {
+                'total_champions': champion_count
+            }
+        }
+        
+        print(f"Returning {len(response_data['years'])} years of data")
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        import traceback
+        print("ERROR in champions_page_data:")
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'error_type': type(e).__name__
+        }, status=500)
+
+
+def champions_page(request):
+    """Champions sahifasini ko'rsatish"""
+    return render(request, 'champions_page.html')
+
+
+
+@admin_only
+def add_manual_champion(request):
+    """Qo'lda chempion qo'shish (modal orqali)"""
+    if request.method == 'POST':
+        try:
+            user_id = request.POST.get('user_id')
+            position = request.POST.get('position')
+            year = request.POST.get('year')
+            tournament_name = request.POST.get('tournament_name')
+            tournament_image = request.FILES.get('tournament_image')
+            
+            if not all([user_id, position, year, tournament_name]):
+                return JsonResponse({
+                    'success': False,
+                    'error': "Barcha maydonlarni to'ldiring!"
+                }, status=400)
+            
+            user = get_object_or_404(User, id=user_id)
+            
+            champion = Champion.objects.create(
+                user=user,
+                position=position,
+                year=year,
+                tournament_name=tournament_name,
+                tournament_image=tournament_image,
+                is_manual=True,
+                championship=None  # Hech qanday turnirga bog'lanmagan
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': f"{user} muvaffaqiyatli qo'shildi!",
+                'champion': {
+                    'id': champion.id,
+                    'user': str(champion.user),
+                    'position': champion.position,
+                    'year': champion.year,
+                    'tournament_name': champion.tournament_name,
+                }
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    # GET so'rov - modal uchun form
+    users = User.objects.filter(role='USER').order_by('first_name', 'last_name')
+    current_year = timezone.now().year
+    years = range(current_year - 5, current_year + 2)  # 5 yil oldin + 2 yil keyin
+    
+    return render(request, 'admin/add_champion_modal.html', {
+        'users': users,
+        'years': years,
+        'positions': [1, 2, 3]
     })
 

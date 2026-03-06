@@ -1,31 +1,12 @@
 {% load static %}
 
 <div class="tournaments-container" style="padding: 16px;">
-    <!-- Info Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; backdrop-filter: blur(10px);">
-            <div style="font-size: 12px; color: #94a3b8;">TURNIR TURI</div>
-            <div style="font-size: 24px; font-weight: 700; color: #22d3ee;">{{ championship.get_type_display }}</div>
-        </div>
-        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px;">
-            <div style="font-size: 12px; color: #94a3b8;">ISHTIROKCHILAR</div>
-            <div style="font-size: 24px; font-weight: 700; color: #22d3ee;">{{ championship.teams_count }}</div>
-        </div>
-        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px;">
-            <div style="font-size: 12px; color: #94a3b8;">HOLATI</div>
-            <div style="font-size: 24px; font-weight: 700; color: {% if championship.status == 'STARTED' %}#22d3ee{% elif championship.status == 'FINISHED' %}#10b981{% else %}#94a3b8{% endif %};">
-                {{ championship.get_status_display }}
-            </div>
-        </div>
-    </div>
-
     <!-- LEAGUE TABLE -->
     {% if championship.type == 'LEAGUE' %}
         {% if table %}
         <div class="card" style="background: rgba(255,255,255,0.03); border-radius: 24px; padding: 25px; margin-bottom: 30px;">
             <h2 style="font-size: 20px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                 📊 <span>TURNIR JADVALI</span>
-                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">Ochkolar bo'yicha tartiblangan</span>
             </h2>
             <div style="overflow-x: auto;">
                 <table class="modern-table" style="width: 100%; border-collapse: collapse;">
@@ -98,7 +79,7 @@
 
     <!-- GROUP STAGE -->
     {% if championship.type == 'GROUP' and group_data %}
-        <div class="card" style="margin-bottom: 40px;"> 
+        <!-- <div class="card" style="margin-bottom: 40px;"> 
             <h2 style="font-size: 18px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                 <span>📋 GURUHLAR TAQSIMOTI</span>
                 <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">{{ championship.group_count }} ta guruh | Har bir guruhdan {{ championship.group_advance_count }} ta jamoa chiqadi</span>
@@ -166,12 +147,11 @@
                         </div>
                     </div>
                 {% endfor %}
-            </div>
+            </div> -->
 
         <div class="card" style="margin-top: 30px; margin-bottom: 16px;">  <!-- margin-top qo'shildi -->
             <h2 style="font-size: 18px; color: #22d3ee; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                📊 <span>GURUHLAR BATAFSIL JADVALI</span>
-                <span style="font-size: 14px; color: #94a3b8; margin-left: auto;">Ochkolar va statistikalar</span>
+                📊 <span>GURUHLAR JADVALI</span>
             </h2>
 
             <div style="display: flex; flex-direction: column; gap: 30px;">
@@ -553,42 +533,45 @@
                             </div>
                         </div>
                         
-                        <!-- Away Team -->
+                        <!-- Away Team - TO'G'RILANGAN VERSIYA -->
                         <div style="display: flex; align-items: center; gap: 12px; justify-content: flex-end; {% if match.is_finished and match.away_score > match.home_score %}background: rgba(16,185,129,0.1); padding: 8px; border-radius: 12px;{% endif %}">
-                            <div style="text-align: right; order: 2;">
-                                <div style="font-weight: 700; font-size: 16px;">
-                                    {% if match.away_user %}
-                                        {% if match.away_user.first_name %}
-                                            {{ match.away_user.first_name }}
-                                        {% else %}
-                                            {{ match.away_user.username }}
-                                        {% endif %}
-                                    {% else %}
-                                        TBD
-                                    {% endif %}
-                                </div>
-                                <div style="font-size: 11px; color: #64748b;">
-                                    @{% if match.away_user %}{{ match.away_user.username }}{% else %}???{% endif %}
-                                </div>
-                            </div>
-                            <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; order: 1;">
-                                {% if match.away_user %}
-                                    {% if match.away_user.avatar %}
-                                        <img src="{{ match.away_user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
-                                    {% else %}
-                                        <span style="font-size: 18px; font-weight: bold;">
-                                            {% if match.away_user.first_name %}
-                                                {{ match.away_user.first_name|slice:":1"|upper }}
-                                            {% else %}
-                                                {{ match.away_user.username|slice:":1"|upper }}
-                                            {% endif %}
-                                        </span>
-                                    {% endif %}
-                                {% else %}
-                                    <span style="font-size: 18px;">?</span>
-                                {% endif %}
-                            </div>
-                        </div>
+    
+    <div style="text-align: right;">
+        <div style="font-weight: 700; font-size: 16px;">
+            {% if match.away_user %}
+                {% if match.away_user.first_name %}
+                    {{ match.away_user.first_name }}
+                {% else %}
+                    {{ match.away_user.username }}
+                {% endif %}
+            {% else %}
+                TBD
+            {% endif %}
+        </div>
+        <div style="font-size: 11px; color: #64748b;">
+            @{% if match.away_user %}{{ match.away_user.username }}{% else %}???{% endif %}
+        </div>
+    </div>
+
+    <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+        {% if match.away_user %}
+            {% if match.away_user.avatar %}
+                <img src="{{ match.away_user.avatar.url }}" style="width:100%; height:100%; object-fit:cover;">
+            {% else %}
+                <span style="font-size: 18px; font-weight: bold;">
+                    {% if match.away_user.first_name %}
+                        {{ match.away_user.first_name|slice:":1"|upper }}
+                    {% else %}
+                        {{ match.away_user.username|slice:":1"|upper }}
+                    {% endif %}
+                </span>
+            {% endif %}
+        {% else %}
+            <span style="font-size: 18px;">?</span>
+        {% endif %}
+    </div>
+    
+</div>
                     </div>
                     
                     <!-- Qo'shimcha ma'lumotlar (agar kerak bo'lsa) -->

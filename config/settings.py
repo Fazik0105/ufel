@@ -27,10 +27,10 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ["*"]
 
-ALLOWED_HOSTS = ["*", ".ngrok-free.dev"]
+ALLOWED_HOSTS = ["*", ".ngrok-free.dev", "intergovernmental-kym-influentially.ngrok-free.dev",]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://unarrived-impecuniously-cathrine.ngrok-free.dev",
+    "https://*.ngrok-free.dev",
     "http://127.0.0.1",
 ]
 
@@ -134,8 +134,6 @@ STATICFILES_DIRS = [
 # Production (deploy) uchun
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -149,11 +147,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://unarrived-impecuniously-cathrine.ngrok-free.dev",
-    "http://127.0.0.1",
-]
 
 CACHES = {
     'default': {

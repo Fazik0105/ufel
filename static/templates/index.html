@@ -9,14 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UFEL</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- <script src="{% static 'js/app.js' %}"></script> -->
-    
-    <!-- App -->
-    <!-- <script src="{% static 'JavaScripts/tournaments.js' %}"></script> -->
-
 </head>
 
-<body>
+<body class="{% if user.is_authenticated and user.is_admin %}user-admin{% endif %}">
 
   <div class="background-stack">
         <img src="{% static 'images/UFEL.png' %}" alt="UFEL background">
@@ -33,7 +28,7 @@
 <nav class="navbar">
     <a href="#" data-page="home" class="active">HOME</a>
     <a href="#" data-page="tournaments">TOURNAMENTS</a>
-    <a href="#" data-page="champions">UFEL CHAMPIONS</a>
+    <a href="#" data-page="champions" onclick="switchPage('champions')">UFEL CHAMPIONS</a>
     <a href="#" data-page="ratings">RATINGS</a>
     
     {% if user.is_authenticated %}
@@ -52,7 +47,7 @@
 <div class="mobile-menu" id="mobileMenu">
     <a href="#" data-page="home">HOME</a>
     <a href="#" data-page="tournaments">TOURNAMENTS</a>
-    <a href="#" data-page="champions">UFEL CHAMPIONS</a>
+    <a href="#" data-page="champions" onclick="switchPage('champions')">UFEL CHAMPIONS</a>
     <a href="#" data-page="ratings">RATINGS</a>
 
         {% if user.is_authenticated %}
@@ -94,6 +89,94 @@
       <a href="https://t.me/ufel_uz" class="join-group">JOIN GROUP</a>
     </div>
     
+    <div class="bookmarks-section" style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(34,211,238,0.2);">
+        <div id="bookmarks-list" style="display: flex; flex-direction: column; gap: 12px; min-height: 100px;">
+            <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                Yuklanmoqda...
+            </div>
+        </div>
+    </div>
+
+    <!-- ============= TOP 5 RATINGS SECTION ============= -->
+    <div class="home-ratings-section" style="margin-top: 40px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,196,0,0.2);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <h3 style="color: #FFC400; font-family: 'Futura', serif; font-size: 24px; margin: 0;">TOP 5 RATINGS</h3>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            {% for rating in ratings|slice:":5" %}
+            <div style="display: flex; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease; position: relative; overflow: hidden;" 
+                 onmouseover="this.style.background='rgba(255,196,0,0.05)'; this.style.borderColor='rgba(255,196,0,0.3)'" 
+                 onmouseout="this.style.background='linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))'; this.style.borderColor='rgba(255,255,255,0.05)'">
+                
+                <!-- Position badge (1,2,3,4,5) -->
+                <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                    <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; 
+                        {% if forloop.counter == 1 %}background: linear-gradient(135deg, #FFD700, #FFA500); color: #0f172a; box-shadow: 0 0 20px rgba(255,215,0,0.3);{% endif %}
+                        {% if forloop.counter == 2 %}background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: #0f172a;{% endif %}
+                        {% if forloop.counter == 3 %}background: linear-gradient(135deg, #CD7F32, #B87333); color: #0f172a;{% endif %}
+                        {% if forloop.counter == 4 %}background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);{% endif %}
+                        {% if forloop.counter == 5 %}background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);{% endif %}
+                        border-radius: 12px; font-weight: 700; font-size: 16px;">
+                        {{ forloop.counter }}
+                    </span>
+                </div>
+                
+                <!-- Avatar -->
+                <div style="width: 50px; height: 50px; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); margin-right: 15px; border: 2px solid rgba(255,255,255,0.1);">
+                    {% if rating.user.avatar %}
+                        <img src="{{ rating.user.avatar.url }}" alt="{{ rating.user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #7c3aed, #22d3ee); color: white; font-weight: 700; font-size: 20px; text-transform: uppercase;">
+                            {% if rating.user.first_name %}
+                                {{ rating.user.first_name|first|upper }}
+                            {% elif rating.user.last_name %}
+                                {{ rating.user.last_name|first|upper }}
+                            {% elif rating.user.username %}
+                                {{ rating.user.username|first|upper }}
+                            {% else %}
+                                ?
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Player Name (first_name, last_name yoki username) -->
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 700; font-size: 16px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {% if rating.user.first_name and rating.user.last_name %}
+                            {{ rating.user.first_name }} {{ rating.user.last_name }}
+                        {% elif rating.user.first_name %}
+                            {{ rating.user.first_name }}
+                        {% elif rating.user.last_name %}
+                            {{ rating.user.last_name }}
+                        {% elif rating.user.username %}
+                            {{ rating.user.username }}
+                        {% else %}
+                            Foydalanuvchi #{{ rating.user.id }}
+                        {% endif %}
+                    </div>
+                    {% if rating.user.username and not rating.user.first_name %}
+                    <div style="font-size: 12px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        @{{ rating.user.username }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Points -->
+                <div style="text-align: right;">
+                    <div style="font-weight: 800; font-size: 24px; color: #FFC400; line-height: 1;">{{ rating.points }}</div>
+                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">BALL</div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                <p>Hali rating ma'lumotlari mavjud emas</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
     <div class="social-btns">
       <a href="https://t.me/ufel_uz" class="telegram">
         <img src="https://cdn.pixabay.com/photo/2021/12/27/10/50/telegram-6896827_1280.png" alt="Telegram">
@@ -104,14 +187,6 @@
       <a href="http://www.youtube.com/@ufel_uz" class="youtube">
         <img src="https://cdn-icons-png.freepik.com/512/2496/2496113.png" alt="YouTube">
       </a>
-    </div>
-
-    <div class="bookmarks-section" style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(34,211,238,0.2);">
-        <div id="bookmarks-list" style="display: flex; flex-direction: column; gap: 12px; min-height: 100px;">
-            <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                Yuklanmoqda...
-            </div>
-        </div>
     </div>
 
     <h6 class="end-text" style="margin-top: 16px;">© 2026 UFeL | All Rights Reserved</h6>
@@ -144,183 +219,211 @@
     </div>
 </section>
 
-<!--CHAMPIONS PAGE-->
 <section id="champions" class="page">
-  <div class="ratings-header">
-    <h2 class="champions-title">UFEL CHAMPIONS</h2>
-    <div class="champions-line"></div>
-  </div>
-
-  <div class="champions-list">
-
-    <div class="champion-card">
-      <div class="champion-poster">
-        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
-        <div class="champion-poster-mask"></div>
-      </div>
-      <div class="champion-content">
-        <h2>Farrux<br> Sattorov</h2>
-        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
-      </div>
+    <div class="champions-header">
+        <h2 class="champions-title">UFEL CHAMPIONS</h2>
+        <div class="champions-line"></div>
     </div>
 
-    <div class="champion-card">
-      <div class="champion-poster">
-        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
-        <div class="champion-poster-mask"></div>
-      </div>
-      <div class="champion-content">
-        <h2>Farrux<br> Sattorov</h2>
-        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
-      </div>
-    </div>
-
-    <div class="champion-card">
-      <div class="champion-poster">
-        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
-        <div class="champion-poster-mask"></div>
-      </div>
-      <div class="champion-content">
-        <h2>Farrux<br> Sattorov</h2>
-        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
-      </div>
-    </div>
-
-    <div class="champion-card">
-      <div class="champion-poster">
-        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
-        <div class="champion-poster-mask"></div>
-      </div>
-      <div class="champion-content">
-        <h2>Farrux<br> Sattorov</h2>
-        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
-      </div>
-    </div>
-
-    <div class="champion-card">
-      <div class="champion-poster">
-        <img src="{% static 'images/champion-poster.jpg' %}" alt="poster">
-        <div class="champion-poster-mask"></div>
-      </div>
-      <div class="champion-content">
-        <h2>Farrux<br> Sattorov</h2>
-        <a href="#" onclick="openModal()">UFEL CHAMPION</a>
-      </div>
-    </div>
-
-        <!-- MODAL -->
-    <div class="modal" id="modal">
-      <div class="modal-backdrop"></div>
-    
-      <div class="modal-box">
-        <button class="modal-close" aria-label="Close">×</button>
-
-        <h2 class="champion-year">2024</h2>
-        <div class="liga-container">
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
+    <div class="champions-list" id="champions-list">
+        <!-- Dinamik ravishda to'ldiriladi -->
+        <div class="loading-spinner" style="text-align: center; padding: 40px;">
+            <div class="tournament-loading-spinner"></div>
+            <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
         </div>
-
-        <h2 class="champion-year">2025</h2>
-        <div class="liga-container">
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-        </div>
-
-        <h2 class="champion-year">2026</h2>
-        <div class="liga-container">
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-          <div class="champions-liga">
-            <img src="https://store.liverpoolfc.ae/cdn/shop/files/PL_Patch_1b2281c8-4e01-46d0-81bc-f67eb132cc75_grande.png?v=1745594309" alt="premier">
-            <h2>Premier<br>ligasi</h2>
-          </div>
-        </div>
-      </div>
     </div>
-
-    <script src="{% static 'JavaScripts/champions-modal.js' %}"></script>
-
-  </div>
-</div>
-
-
-  </div>
-
 </section>
 
-<!--RATINGS PAGE-->
+<div class="champion-detail-modal" id="championDetailModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeChampionModal()">×</button>
+        <div class="modal-body" id="championDetailContent">
+        </div>
+    </div>
+</div>
+
+<!-- RATINGS PAGE -->
 <section id="ratings" class="page ratings">
   <div class="ratings-header">
     <h2 class="ratings-title">RATINGS</h2>
     <div class="ratings-line"></div>
   </div>
 
+  {% if user.is_authenticated and user.is_admin %}
+  <!-- Admin Control Panel -->
+  <div class="admin-ratings-panel">
+    <div class="admin-panel-header">
+      <div class="admin-panel-title">
+        <h3>Admin boshqaruvi</h3>
+        <p>Reytinglarni tahrirlash va yangilash</p>
+      </div>
+    </div>
+    
+    <form id="ratings-bulk-update-form" method="post" class="admin-bulk-form">
+      {% csrf_token %}
+      <div class="admin-bulk-actions">
+        <button type="submit" class="admin-save-all-btn">
+          <span>💾</span>
+          Barcha o'zgarishlarni saqlash
+        </button>
+        <span class="admin-hint">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          Har bir qatorni alohida yoki bir vaqtda saqlashingiz mumkin
+        </span>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
   <div class="rating-list">
     <div class="rating-panel">
-      <div class="r-pos">TOP</div>
+      <div class="r-pos">#</div>
       <div class="r-avatar"></div>
-      <div class="r-name">PLAYERS</div>
+      <div class="r-name">O'YINCHI</div>
       <div class="r-nation">NAT</div>
-      <div class="r-games">GAMES</div>
-      <div class="r-points">POINTS</div>
+      <div class="r-games">O'YIN</div>
+      <div class="r-points">REYTING</div>
+      {% if user.is_authenticated and user.is_admin %}
+      <div class="r-action">SAQLASH</div>
+      {% endif %}
     </div>
 
-    {% for r in ratings %}
-    <div class="rating-row">
-      <div class="rating-pos">{{ forloop.counter }}</div>
+    <form id="ratings-form" method="post" action="{% url 'update_ratings' %}">
+      {% csrf_token %}
+      {% for r in ratings %}
+      <div class="rating-row {% if user.is_authenticated and user.is_admin %}admin-row{% endif %}" data-user-id="{{ r.user.id }}" style="margin-bottom: 8px;">
+        <div class="rating-pos">
+          <span class="pos-badge {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+            {{ forloop.counter }}
+          </span>
+        </div>
 
-      <div class="rating-avatar">
-          {% if r.user.avatar %}
-              <img src="{{ r.user.avatar.url }}" alt="{{ r.user.username }}">
-          {% else %}
-              <img src="{% static 'images/UFEL.png' %}" alt="UFEL Logo">
-          {% endif %}
+        <div class="rating-avatar">
+          <div class="avatar-wrapper">
+            {% if r.user.avatar %}
+              <img src="{{ r.user.avatar.url }}" alt="{{ r.user.username }}" class="avatar-img">
+            {% else %}
+              <div class="avatar-placeholder">
+                <span>
+                  {% if r.user.first_name %}
+                    {{ r.user.first_name|first|upper }}
+                  {% elif r.user.last_name %}
+                    {{ r.user.last_name|first|upper }}
+                  {% elif r.user.username %}
+                    {{ r.user.username|first|upper }}
+                  {% else %}
+                    ?
+                  {% endif %}
+                </span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="rating-name">
+          <span class="player-name">
+            {% if r.user.first_name and r.user.last_name %}
+              {{ r.user.first_name }} {{ r.user.last_name }}
+            {% elif r.user.first_name %}
+              {{ r.user.first_name }}
+            {% elif r.user.last_name %}
+              {{ r.user.last_name }}
+            {% elif r.user.username %}
+              {{ r.user.username }}
+            {% else %}
+              Foydalanuvchi #{{ r.user.id }}
+            {% endif %}
+          </span>
+          <span class="player-username">
+            {% if r.user.username %}{{ r.user.username }}{% endif %}
+          </span>
+        </div>
+        
+        <div class="rating-nation">
+          <span class="nation-flag">
+            {% if r.user.nation %}
+              {% if r.user.nation == 'UZ' %}🇺🇿
+              {% elif r.user.nation == 'KG' %}🇰🇬
+              {% elif r.user.nation == 'KZ' %}🇰🇿
+              {% elif r.user.nation == 'TJ' %}🇹🇯
+              {% elif r.user.nation == 'AM' %}🇦🇲
+              {% elif r.user.nation == 'AZ' %}🇦🇿
+              {% elif r.user.nation == 'BY' %}🇧🇾
+              {% elif r.user.nation == 'RU' %}🇷🇺
+              {% else %}🌍
+              {% endif %}
+            {% else %}
+              🇺🇿
+            {% endif %}
+          </span>
+        </div>
+        
+        {% if user.is_authenticated and user.is_admin %}
+        <!-- Admin input fields -->
+        <div class="rating-games">
+          <input type="hidden" name="user_ids" value="{{ r.user.id }}" form="ratings-form">
+          <div class="input-wrapper">
+            <input type="number" name="games_played" value="{{ r.games_played }}" min="0" 
+                   class="rating-input games-input" 
+                   placeholder="0"
+                   form="ratings-form">
+          </div>
+        </div>
+        <div class="rating-points">
+          <div class="input-wrapper">
+            <input type="number" name="points" value="{{ r.points }}" min="0" 
+                   class="rating-input points-input" 
+                   placeholder="0"
+                   form="ratings-form">
+          </div>
+        </div>
+        <div class="r-action">
+          <button type="button" class="save-single-btn" data-user-id="{{ r.user.id }}" title="Saqlash">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+          </button>
+        </div>
+        {% else %}
+        <!-- Regular user display -->
+        <div class="rating-games">
+          <span class="stat-value">{{ r.games_played }}</span>
+        </div>
+        <div class="rating-points">
+          <span class="stat-value points-value">{{ r.points }}</span>
+        </div>
+        {% endif %}
       </div>
-      <div class="rating-name">{{ r.user.first_name }} {{ r.user.last_name|default:r.user.username }}</div>
-      <div class="rating-nation">🇺🇿</div>
-      <div class="rating-games">{{ r.pld }}</div>
-      <div class="rating-points">{{ r.pts }}</div>
-    </div>
-    {% endfor %}
+      {% endfor %}
+    </form>
   </div>
 </section>
-
-
-    <script src="{% static 'JavaScripts/navigation-page.js' %}"></script>
-    <script src="{% static 'JavaScripts/hamburger-menu.js' %}"></script>
-    <script src="{% static 'JavaScripts/champions-modal.js' %}"></script>
-
 </body>
 
 
 <script>
+
+    // CSRF token olish funksiyasi (global)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 // IIFE - global namespace ni toza saqlash uchun
 (function() {
     'use strict';
@@ -332,24 +435,22 @@
         NOTIFICATION_DURATION: 3000,
         API_ENDPOINTS: {
             BOOKMARKS: '/app/get-bookmarks/',
-            TOURNAMENT_PARTIAL: '/app/tournament-detail/'
+            TOURNAMENT_PARTIAL: '/app/tournament-detail/',
+            UPDATE_RATINGS: '/app/update-ratings/',
+            CHAMPIONS_DATA: '/app/champions/data/'
         }
     };
 
     // Cache management
     const cache = {
-        tournamentData: new Map(), // champId -> {html, search, status, timestamp}
-        maxAge: 5 * 60 * 1000, // 5 daqiqa cache muddati
-        maxSize: 10, // Maksimum 10 ta turnir cache'da saqlansin
+        tournamentData: new Map(),
+        maxAge: 5 * 60 * 1000,
+        maxSize: 10,
         
-        // Cachega ma'lumot qo'shish
         set(champId, data, search = '', status = 'all') {
-            // Agar cache limiti to'lgan bo'lsa, eng eski ma'lumotni o'chirish
             if (this.tournamentData.size >= this.maxSize) {
                 const oldestKey = this.getOldestKey();
-                if (oldestKey) {
-                    this.tournamentData.delete(oldestKey);
-                }
+                if (oldestKey) this.tournamentData.delete(oldestKey);
             }
             
             this.tournamentData.set(champId, {
@@ -357,31 +458,24 @@
                 search: search,
                 status: status,
                 timestamp: Date.now(),
-                fullData: data // To'liq ma'lumotni ham saqlash (kerak bo'lsa)
+                fullData: data
             });
         },
         
-        // Cachedan ma'lumot olish
         get(champId, search = '', status = 'all') {
             const cached = this.tournamentData.get(champId);
-            
             if (!cached) return null;
             
-            // Cache muddatini tekshirish
             if (Date.now() - cached.timestamp > this.maxAge) {
                 this.tournamentData.delete(champId);
                 return null;
             }
             
-            // Filter parametrlarini tekshirish
-            if (cached.search !== search || cached.status !== status) {
-                return null;
-            }
+            if (cached.search !== search || cached.status !== status) return null;
             
             return cached;
         },
         
-        // Eng eski cache keyni topish
         getOldestKey() {
             let oldestKey = null;
             let oldestTime = Infinity;
@@ -392,21 +486,17 @@
                     oldestKey = key;
                 }
             }
-            
             return oldestKey;
         },
         
-        // Cacheni tozalash
         clear() {
             this.tournamentData.clear();
         },
         
-        // Muayyan turnir cache'ini o'chirish
         invalidate(champId) {
             this.tournamentData.delete(champId);
         },
         
-        // Cache statistikasi
         getStats() {
             return {
                 size: this.tournamentData.size,
@@ -425,7 +515,7 @@
         filterFormHandler: null,
         isLoading: false,
         initialLoadDone: false,
-        lastLoadedChamp: null // Oxirgi yuklangan turnirni eslab qolish
+        lastLoadedChamp: null
     };
 
     // DOM elementlarini cache qilish
@@ -440,7 +530,347 @@
         homeButtons: document.querySelectorAll('.home-btn[data-page]')
     };
 
-    // Scroll buttons functionality
+// ==================== RATINGS FUNCTIONS ====================
+
+function initRatingsPage() {
+    console.log('Initializing ratings page...');
+    
+    // Admin ekanligini tekshirish
+    const isAdmin = document.body.classList.contains('user-admin') || 
+                    document.querySelector('.navbar a[href*="admin"]') !== null;
+    
+    if (!isAdmin) {
+        console.log('User is not admin, skipping ratings initialization');
+        return;
+    }
+    
+    console.log('Admin detected, setting up ratings handlers');
+    
+    // Yakka tartibda saqlash tugmalari
+    setupSingleRatingButtons();
+    
+    // Ommaviy saqlash formi
+    setupBulkRatingForm();
+}
+
+function setupSingleRatingButtons() {
+    // TO'G'RI SELECTOR: .save-single-btn (class nomi to'g'ri)
+    const buttons = document.querySelectorAll('.save-single-btn');
+    console.log(`Found ${buttons.length} single rating buttons`);
+    
+    buttons.forEach(btn => {
+        // Eski event listenerlarni olib tashlash
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const userId = this.dataset.userId;
+            const row = this.closest('.rating-row');
+            
+            if (!row) {
+                showNotification('Rating row topilmadi', 'error');
+                return;
+            }
+            
+            const gamesInput = row.querySelector('input[name="games_played"]');
+            const pointsInput = row.querySelector('input[name="points"]');
+            
+            if (gamesInput && pointsInput) {
+                const games = gamesInput.value;
+                const points = pointsInput.value;
+                console.log(`Saving single rating - User: ${userId}, Games: ${games}, Points: ${points}`);
+                updateSingleRating(userId, games, points);
+            } else {
+                showNotification('Inputlar topilmadi', 'error');
+            }
+        });
+    });
+}
+
+function setupBulkRatingForm() {
+    const bulkForm = document.getElementById('ratings-bulk-update-form');
+    if (!bulkForm) {
+        console.log('Bulk form not found');
+        return;
+    }
+    
+    console.log('Setting up bulk form handler');
+    
+    // Eski event listenerlarni olib tashlash
+    const newBulkForm = bulkForm.cloneNode(true);
+    bulkForm.parentNode.replaceChild(newBulkForm, bulkForm);
+    
+    newBulkForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Bulk form submitted');
+        submitAllRatings();
+    });
+}
+
+async function updateSingleRating(userId, games, points) {
+    try {
+        console.log('Sending rating update:', {userId, games, points});
+        
+        const formData = new FormData();
+        // MUHIM: Qavslarni olib tashlash kerak! 'user_ids' emas 'user_ids[]'
+        formData.append('user_ids', userId);
+        formData.append('games_played', games);
+        formData.append('points', points);
+        
+        const csrfToken = getCookie('csrftoken');
+        if (csrfToken) {
+            formData.append('csrfmiddlewaretoken', csrfToken);
+        }
+        
+        // Debug: formData tarkibini ko'rish
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+        
+        // Tugmani "loading" holatiga o'tkazish
+        const button = document.querySelector(`.save-single-btn[data-user-id="${userId}"]`);
+        if (button) {
+            button.classList.add('saving');
+            button.disabled = true;
+        }
+        
+        const response = await fetch(CONFIG.API_ENDPOINTS.UPDATE_RATINGS, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const data = await response.json();
+        console.log('Response:', data);
+        
+        if (data.success) {
+            showNotification(`✅ ${data.message}`, 'success');
+            
+            // UI ni yangilash
+            updateRatingDisplay(userId, games, points);
+        } else {
+            showNotification('❌ Xatolik: ' + (data.error || 'Noma\'lum xato'), 'error');
+        }
+    } catch (error) {
+        console.error('Error updating rating:', error);
+        showNotification('❌ Xatolik yuz berdi: ' + error.message, 'error');
+    } finally {
+        // Tugmani normal holatga qaytarish
+        const button = document.querySelector(`.save-single-btn[data-user-id="${userId}"]`);
+        if (button) {
+            button.classList.remove('saving');
+            button.disabled = false;
+        }
+    }
+}
+
+// submitAllRatings funksiyasida ham 'user_ids[]' ni 'user_ids' ga o'zgartirish kerak
+async function submitAllRatings() {
+    const form = document.getElementById('ratings-form');
+    if (!form) {
+        showNotification('Form topilmadi', 'error');
+        return;
+    }
+    
+    const formData = new FormData(form);
+    
+    // CSRF token qo'shish (agar yo'q bo'lsa)
+    if (!formData.has('csrfmiddlewaretoken')) {
+        const csrfToken = getCookie('csrftoken');
+        if (csrfToken) {
+            formData.append('csrfmiddlewaretoken', csrfToken);
+        }
+    }
+    
+    // Debug: formData tarkibini ko'rish
+    console.log('Bulk form data:');
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+    
+    // "Barcha o'zgarishlarni saqlash" tugmasini loading holatiga o'tkazish
+    const saveAllBtn = document.querySelector('.admin-save-all-btn');
+    if (saveAllBtn) {
+        saveAllBtn.classList.add('saving');
+        saveAllBtn.disabled = true;
+    }
+    
+    try {
+        showNotification('⏳ Saqlanmoqda...', 'info');
+        
+        const response = await fetch(CONFIG.API_ENDPOINTS.UPDATE_RATINGS, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const data = await response.json();
+        console.log('Response:', data);
+        
+        if (data.success) {
+            showNotification(`✅ ${data.message}`, 'success');
+            // Page reload qilmasdan, faqat qiymatlarni yangilash
+            updateAllRatingsDisplay();
+        } else {
+            showNotification('❌ Xatolik: ' + (data.error || 'Noma\'lum xato'), 'error');
+        }
+    } catch (error) {
+        console.error('Error submitting ratings:', error);
+        showNotification('❌ Xatolik yuz berdi: ' + error.message, 'error');
+    } finally {
+        // Tugmani normal holatga qaytarish
+        if (saveAllBtn) {
+            saveAllBtn.classList.remove('saving');
+            saveAllBtn.disabled = false;
+        }
+    }
+}
+// Yangi funksiya: bitta rating displayini yangilash
+function updateRatingDisplay(userId, games, points) {
+    const row = document.querySelector(`.rating-row[data-user-id="${userId}"]`);
+    if (!row) return;
+    
+    // Admin bo'lmagan view uchun (agar kerak bo'lsa)
+    const gamesSpan = row.querySelector('.rating-games .stat-value');
+    const pointsSpan = row.querySelector('.rating-points .stat-value');
+    
+    // Agar oddiy user view bo'lsa, qiymatlarni yangilash
+    if (gamesSpan) gamesSpan.textContent = games;
+    if (pointsSpan) pointsSpan.textContent = points;
+}
+
+// Yangi funksiya: barcha ratinglarni yangilash (page reloadsiz)
+function updateAllRatingsDisplay() {
+    // Inputlardan olingan qiymatlarni spanlarga ko'chirish (agar mavjud bo'lsa)
+    document.querySelectorAll('.rating-row').forEach(row => {
+        const gamesInput = row.querySelector('input[name="games_played"]');
+        const pointsInput = row.querySelector('input[name="points"]');
+        const gamesSpan = row.querySelector('.rating-games .stat-value');
+        const pointsSpan = row.querySelector('.rating-points .stat-value');
+        
+        if (gamesInput && gamesSpan) {
+            gamesSpan.textContent = gamesInput.value;
+        }
+        if (pointsInput && pointsSpan) {
+            pointsSpan.textContent = pointsInput.value;
+        }
+    });
+}
+    
+    // ==================== BOOKMARK FUNCTIONS ====================
+    
+    async function loadUserBookmarks() {
+        if (!elements.bookmarksList) return;
+        
+        try {
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                    <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
+                    Yuklanmoqda...
+                </div>
+            `;
+            
+            const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
+            
+        } catch (error) {
+            console.error('Error loading bookmarks:', error);
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                    <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
+                    <p style="color: #64748b; font-size: 12px; margin-top: 8px;">${error.message}</p>
+                    <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
+                        Qayta urinish
+                    </button>
+                </div>
+            `;
+        }
+    }
+    
+    function updateBookmarksList(bookmarks, isAuthenticated = false) {
+        if (!elements.bookmarksList) return;
+        
+        if (!bookmarks || bookmarks.length === 0) {
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                    <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `
+            <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
+                <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
+                    ⭐ TOP O'yinlar (${bookmarks.length}/3)
+                </span>
+            </div>
+        `;
+        
+        bookmarks.forEach(bm => {
+            const homeName = bm.home_user?.name || 'TBD';
+            const awayName = bm.away_user?.name || 'TBD';
+            const homeInitial = homeName.charAt(0).toUpperCase();
+            const awayInitial = awayName.charAt(0).toUpperCase();
+            const isFinished = bm.is_finished || false;
+            
+            html += `
+                <div class="bookmark-item" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'" 
+                     style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
+                     onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                        <!-- Home team avatar -->
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
+                            ${bm.home_user?.avatar ? 
+                                `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                                `<span>${homeInitial}</span>`}
+                        </div>
+                        
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
+                                ${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                                <span style="color: #f8fafc; font-size: 13px;">${homeName}</span>
+                                <span style="color: #22d3ee; font-weight: 700;">${bm.score || '0:0'}</span>
+                                <span style="color: #f8fafc; font-size: 13px;">${awayName}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Away team avatar -->
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
+                            ${bm.away_user?.avatar ? 
+                                `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                                `<span>${awayInitial}</span>`}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: ${isFinished ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${isFinished ? '#10b981' : '#f59e0b'};">
+                            ${isFinished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        elements.bookmarksList.innerHTML = html;
+    }
+
+    // ==================== TOURNAMENT FUNCTIONS ====================
+    
     function initScrollableTabs() {
         const container = document.querySelector('.tabs-container');
         if (!container) return;
@@ -450,20 +880,13 @@
         
         if (scrollLeftBtn && scrollRightBtn) {
             scrollLeftBtn.addEventListener('click', () => {
-                container.scrollBy({
-                    left: -200,
-                    behavior: 'smooth'
-                });
+                container.scrollBy({ left: -200, behavior: 'smooth' });
             });
             
             scrollRightBtn.addEventListener('click', () => {
-                container.scrollBy({
-                    left: 200,
-                    behavior: 'smooth'
-                });
+                container.scrollBy({ left: 200, behavior: 'smooth' });
             });
             
-            // Hide/show scroll buttons based on scroll position
             container.addEventListener('scroll', () => {
                 const maxScroll = container.scrollWidth - container.clientWidth;
                 
@@ -485,18 +908,13 @@
             });
         }
         
-        // Mouse wheel horizontal scroll
         container.addEventListener('wheel', (e) => {
             if (e.deltaY !== 0) {
                 e.preventDefault();
-                container.scrollBy({
-                    left: e.deltaY > 0 ? 100 : -100,
-                    behavior: 'smooth'
-                });
+                container.scrollBy({ left: e.deltaY > 0 ? 100 : -100, behavior: 'smooth' });
             }
         });
         
-        // Mouse follow glow effect
         document.querySelectorAll('.liga-tab').forEach(tab => {
             tab.addEventListener('mousemove', function(e) {
                 const rect = this.getBoundingClientRect();
@@ -508,7 +926,6 @@
         });
     }
 
-    // CSS animatsiyalarni bir marta qo'shish
     function initStyles() {
         if (!document.getElementById('tournament-styles')) {
             const style = document.createElement('style');
@@ -575,141 +992,60 @@
         }
     }
 
-    // Sahifa almashish funksiyasi
-    function switchPage(pageId) {
-        // Barcha sectionlarni yashirish
-        document.querySelectorAll('.page').forEach(page => {
-            page.classList.remove('active');
-        });
-        
-        // Tanlangan sectionni ko'rsatish
-        const selectedPage = document.getElementById(pageId);
-        if (selectedPage) {
-            selectedPage.classList.add('active');
+function switchPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    const selectedPage = document.getElementById(pageId);
+    if (selectedPage) {
+        selectedPage.classList.add('active');
+    }
+    
+    document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
+        if (link.dataset.page === pageId) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
         }
-        
-        // Navigatsiya linklarini yangilash
-        document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
-            if (link.dataset.page === pageId) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-        
-        // Agar tournaments sahifasi ochilgan bo'lsa va oxirgi ko'rilgan turnir bo'lsa
-        if (pageId === 'tournaments' && state.lastLoadedChamp) {
-            const tab = document.querySelector(`.liga-tab[data-champ-id="${state.lastLoadedChamp}"]`);
-            if (tab) {
-                // Active classni yangilash
-                elements.ligaTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Cachedan ko'rsatish
-                loadTournamentContent(state.lastLoadedChamp, state.currentSearch, state.currentStatus, true);
-            }
+    });
+
+    // RATINGS sahifasi ochilganda initRatingsPage ni chaqirish
+    if (pageId === 'ratings') {
+        setTimeout(initRatingsPage, 100);
+    }
+    
+    if (pageId === 'tournaments' && state.lastLoadedChamp) {
+        const tab = document.querySelector(`.liga-tab[data-champ-id="${state.lastLoadedChamp}"]`);
+        if (tab) {
+            elements.ligaTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            loadTournamentContent(state.lastLoadedChamp, state.currentSearch, state.currentStatus, true);
         }
     }
 
-    // Initialize
-    function init() {
-        initStyles();
-        initScrollableTabs();
-        
-        // Navigatsiya linklariga event listener qo'shish
-        elements.navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = link.dataset.page;
-                if (pageId) {
-                    switchPage(pageId);
-                }
-            });
-        });
-        
-        // Home page buttons
-        elements.homeButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = btn.dataset.page;
-                if (pageId) {
-                    switchPage(pageId);
-                }
-            });
-        });
-        
-        // Bookmarklarni yuklash
-        if (elements.bookmarksList) {
-            loadUserBookmarks();
-        }
-        
-        // Tournament tablar uchun event listener
-        if (elements.ligaTabs.length) {
-            elements.ligaTabs.forEach(tab => {
-                tab.addEventListener('click', handleTabClick);
-            });
-        }
-        
-        // URL parametrini tekshirish
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get('page');
-        const champId = urlParams.get('champ');
-        const searchParam = urlParams.get('search') || '';
-        const statusParam = urlParams.get('status') || 'all';
-        
-        if (pageParam) {
-            switchPage(pageParam);
-        }
-        
-        // Agar tournaments sahifasi active bo'lsa yoki champ parametri bo'lsa
-        if (document.getElementById('tournaments').classList.contains('active') || champId) {
-            setTimeout(() => {
-                if (champId) {
-                    const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
-                    if (tab) {
-                        tab.click();
-                        // Filter parametrlarini saqlash
-                        state.currentSearch = searchParam;
-                        state.currentStatus = statusParam;
-                    } else if (elements.ligaTabs.length > 0) {
-                        elements.ligaTabs[0].click();
-                    }
-                } else if (elements.ligaTabs.length > 0) {
-                    elements.ligaTabs[0].click();
-                }
-            }, 100);
-        }
-        
-        // History API ni boshqarish
-        window.addEventListener('popstate', handlePopState);
-        
-        // Cache statistikasini ko'rsatish (development uchun)
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            showCacheStats();
-        }
+    // CHAMPIONS sahifasi ochilganda ma'lumotlarni yuklash
+    if (pageId === 'champions') {
+        setTimeout(loadChampions, 100);
     }
+}
 
-    // Tab click handler
     function handleTabClick(e) {
         e.preventDefault();
         
         const champId = e.currentTarget.dataset.champId;
         if (!champId || state.isLoading) return;
         
-        // Active classni yangilash
         elements.ligaTabs.forEach(t => t.classList.remove('active'));
         e.currentTarget.classList.add('active');
         
-        // URL dan filter parametrlarini olish
         const urlParams = new URLSearchParams(window.location.search);
         const search = urlParams.get('search') || '';
         const status = urlParams.get('status') || 'all';
         
-        // Turnir ma'lumotlarini yuklash (cache bilan)
         loadTournamentContent(champId, search, status);
     }
 
-    // History popstate handler
     function handlePopState() {
         const urlParams = new URLSearchParams(window.location.search);
         const pageParam = urlParams.get('page');
@@ -730,36 +1066,25 @@
         }
     }
 
-    // Tournament content yuklash (cache bilan)
     async function loadTournamentContent(champId, search = '', status = 'all', skipCache = false) {
         if (!elements.tournamentContent || !elements.tournamentLoading) return;
-        
-        // Rate limiting - bir vaqtning o'zida faqat bitta request
         if (state.isLoading) return;
         
-        // Cachedan tekshirish
         if (!skipCache) {
             const cached = cache.get(champId, search, status);
             if (cached) {
                 console.log(`⚡ Loading tournament ${champId} from cache`);
-                
-                // Contentni cachedan ko'rsatish
                 elements.tournamentContent.innerHTML = cached.html;
                 elements.tournamentContent.classList.add('fade-enter');
                 setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
                 
-                // State ni yangilash
                 state.currentChampId = champId;
                 state.currentSearch = search;
                 state.currentStatus = status;
                 state.lastLoadedChamp = champId;
                 
-                // Filter formni sozlash
                 setupFilterForm(champId);
-                
-                // Cache badge qo'shish
                 addCacheBadge(champId);
-                
                 return;
             }
         }
@@ -770,11 +1095,9 @@
             state.currentSearch = search;
             state.currentStatus = status;
             
-            // Loading UI
             elements.tournamentContent.style.opacity = '0.5';
             elements.tournamentLoading.style.display = 'block';
             
-            // URL yaratish
             const url = new URL(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`, window.location.origin);
             if (search || status !== 'all') {
                 url.searchParams.append('search', search);
@@ -788,19 +1111,15 @@
             const data = await response.json();
             
             if (data.success) {
-                // Contentni yangilash
                 elements.tournamentContent.innerHTML = data.html;
                 elements.tournamentContent.classList.add('fade-enter');
                 setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
                 
-                // Cachesaqlash
                 cache.set(champId, data, search, status);
                 state.lastLoadedChamp = champId;
                 
-                // Filter formni sozlash
                 setupFilterForm(champId);
                 
-                // URL ni yangilash
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('page', 'tournaments');
                 newUrl.searchParams.set('champ', champId);
@@ -819,7 +1138,6 @@
             console.error('Error loading tournament:', error);
             showNotification(error.message || 'Server bilan bog\'lanishda xatolik', 'error');
             
-            // Error UI
             elements.tournamentContent.innerHTML = `
                 <div style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
                     <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
@@ -831,25 +1149,20 @@
                 </div>
             `;
         } finally {
-            // Loading UI ni yashirish
             elements.tournamentContent.style.opacity = '1';
             elements.tournamentLoading.style.display = 'none';
             state.isLoading = false;
         }
     }
 
-    // Cache badge qo'shish
     function addCacheBadge(champId) {
-        // Eski badge ni o'chirish
         const oldBadge = document.querySelector('.cache-badge');
         if (oldBadge) oldBadge.remove();
         
-        // Yangi badge yaratish
         const badge = document.createElement('div');
         badge.className = 'cache-badge';
         badge.innerHTML = `⚡ Cache: ${champId} | ${cache.tournamentData.size}/${cache.maxSize}`;
         
-        // Badge ga click event - cache statistikasini ko'rsatish
         badge.addEventListener('click', () => {
             const stats = cache.getStats();
             showNotification(`Cache: ${stats.size}/${stats.maxSize} | Keys: ${stats.keys.join(', ')}`, 'info');
@@ -857,31 +1170,24 @@
         
         document.body.appendChild(badge);
         
-        // 3 sekunddan keyin badgeni yashirish
         setTimeout(() => {
-            if (badge.parentNode) {
-                badge.remove();
-            }
+            if (badge.parentNode) badge.remove();
         }, 3000);
     }
 
-    // Cache statistikasini ko'rsatish
     function showCacheStats() {
         const stats = cache.getStats();
         console.log('📊 Cache Stats:', stats);
     }
 
-    // Filter form sozlash
     function setupFilterForm(champId) {
         const filterForm = document.querySelector('#tournament-content form');
         if (!filterForm) return;
         
-        // Eski event listener ni o'chirish
         if (state.filterFormHandler) {
             filterForm.removeEventListener('submit', state.filterFormHandler);
         }
         
-        // Yangi handler yaratish
         state.filterFormHandler = function(e) {
             e.preventDefault();
             
@@ -893,14 +1199,11 @@
             const search = searchInput.value.trim();
             const status = statusSelect.value;
             
-            // Cachedan tekshirish (skipCache = false - cache dan foydalanadi)
             loadTournamentContent(champId, search, status, false);
         };
         
-        // Event listener qo'shish
         filterForm.addEventListener('submit', state.filterFormHandler);
         
-        // Reset button ni sozlash (agar mavjud bo'lsa)
         const resetBtn = filterForm.querySelector('a[href*="search"]');
         if (resetBtn) {
             resetBtn.addEventListener('click', (e) => {
@@ -910,113 +1213,6 @@
         }
     }
 
-// Bookmarklarni yuklash - hamma uchun ochiq
-async function loadUserBookmarks() {
-    if (!elements.bookmarksList) return;
-    
-    try {
-        elements.bookmarksList.innerHTML = `
-            <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
-                Yuklanmoqda...
-            </div>
-        `;
-        
-        const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const data = await response.json();
-        
-        // data.is_authenticated maydoniga qarab ishlash
-        updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
-        
-    } catch (error) {
-        console.error('Error loading bookmarks:', error);
-        // Xatolik bo'lganda bo'sh ro'yxat ko'rsatish
-        elements.bookmarksList.innerHTML = `
-            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
-                <p style="color: #64748b; font-size: 12px; margin-top: 8px;">${error.message}</p>
-                <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
-                    Qayta urinish
-                </button>
-            </div>
-        `;
-    }
-}
-// Bookmarklarni yangilash - hamma uchun ochiq
-function updateBookmarksList(bookmarks, isAuthenticated = false) {
-    if (!elements.bookmarksList) return;
-    
-    // Agar bookmarklar bo'lmasa
-    if (!bookmarks || bookmarks.length === 0) {
-        elements.bookmarksList.innerHTML = `
-            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
-            </div>
-        `;
-        return;
-    }
-    
-    // Bookmarklar mavjud bo'lsa - ko'rsatish
-    let html = `
-        <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
-            <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
-                ⭐ TOP O'yinlar (${bookmarks.length}/3)
-            </span>
-        </div>
-    `;
-    
-    bookmarks.forEach(bm => {
-        const homeName = bm.home_user?.name || 'TBD';
-        const awayName = bm.away_user?.name || 'TBD';
-        const homeInitial = homeName.charAt(0).toUpperCase();
-        const awayInitial = awayName.charAt(0).toUpperCase();
-        const isFinished = bm.is_finished || false;
-        
-        html += `
-            <div class="bookmark-item" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'" 
-                 style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
-                 onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-                    <!-- Home team avatar -->
-                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                        ${bm.home_user?.avatar ? 
-                            `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                            `<span>${homeInitial}</span>`}
-                    </div>
-                    
-                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
-                            ${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
-                            <span style="color: #f8fafc; font-size: 13px;">${homeName}</span>
-                            <span style="color: #22d3ee; font-weight: 700;">${bm.score || '0:0'}</span>
-                            <span style="color: #f8fafc; font-size: 13px;">${awayName}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Away team avatar -->
-                    <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                        ${bm.away_user?.avatar ? 
-                            `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                            `<span>${awayInitial}</span>`}
-                    </div>
-                </div>
-                
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: ${isFinished ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${isFinished ? '#10b981' : '#f59e0b'};">
-                        ${isFinished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
-                    </span>
-                </div>
-            </div>
-        `;
-    });
-    
-    elements.bookmarksList.innerHTML = html;
-}
-    // Notification ko'rsatish
     function showNotification(message, type = 'info') {
         const oldNotification = document.querySelector('.custom-notification');
         if (oldNotification) oldNotification.remove();
@@ -1034,29 +1230,133 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
         }, CONFIG.NOTIFICATION_DURATION);
     }
 
-    // CSRF token olish
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
+    // ==================== INITIALIZATION ====================
+    
+function init() {
+    console.log('Initializing application...');
+    
+    initStyles();
+    initScrollableTabs();
+    
+    // Navigatsiya linklariga event listener qo'shish
+    elements.navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageId = link.dataset.page;
+            if (pageId) switchPage(pageId);
+        });
+    });
+    
+    // Home page buttons
+    elements.homeButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageId = btn.dataset.page;
+            if (pageId) switchPage(pageId);
+        });
+    });
+    
+    // Bookmarklarni yuklash
+    if (elements.bookmarksList) {
+        loadUserBookmarks();
     }
-
+    
+    // Tournament tablar uchun event listener
+    if (elements.ligaTabs.length) {
+        elements.ligaTabs.forEach(tab => {
+            tab.addEventListener('click', handleTabClick);
+        });
+    }
+    
+    // Agar ratings sahifasi active bo'lsa, initRatingsPage ni chaqirish
+    if (document.getElementById('ratings').classList.contains('active')) {
+        setTimeout(initRatingsPage, 200);
+    }
+    
+    // URL parametrini tekshirish
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
+    const champId = urlParams.get('champ');
+    const searchParam = urlParams.get('search') || '';
+    const statusParam = urlParams.get('status') || 'all';
+    
+    // MUHIM: BARCHA page'lardan active classni olib tashlash
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // Agar pageParam mavjud bo'lsa, o'sha sahifani active qilish
+    if (pageParam) {
+        const targetPage = document.getElementById(pageParam);
+        if (targetPage) {
+            targetPage.classList.add('active');
+            
+            // Navbar linklarini yangilash
+            document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageParam) {
+                    link.classList.add('active');
+                }
+            });
+        } else {
+            // Agar pageParam noto'g'ri bo'lsa, home ga o'tish
+            document.getElementById('home').classList.add('active');
+        }
+    } else {
+        // Agar pageParam yo'q bo'lsa, home sahifasini active qilish
+        document.getElementById('home').classList.add('active');
+        
+        // Navbar linklaridan active classni olib tashlash va home ga qo'shish
+        document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.page === 'home') {
+                link.classList.add('active');
+            }
+        });
+    }
+    
+    // Tournament ma'lumotlarini yuklash (backgroundda, sahifaga o'tmasdan)
+    if (champId) {
+        setTimeout(() => {
+            console.log(`🔄 Preloading tournament ${champId} data in background...`);
+            
+            // Cacheni tekshirish
+            const cached = cache.get(champId, searchParam, statusParam);
+            if (!cached) {
+                // Backgroundda yuklash
+                const url = new URL(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`, window.location.origin);
+                if (searchParam || statusParam !== 'all') {
+                    url.searchParams.append('search', searchParam);
+                    url.searchParams.append('status', statusParam);
+                }
+                
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            cache.set(champId, data, searchParam, statusParam);
+                            console.log(`✅ Tournament ${champId} preloaded successfully`);
+                        }
+                    })
+                    .catch(err => console.log('Preload error:', err));
+            } else {
+                console.log(`⚡ Tournament ${champId} already in cache`);
+            }
+        }, 200);
+    }
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        showCacheStats();
+    }
+}
     // Cache API ni global qilish (debugging uchun)
     window.tournamentCache = cache;
 
     // Global funksiyalarni expose qilish
     window.loadUserBookmarks = loadUserBookmarks;
     window.showNotification = showNotification;
-    window.getCookie = getCookie;
     window.switchPage = switchPage;
     window.clearTournamentCache = () => {
         cache.clear();
@@ -1069,15 +1369,10 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
 
 function adjustForMobile() {
     if (window.innerWidth <= 768) {
-        // Jadval ustunlarini qisqartirish
         document.querySelectorAll('.player-name').forEach(el => {
             const text = el.textContent;
-            if (text.length > 15) {
-                el.textContent = text.substring(0, 12) + '...';
-            }
         });
         
-        // Ortiqcha columnlarni yashirish
         document.querySelectorAll('.extra-col').forEach(el => {
             el.style.display = 'none';
         });
@@ -1086,5 +1381,336 @@ function adjustForMobile() {
 
 window.addEventListener('resize', adjustForMobile);
 adjustForMobile();
+
+// Sahifani almashtirish funksiyasi
+function showPage(pageId) {
+    // Barcha sahifalardan 'active' klassini olib tashlash
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // Tanlangan sahifani ko'rsatish
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+    }
+
+    // Navbatdagi menyu linklarini 'active' qilish
+    document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
+        if (link.getAttribute('data-page') === pageId) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Doim Home sahifasidan boshlash
+    showPage('home');
+
+    // 2. Oxirgi turnir ma'lumotlarini fonda yuklab qo'yish
+    const activeLigaTab = document.querySelector('.liga-tab.active');
+    if (activeLigaTab) {
+        const champId = activeLigaTab.dataset.champId;
+        // Bu funksiya faqat ma'lumotni yuklaydi (fetch), sahifani o'zgartirmaydi
+        loadTournamentDataInBackground(champId); 
+    }
+
+    // 3. Navigatsiya tugmalariga event listenerlar
+    setupNavigation();
+});
+
+// Fonda yuklash funksiyasi (Tournaments sahifasiga o'tmaydi)
+async function loadTournamentDataInBackground(champId) {
+    if (!champId) return;
+    
+    try {
+        // Tournament content containerini topish
+        const container = document.getElementById('tournament-content');
+        
+        // Agar keshda bo'lsa, yuklab o'tirmaymiz
+        if (cache.get(champId)) {
+            container.innerHTML = cache.get(champId).html;
+            return;
+        }
+
+        const response = await fetch(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+        
+        if (data.html) {
+            container.innerHTML = data.html;
+            cache.set(champId, data); // Keshga saqlash
+        }
+    } catch (error) {
+        console.error("Turnirni yuklashda xatolik:", error);
+    }
+}
+function setupNavigation() {
+    // Navbar va Mobile menyu linklari uchun
+    document.querySelectorAll('[data-page]').forEach(element => {
+        element.addEventListener('click', function(e) {
+            const pageId = this.getAttribute('data-page');
+            
+            // Agar link bo'lsa (href="#"), sahifa sakrab ketmasligi uchun
+            if (this.tagName === 'A') {
+                e.preventDefault();
+            }
+
+            // Sahifani almashtirish
+            showPage(pageId);
+
+            // Agar Tournaments sahifasiga o'tayotgan bo'lsa va hali yuklanmagan bo'lsa
+            if (pageId === 'tournaments') {
+                const activeTab = document.querySelector('.liga-tab.active');
+                if (activeTab && !document.getElementById('tournament-content').innerHTML.trim()) {
+                    loadTournamentDataInBackground(activeTab.dataset.champId);
+                }
+            }
+        });
+    });
+}
+
+// Asosiy faylning oxiriga (index.html yoki base template) qo'shing
+document.addEventListener('DOMContentLoaded', function() {
+    // Tournament filter formni to'g'ri ishlashi uchun
+    const filterForm = document.getElementById('tournament-filter-form');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const search = this.querySelector('input[name="search"]').value;
+            const status = this.querySelector('select[name="status"]').value;
+            
+            // URL ni yangilash
+            const url = new URL(window.location);
+            url.searchParams.set('search', search);
+            url.searchParams.set('status', status);
+            
+            // Sahifani qayta yuklash
+            window.location.href = url.toString();
+        });
+    }
+    
+    // Reset linkini to'g'ri ishlashi uchun
+    const resetLink = document.querySelector('.filter-reset');
+    if (resetLink) {
+        resetLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = window.location.pathname; // Filterlarni tozalash
+        });
+    }
+});
+
+// Eng sodda va ishonchli usul
+document.addEventListener('click', function(e) {
+    // Mobile menu linklari uchun
+    if (e.target.matches('.mobile-menu a[data-page]')) {
+        e.preventDefault();
+        
+        const link = e.target.closest('a');
+        const pageId = link.getAttribute('data-page');
+        
+        if (pageId) {
+            // Mobile menyuni yopish
+            document.getElementById('mobileMenu').classList.remove('active');
+            document.getElementById('hamburger').classList.remove('active');
+            
+            // Sahifani almashtirish
+            showPage(pageId);
+        }
+    }
+    
+    // Hamburger menu uchun
+    if (e.target.closest('#hamburger')) {
+        e.preventDefault();
+        document.getElementById('hamburger').classList.toggle('active');
+        document.getElementById('mobileMenu').classList.toggle('active');
+    }
+});
+
+// ==================== CHAMPIONS FUNCTIONS ====================
+window.loadChampions = function() {
+    console.log('Loading champions...');
+    const container = document.getElementById('champions-list');
+    if (!container) {
+        console.error('Champions container not found');
+        return;
+    }
+    
+    // Loading indicator
+    container.innerHTML = `
+        <div class="loading-spinner" style="text-align: center; padding: 40px;">
+            <div class="tournament-loading-spinner"></div>
+            <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+        </div>
+    `;
+    
+    // Fetch champions data
+    fetch('/app/champions/data/')
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Error response:', text);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Champions data received:', data);
+            
+            if (data.success) {
+                if (data.years && data.years.length > 0) {
+                    renderChampions(data.years);
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
+                            <p style="color: #94a3b8; font-size: 18px;">Hali chempionlar mavjud emas</p>
+                            <p style="color: #64748b; font-size: 14px; margin-top: 10px;">Bazada ${data.debug?.total_champions || 0} ta champion bor</p>
+                        </div>
+                    `;
+                }
+            } else {
+                throw new Error(data.error || 'Unknown error');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading champions:', error);
+            container.innerHTML = `
+                <div class="error" style="text-align: center; padding: 50px;">
+                    <p style="color: #ef4444; font-size: 48px; margin-bottom: 20px;">❌</p>
+                    <p style="color: #ef4444; font-size: 18px;">Xatolik yuz berdi</p>
+                    <p style="color: #94a3b8; margin-top: 10px;">${error.message}</p>
+                    <button onclick="loadChampions()" style="margin-top: 20px; padding: 10px 30px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        Qayta urinish
+                    </button>
+                </div>
+            `;
+        });
+};
+
+function renderChampions(years) {
+    console.log('Rendering champions with years:', years);
+    const container = document.getElementById('champions-list');
+    if (!container) return;
+    
+    let html = '';
+    
+    years.forEach(yearData => {
+        html += `
+            <div class="champion-year-section" style="margin-bottom: 50px;">
+                <h2 class="champion-year" style="color: #FFC400; font-size: 32px; margin-bottom: 25px; border-left: 4px solid #FFC400; padding-left: 15px;">
+                    ${yearData.year} YIL CHEMPIONLARI
+                </h2>
+                <div class="champions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        `;
+        
+        yearData.champions.forEach(champ => {
+            const fullName = [champ.user.first_name, champ.user.last_name].filter(Boolean).join(' ') || champ.user.username || 'Noma\'lum';
+            const avatarUrl = champ.user.avatar || '/static/images/default-avatar.jpg';
+            const tournamentImage = champ.tournament_image || '/static/images/default-tournament.jpg';
+            
+            // Xavfsiz JSON string
+            const champJson = JSON.stringify(champ).replace(/'/g, "&apos;").replace(/"/g, '&quot;');
+            
+            html += `
+                <div class="champion-card" onclick='showChampionDetail(${champJson})' 
+                     style="background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 16px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,196,0,0.1); transition: all 0.3s ease;">
+                    
+                    <!-- Tournament Image -->
+                    <div style="height: 150px; overflow: hidden; position: relative;">
+                        <img src="${tournamentImage}" alt="tournament" style="width: 100%; height: 100%; object-fit: cover;" 
+                             onerror="this.src='/static/images/default-tournament.jpg'">
+                        <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 20px; color: #FFC400; font-weight: bold;">
+                            ${champ.position_display || champ.position + '-o\'rin'}
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div style="padding: 15px; display: flex; gap: 15px;">
+                        <!-- Avatar -->
+                        <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid #FFC400;">
+                            <img src="${avatarUrl}" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;" 
+                                 onerror="this.src='/static/images/default-avatar.jpg'">
+                        </div>
+                        
+                        <!-- Info -->
+                        <div style="flex: 1;">
+                            <h3 style="color: white; margin: 0 0 5px 0; font-size: 18px;">${fullName}</h3>
+                            <p style="color: #94a3b8; margin: 0 0 5px 0; font-size: 14px;">🏆 ${champ.tournament_name || 'Noma\'lum turnir'}</p>
+                            <p style="color: #FFC400; margin: 0; font-size: 14px;">⭐ ${champ.position_display || champ.position + '-o\'rin'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+// Champion detail modalini ochish
+window.showChampionDetail = function(champ) {
+    console.log('Showing champion detail:', champ);
+    
+    const modalContent = document.getElementById('championDetailContent');
+    const modal = document.getElementById('championDetailModal');
+    
+    if (!modalContent || !modal) {
+        console.error('Modal elements not found');
+        return;
+    }
+    
+    const fullName = [champ.user.first_name, champ.user.last_name].filter(Boolean).join(' ') || champ.user.username || 'Noma\'lum';
+    const avatarUrl = champ.user.avatar || '/static/images/default-avatar.jpg';
+    const tournamentImage = champ.tournament_image || '/static/images/default-tournament.jpg';
+    
+    modalContent.innerHTML = `
+        <div style="padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <span style="background: ${champ.position === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : champ.position === 2 ? 'linear-gradient(135deg, #C0C0C0, #A0A0A0)' : 'linear-gradient(135deg, #CD7F32, #B87333)'}; color: #0f172a; padding: 8px 20px; border-radius: 50px; font-weight: 700;">
+                    ${champ.position_display || champ.position + '-o\'rin'}
+                </span>
+                <span style="background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 50px; color: white;">
+                    ${champ.year}
+                </span>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+                <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee);">
+                    <img src="${avatarUrl}" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;" 
+                         onerror="this.src='/static/images/default-avatar.jpg'">
+                </div>
+                <div>
+                    <h3 style="color: white; margin: 0 0 5px 0; font-size: 24px;">${fullName}</h3>
+                    <p style="color: #94a3b8; margin: 0;">@${champ.user.username || 'username'}</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <img src="${tournamentImage}" alt="tournament" style="width: 100%; max-width: 300px; height: 200px; object-fit: cover; border-radius: 16px; margin-bottom: 20px;" 
+                     onerror="this.src='/static/images/default-tournament.jpg'">
+                <h4 style="color: #FFC400; margin: 0;">${champ.tournament_name || 'Noma\'lum turnir'}</h4>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    document.body.classList.add('modal-open');
+};
+
+// Modalni yopish
+window.closeChampionModal = function() {
+    const modal = document.getElementById('championDetailModal');
+    modal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+};
 </script>
 </html>

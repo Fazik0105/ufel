@@ -51,6 +51,16 @@
             margin-bottom: 20px;
         }
 
+        .nation-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(34, 211, 238, 0.1);
+            border-radius: 20px;
+            color: #22d3ee;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
         form {
             display: flex;
             flex-direction: column;
@@ -69,7 +79,7 @@
             color: #cbd5f5;
         }
 
-        input {
+        input, select {
             padding: 12px 14px;
             border-radius: 12px;
             border: none;
@@ -78,7 +88,12 @@
             outline: none;
         }
 
-        input:focus {
+        select option {
+            background: #1e293b;
+            color: #fff;
+        }
+
+        input:focus, select:focus {
             box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.6);
         }
 
@@ -101,6 +116,12 @@
             font-size: 14px;
         }
 
+        .field-hint {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -118,27 +139,67 @@
         {% if target_user.avatar %}
             <img src="{{ target_user.avatar.url }}" class="edit-avatar" alt="avatar">
         {% else %}
-            <div style="width:100px; height:100px; background:#2a2a40; border-radius:50%; margin: 0 auto 20px; display:flex; align-items:center; justify-content:center;">No IMG</div>
+            <div style="width:100px; height:100px; background:#2a2a40; border-radius:50%; margin: 0 auto 20px; display:flex; align-items:center; justify-content:center; font-size: 36px;">
+                {{ target_user.first_name|first|default:target_user.username|first|upper }}
+            </div>
         {% endif %}
 
+        <!-- Joriy nation badge -->
+        <div class="nation-badge">
+            {% if target_user.nation %}
+                {% if target_user.nation == 'UZ' %}🇺🇿 O'zbekiston
+                {% elif target_user.nation == 'KG' %}🇰🇬 Qirg'iziston
+                {% elif target_user.nation == 'KZ' %}🇰🇿 Qozog'iston
+                {% elif target_user.nation == 'TJ' %}🇹🇯 Tojikiston
+                {% elif target_user.nation == 'AM' %}🇦🇲 Armenia
+                {% elif target_user.nation == 'AZ' %}🇦🇿 Ozarbayjon
+                {% elif target_user.nation == 'BY' %}🇧🇾 Belarusiya
+                {% elif target_user.nation == 'RU' %}🇷🇺 Rossiya
+                {% else %}🌍 Boshqa
+                {% endif %}
+            {% else %}
+                🇺🇿 O'zbekiston
+            {% endif %}
+        </div>
+
         <h2>O'yinchi ma'lumotlarini tahrirlash</h2>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Barcha maydonlar ixtiyoriy. Faqat o'zgartirmoqchi bo'lgan ma'lumotlarni kiriting.</p>
 
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
             <div class="field">
                 <label>Username</label>
-                <input type="text" name="username" value="{{ target_user.username }}" required>
+                <input type="text" name="username" value="{{ target_user.username|default:'' }}" placeholder="Username">
             </div>
 
             <div class="field">
                 <label>Ismi</label>
-                <input type="text" name="first_name" value="{{ target_user.first_name }}" required>
+                <input type="text" name="first_name" value="{{ target_user.first_name|default:'' }}" placeholder="Ism">
             </div>
 
             <div class="field">
                 <label>Familiyasi</label>
-                <input type="text" name="last_name" value="{{ target_user.last_name }}" required>
+                <input type="text" name="last_name" value="{{ target_user.last_name|default:'' }}" placeholder="Familiya">
+            </div>
+
+            <!-- Nation select -->
+            <div class="field">
+                <label>Davlat</label>
+                <select name="nation">
+                    <option value="" {% if not target_user.nation %}selected{% endif %}>-- Tanlanmagan --</option>
+                    <option value="UZ" {% if target_user.nation == 'UZ' %}selected{% endif %}>🇺🇿 O'zbekiston</option>
+                    <option value="" {% if not target_user.nation %}selected{% endif %}>-- Tanlanmagan --</option>
+                    <option value="UZ" {% if target_user.nation == 'UZ' %}selected{% endif %}>🇺🇿 O'zbekiston</option>
+                    <option value="KG" {% if target_user.nation == 'KG' %}selected{% endif %}>🇰🇬 Qirg'iziston</option>
+                    <option value="KZ" {% if target_user.nation == 'KZ' %}selected{% endif %}>🇰🇿 Qozog'iston</option>
+                    <option value="TJ" {% if target_user.nation == 'TJ' %}selected{% endif %}>🇹🇯 Tojikiston</option>
+                    <option value="AM" {% if target_user.nation == 'AM' %}selected{% endif %}>🇦🇲 Armenia</option>
+                    <option value="AZ" {% if target_user.nation == 'AZ' %}selected{% endif %}>🇦🇿 Ozarbayjon</option>
+                    <option value="BY" {% if target_user.nation == 'BY' %}selected{% endif %}>🇧🇾 Belarusiya</option>
+                    <option value="RU" {% if target_user.nation == 'RU' %}selected{% endif %}>🇷🇺 Rossiya</option>
+                    <option value="OTHER" {% if target_user.nation == 'OTHER' %}selected{% endif %}>🌍 Boshqa</option>
+                </select>
             </div>
 
             <div class="field">

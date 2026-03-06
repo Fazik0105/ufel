@@ -1,0 +1,735 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UFEL Champions</title>
+    <style>
+        /* Champions Grid */
+.champions-list {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.champion-year-section {
+    margin-bottom: 50px;
+}
+
+.champion-year {
+    color: #FFC400;
+    font-size: 32px;
+    margin-bottom: 25px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.champion-year::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 40px;
+    background: linear-gradient(135deg, #FFC400, #FF8C00);
+    border-radius: 5px;
+}
+
+.champions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.champion-card {
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 196, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.champion-card:hover {
+    transform: translateY(-8px);
+    border-color: #FFC400;
+    box-shadow: 0 20px 40px rgba(255, 196, 0, 0.2);
+}
+
+.champion-poster {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.champion-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.champion-card:hover .champion-poster img {
+    transform: scale(1.1);
+}
+
+.champion-poster-mask {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #0f172a, transparent);
+    opacity: 0.8;
+}
+
+.champion-content {
+    padding: 20px;
+    position: relative;
+}
+
+.champion-content h2 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.champion-position {
+    color: #FFC400;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.champion-tournament {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.champion-btn {
+    background: #FFC400;
+    color: #0f172a;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.champion-btn:hover {
+    background: #FFD700;
+    transform: scale(1.05);
+}
+
+/* Detail Modal */
+.champion-detail {
+    padding: 30px;
+}
+
+.champion-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.position-badge {
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.position-badge.position-1 {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #0f172a;
+}
+
+.position-badge.position-2 {
+    background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+    color: #0f172a;
+}
+
+.position-badge.position-3 {
+    background: linear-gradient(135deg, #CD7F32, #B87333);
+    color: #0f172a;
+}
+
+.year-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.champion-detail-user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #7c3aed, #22d3ee);
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+}
+
+.user-info h3 {
+    font-size: 28px;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.user-username {
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+.champion-detail-tournament {
+    text-align: center;
+}
+
+.champion-detail-tournament img {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+.champion-detail-tournament h4 {
+    font-size: 20px;
+    color: #FFC400;
+}
+
+/* Bottom Sheet (Mobile) */
+.bottom-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.bottom-sheet.active {
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.bottom-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.bottom-sheet.active .bottom-sheet-backdrop {
+    opacity: 1;
+}
+
+.bottom-sheet-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1e293b;
+    border-radius: 30px 30px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.bottom-sheet.active .bottom-sheet-content {
+    transform: translateY(0);
+}
+
+.bottom-sheet-handle {
+    width: 40px;
+    height: 5px;
+    background: #94a3b8;
+    border-radius: 5px;
+    margin: 15px auto;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.modal.active {
+    pointer-events: auto;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active .modal-backdrop {
+    opacity: 1;
+}
+
+.modal-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #1e293b;
+    border-radius: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modal.active .modal-box {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Admin Add Form */
+.add-champion-form {
+    padding: 40px 30px;
+}
+
+.add-champion-form h3 {
+    color: #FFC400;
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: #0f172a;
+    border: 2px solid rgba(255, 196, 0, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #FFC400;
+}
+
+.form-group input[type="file"] {
+    padding: 10px;
+    background: #0f172a;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.form-actions button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-actions button[type="submit"] {
+    background: #FFC400;
+    color: #0f172a;
+}
+
+.form-actions button[type="button"] {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.form-actions button:hover {
+    transform: translateY(-2px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .champions-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .champion-card {
+        max-width: 100%;
+    }
+    
+    .champion-poster {
+        height: 150px;
+    }
+    
+    .champion-content h2 {
+        font-size: 20px;
+    }
+    
+    .champion-year {
+        font-size: 24px;
+    }
+    
+    .champion-detail {
+        padding: 20px;
+    }
+    
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .user-info h3 {
+        font-size: 22px;
+    }
+    
+    .position-badge,
+    .year-badge {
+        font-size: 14px;
+        padding: 5px 15px;
+    }
+    
+    .add-champion-form {
+        padding: 30px 20px;
+    }
+}
+
+/* Admin add button */
+.admin-add-btn {
+    background: linear-gradient(135deg, #FFC400, #FF8C00);
+    color: #0f172a;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.admin-add-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(255, 196, 0, 0.3);
+}
+    </style>
+</head>
+<body>
+    <div class="champions-header">
+        <h2 class="champions-title">UFEL CHAMPIONS</h2>
+        <div class="champions-line"></div>
+        {% if user.is_authenticated and user.is_admin %}
+        <button class="admin-add-btn" onclick="openAddChampionModal()">
+            <span>➕</span> Qo'lda qo'shish
+        </button>
+        {% endif %}
+    </div>
+
+    <div id="champions-container" class="champions-list">
+        <div class="loading">Yuklanmoqda...</div>
+    </div>
+
+    <!-- Modal (Desktop) -->
+    <div class="modal" id="championModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Sheet (Mobile) -->
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="bottom-sheet-backdrop" onclick="closeBottomSheet()"></div>
+        <div class="bottom-sheet-content">
+            <div class="bottom-sheet-handle"></div>
+            <div id="bottom-sheet-content"></div>
+        </div>
+    </div>
+
+    <script>
+
+async function loadChampions() {
+    const container = document.getElementById('champions-container');
+    
+    try {
+        // URL ni to'g'rilang
+        const response = await fetch('/app/champions/data/');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success) throw new Error(data.error);
+        
+        let html = '';
+        
+        // Agar ma'lumotlar bo'lmasa
+        if (!data.years || data.years.length === 0) {
+            html = '<div class="no-data" style="text-align: center; padding: 50px; color: #94a3b8;">Hali chempionlar mavjud emas</div>';
+        } else {
+            data.years.forEach(yearData => {
+                html += `
+                    <div class="champion-year-section">
+                        <h2 class="champion-year">${yearData.year}</h2>
+                        <div class="champions-grid">
+                `;
+                
+                yearData.champions.forEach(champ => {
+                    // JSON.stringify da xatolarni oldini olish
+                    const champJson = JSON.stringify(champ).replace(/'/g, "&apos;").replace(/"/g, '&quot;');
+                    
+                    html += `
+                        <div class="champion-card" onclick='showChampionDetails(${champJson})'>
+                            <div class="champion-poster">
+                                <img src="${champ.tournament_image || '/static/images/default-tournament.jpg'}" alt="tournament" onerror="this.src='/static/images/default-tournament.jpg'">
+                                <div class="champion-poster-mask"></div>
+                            </div>
+                            <div class="champion-content">
+                                <h2>${champ.user.first_name || ''} ${champ.user.last_name || ''}</h2>
+                                <p class="champion-position">${champ.position_display || ''}</p>
+                                <p class="champion-tournament">${champ.tournament_name || 'Noma\'lum turnir'}</p>
+                                <button class="champion-btn" onclick="event.stopPropagation(); showChampionDetails(${champJson})">
+                                    UFEL CHAMPION
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            });
+        }
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Champions load error:', error);
+        container.innerHTML = `
+            <div class="error" style="text-align: center; padding: 50px;">
+                <p style="color: #ef4444;">Xatolik yuz berdi: ${error.message}</p>
+                <button onclick="loadChampions()" style="margin-top: 20px; padding: 10px 20px; background: #22d3ee; border: none; border-radius: 8px; cursor: pointer;">
+                    Qayta urinish
+                </button>
+            </div>
+        `;
+    }
+}
+
+// DOM yuklanganda chaqirish
+document.addEventListener('DOMContentLoaded', function() {
+    // Agar champions sahifasi ochiq bo'lsa yoki umumiy yuklash
+    if (document.getElementById('champions').classList.contains('active')) {
+        loadChampions();
+    }
+});
+// Chempion details (Modal/BottomSheet)
+function showChampionDetails(champ) {
+    const isMobile = window.innerWidth <= 768;
+    const content = `
+        <div class="champion-detail">
+            <div class="champion-detail-header">
+                <span class="position-badge position-${champ.position}">${champ.position_display}</span>
+                <span class="year-badge">${champ.year}</span>
+            </div>
+            
+            <div class="champion-detail-user">
+                <div class="user-avatar">
+                    ${champ.user.avatar ? 
+                        `<img src="${champ.user.avatar}" alt="${champ.user.name}">` : 
+                        `<div class="avatar-placeholder">${champ.user.first_name?.charAt(0) || champ.user.username?.charAt(0)}</div>`
+                    }
+                </div>
+                <div class="user-info">
+                    <h3>${champ.user.first_name} ${champ.user.last_name}</h3>
+                    <p class="user-username">@${champ.user.username}</p>
+                </div>
+            </div>
+            
+            <div class="champion-detail-tournament">
+                <img src="${champ.tournament_image || '/static/images/default-tournament.jpg'}" alt="${champ.tournament_name}">
+                <h4>${champ.tournament_name}</h4>
+            </div>
+        </div>
+    `;
+    
+    if (isMobile) {
+        document.getElementById('bottom-sheet-content').innerHTML = content;
+        document.getElementById('bottomSheet').classList.add('active');
+        document.body.classList.add('modal-open');
+    } else {
+        document.getElementById('modal-content').innerHTML = content;
+        document.getElementById('championModal').classList.add('active');
+        document.body.classList.add('modal-open');
+    }
+}
+
+function closeModal() {
+    document.getElementById('championModal').classList.remove('active');
+    document.body.classList.remove('modal-open');
+}
+
+function closeBottomSheet() {
+    document.getElementById('bottomSheet').classList.remove('active');
+    document.body.classList.remove('modal-open');
+}
+
+// Admin: Qo'lda qo'shish modalini ochish
+function openAddChampionModal() {
+    // AJAX orqali formni yuklash
+    fetch('app/admin/champions/add/')
+        .then(response => response.text())
+        .then(html => {
+            const isMobile = window.innerWidth <= 768;
+            const content = html;
+            
+            if (isMobile) {
+                document.getElementById('bottom-sheet-content').innerHTML = content;
+                document.getElementById('bottomSheet').classList.add('active');
+            } else {
+                document.getElementById('modal-content').innerHTML = content;
+                document.getElementById('championModal').classList.add('active');
+            }
+            document.body.classList.add('modal-open');
+        });
+}
+
+// Form submit (qo'lda qo'shish)
+async function submitManualChampion(form) {
+    const formData = new FormData(form);
+    
+    try {
+        const response = await fetch('app/admin/champions/add/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(data.message);
+            closeModal();
+            closeBottomSheet();
+            loadChampions(); // Listni yangilash
+        } else {
+            alert('Xatolik: ' + data.error);
+        }
+    } catch (error) {
+        alert('Xatolik yuz berdi: ' + error.message);
+    }
+    
+    return false;
+}
+
+// CSRF token olish
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Sahifa yuklanganda
+document.addEventListener('DOMContentLoaded', loadChampions);
+
+// Ekran o'lchami o'zgarganda modalni yopish
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        document.getElementById('bottomSheet').classList.remove('active');
+    }
+});
+    </script>
+</body>
+</html>
