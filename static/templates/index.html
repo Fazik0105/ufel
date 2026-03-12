@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UFEL</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'JavaScripts/tournaments.js' %}"></script>
 </head>
 
 <body class="{% if user.is_authenticated and user.is_admin %}user-admin{% endif %}">
@@ -219,64 +221,97 @@
     </div>
 </section>
 
+<!-- CHAMPIONS PAGE -->
 <section id="champions" class="page">
-    <div class="champions-header">
+    <div class="ratings-header">
         <h2 class="champions-title">UFEL CHAMPIONS</h2>
         <div class="champions-line"></div>
+        <p style="color: #94a3b8; margin-top: 5px; font-size: 14px;">Jami: {{ total_champions }} ta champion</p>
     </div>
 
-    <div class="champions-list" id="champions-list">
-        <!-- Dinamik ravishda to'ldiriladi -->
-        <div class="loading-spinner" style="text-align: center; padding: 40px;">
-            <div class="tournament-loading-spinner"></div>
-            <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+    <div class="champions-list">
+        {% regroup user_champions by champ.user as user_list %}
+        
+        {% for user_data in user_champions %}
+        <!-- Champion Card (User) -->
+        <div class="champion-card" onclick="openChampionModal('{{ user_data.user.id }}')">
+            <div class="champion-poster">
+                {% if user_data.user.avatar %}
+                    <img src="{{ user_data.user.avatar.url }}" alt="{{ user_data.user.username }}">
+                {% else %}
+                    <img src="{% static 'images/default-avatar.jpg' %}" alt="avatar">
+                {% endif %}
+                <div class="champion-poster-mask"></div>
+            </div>
+            <div class="champion-content">
+                <h2>
+                    {% if user_data.user.first_name and user_data.user.last_name %}
+                        {{ user_data.user.first_name }}<br>{{ user_data.user.last_name }}
+                    {% elif user_data.user.first_name %}
+                        {{ user_data.user.first_name }}<br>
+                    {% elif user_data.user.last_name %}
+                        {{ user_data.user.last_name }}<br>
+                    {% elif user_data.user.username %}
+                        {{ user_data.user.username }}<br>
+                    {% endif %}
+                </h2>
+                <p style="margin: 5px; color: #94a3b8; font-size: 14px;">
+                    @{{ user_data.user.username|default:"username" }} • 
+                    Jami: {{ user_data.champions|length }} ta champion
+                </p>
+                <!-- UFEL CHAMPION tugmasi olib tashlandi -->
+            </div>
         </div>
+        {% empty %}
+        <div style="text-align: center; padding: 60px; color: #64748b;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
+            <p style="font-size: 18px;">Hali chempionlar mavjud emas</p>
+        </div>
+        {% endfor %}
     </div>
 </section>
 
-<div class="champion-detail-modal" id="championDetailModal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeChampionModal()">×</button>
-        <div class="modal-body" id="championDetailContent">
+<!-- MODAL -->
+<div class="modal" id="championModal">
+    <div class="modal-backdrop" onclick="closeUserChampionModal()"></div>
+  
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeUserChampionModal()" aria-label="Close">×</button>
+        
+        <div id="modal-content">
+            <!-- Dinamik yuklanadigan content -->
+            <div style="text-align: center; padding: 40px;">
+                <div class="tournament-loading-spinner"></div>
+                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- RATINGS PAGE -->
+
+<!-- CHAMPION DETAIL MODAL -->
+<div class="modal" id="championDetailModal">
+    <div class="modal-backdrop" onclick="closeDetailModal()"></div>
+    
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeDetailModal()" aria-label="Close">×</button>
+        
+        <div class="modal-body" id="championDetailContent">
+            <!-- Dinamik yuklanadigan content -->
+            <div style="text-align: center; padding: 40px;">
+                <div class="tournament-loading-spinner"></div>
+                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RATINGS PAGE - ODDIY USERLAR UCHUN -->
 <section id="ratings" class="page ratings">
   <div class="ratings-header">
     <h2 class="ratings-title">RATINGS</h2>
     <div class="ratings-line"></div>
   </div>
-
-  {% if user.is_authenticated and user.is_admin %}
-  <!-- Admin Control Panel -->
-  <div class="admin-ratings-panel">
-    <div class="admin-panel-header">
-      <div class="admin-panel-title">
-        <h3>Admin boshqaruvi</h3>
-        <p>Reytinglarni tahrirlash va yangilash</p>
-      </div>
-    </div>
-    
-    <form id="ratings-bulk-update-form" method="post" class="admin-bulk-form">
-      {% csrf_token %}
-      <div class="admin-bulk-actions">
-        <button type="submit" class="admin-save-all-btn">
-          <span>💾</span>
-          Barcha o'zgarishlarni saqlash
-        </button>
-        <span class="admin-hint">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
-          Har bir qatorni alohida yoki bir vaqtda saqlashingiz mumkin
-        </span>
-      </div>
-    </form>
-  </div>
-  {% endif %}
 
   <div class="rating-list">
     <div class="rating-panel">
@@ -286,129 +321,94 @@
       <div class="r-nation">NAT</div>
       <div class="r-games">O'YIN</div>
       <div class="r-points">REYTING</div>
-      {% if user.is_authenticated and user.is_admin %}
-      <div class="r-action">SAQLASH</div>
-      {% endif %}
     </div>
 
-    <form id="ratings-form" method="post" action="{% url 'update_ratings' %}">
-      {% csrf_token %}
-      {% for r in ratings %}
-      <div class="rating-row {% if user.is_authenticated and user.is_admin %}admin-row{% endif %}" data-user-id="{{ r.user.id }}" style="margin-bottom: 8px;">
-        <div class="rating-pos">
-          <span class="pos-badge {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
-            {{ forloop.counter }}
-          </span>
-        </div>
-
-        <div class="rating-avatar">
-          <div class="avatar-wrapper">
-            {% if r.user.avatar %}
-              <img src="{{ r.user.avatar.url }}" alt="{{ r.user.username }}" class="avatar-img">
-            {% else %}
-              <div class="avatar-placeholder">
-                <span>
-                  {% if r.user.first_name %}
-                    {{ r.user.first_name|first|upper }}
-                  {% elif r.user.last_name %}
-                    {{ r.user.last_name|first|upper }}
-                  {% elif r.user.username %}
-                    {{ r.user.username|first|upper }}
-                  {% else %}
-                    ?
-                  {% endif %}
-                </span>
-              </div>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="rating-name">
-          <span class="player-name">
-            {% if r.user.first_name and r.user.last_name %}
-              {{ r.user.first_name }} {{ r.user.last_name }}
-            {% elif r.user.first_name %}
-              {{ r.user.first_name }}
-            {% elif r.user.last_name %}
-              {{ r.user.last_name }}
-            {% elif r.user.username %}
-              {{ r.user.username }}
-            {% else %}
-              Foydalanuvchi #{{ r.user.id }}
-            {% endif %}
-          </span>
-          <span class="player-username">
-            {% if r.user.username %}{{ r.user.username }}{% endif %}
-          </span>
-        </div>
-        
-        <div class="rating-nation">
-          <span class="nation-flag">
-            {% if r.user.nation %}
-              {% if r.user.nation == 'UZ' %}🇺🇿
-              {% elif r.user.nation == 'KG' %}🇰🇬
-              {% elif r.user.nation == 'KZ' %}🇰🇿
-              {% elif r.user.nation == 'TJ' %}🇹🇯
-              {% elif r.user.nation == 'AM' %}🇦🇲
-              {% elif r.user.nation == 'AZ' %}🇦🇿
-              {% elif r.user.nation == 'BY' %}🇧🇾
-              {% elif r.user.nation == 'RU' %}🇷🇺
-              {% else %}🌍
-              {% endif %}
-            {% else %}
-              🇺🇿
-            {% endif %}
-          </span>
-        </div>
-        
-        {% if user.is_authenticated and user.is_admin %}
-        <!-- Admin input fields -->
-        <div class="rating-games">
-          <input type="hidden" name="user_ids" value="{{ r.user.id }}" form="ratings-form">
-          <div class="input-wrapper">
-            <input type="number" name="games_played" value="{{ r.games_played }}" min="0" 
-                   class="rating-input games-input" 
-                   placeholder="0"
-                   form="ratings-form">
-          </div>
-        </div>
-        <div class="rating-points">
-          <div class="input-wrapper">
-            <input type="number" name="points" value="{{ r.points }}" min="0" 
-                   class="rating-input points-input" 
-                   placeholder="0"
-                   form="ratings-form">
-          </div>
-        </div>
-        <div class="r-action">
-          <button type="button" class="save-single-btn" data-user-id="{{ r.user.id }}" title="Saqlash">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-              <polyline points="17 21 17 13 7 13 7 21"/>
-              <polyline points="7 3 7 8 15 8"/>
-            </svg>
-          </button>
-        </div>
-        {% else %}
-        <!-- Regular user display -->
-        <div class="rating-games">
-          <span class="stat-value">{{ r.games_played }}</span>
-        </div>
-        <div class="rating-points">
-          <span class="stat-value points-value">{{ r.points }}</span>
-        </div>
-        {% endif %}
+    {% for r in ratings %}
+    <div class="rating-row" data-user-id="{{ r.user.id }}" style="margin-bottom: 8px;">
+      <div class="rating-pos">
+        <span class="pos-badge {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+          {{ forloop.counter }}
+        </span>
       </div>
-      {% endfor %}
-    </form>
+
+      <div class="rating-avatar">
+        <div class="avatar-wrapper">
+          {% if r.user.avatar %}
+            <img src="{{ r.user.avatar.url }}" alt="{{ r.user.username }}" class="avatar-img">
+          {% else %}
+            <div class="avatar-placeholder">
+              <span>
+                {% if r.user.first_name %}
+                  {{ r.user.first_name|first|upper }}
+                {% elif r.user.last_name %}
+                  {{ r.user.last_name|first|upper }}
+                {% elif r.user.username %}
+                  {{ r.user.username|first|upper }}
+                {% else %}
+                  ?
+                {% endif %}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="rating-name">
+        <span class="player-name">
+          {% if r.user.first_name and r.user.last_name %}
+            {{ r.user.first_name }} {{ r.user.last_name }}
+          {% elif r.user.first_name %}
+            {{ r.user.first_name }}
+          {% elif r.user.last_name %}
+            {{ r.user.last_name }}
+          {% elif r.user.username %}
+            {{ r.user.username }}
+          {% else %}
+            Foydalanuvchi #{{ r.user.id }}
+          {% endif %}
+        </span>
+        <span class="player-username">
+          {% if r.user.username %}{{ r.user.username }}{% endif %}
+        </span>
+      </div>
+      
+      <div class="rating-nation">
+        <span class="nation-flag">
+          {% if r.user.nation %}
+            {% if r.user.nation == 'UZ' %}🇺🇿
+            {% elif r.user.nation == 'KG' %}🇰🇬
+            {% elif r.user.nation == 'KZ' %}🇰🇿
+            {% elif r.user.nation == 'TJ' %}🇹🇯
+            {% elif r.user.nation == 'AM' %}🇦🇲
+            {% elif r.user.nation == 'AZ' %}🇦🇿
+            {% elif r.user.nation == 'BY' %}🇧🇾
+            {% elif r.user.nation == 'RU' %}🇷🇺
+            {% else %}🌍
+            {% endif %}
+          {% else %}
+            🇺🇿
+          {% endif %}
+        </span>
+      </div>
+      
+      <div class="rating-games">
+        <span class="stat-value">{{ r.games_played }}</span>
+      </div>
+      <div class="rating-points">
+        <span class="stat-value points-value">{{ r.points }}</span>
+      </div>
+    </div>
+    {% empty %}
+    <div class="rating-row" style="justify-content: center; padding: 30px; color: #64748b;">
+      <p>Hozircha reyting ma'lumotlari mavjud emas</p>
+    </div>
+    {% endfor %}
   </div>
 </section>
 </body>
 
-
 <script>
-
-    // CSRF token olish funksiyasi (global)
+// CSRF token olish funksiyasi (global zarur)
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -424,7 +424,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// IIFE - global namespace ni toza saqlash uchun
+// IIFE - global namespace tozaligi uchun
 (function() {
     'use strict';
     
@@ -452,11 +452,9 @@ function getCookie(name) {
                 const oldestKey = this.getOldestKey();
                 if (oldestKey) this.tournamentData.delete(oldestKey);
             }
-            
             this.tournamentData.set(champId, {
                 html: data.html,
-                search: search,
-                status: status,
+                search, status,
                 timestamp: Date.now(),
                 fullData: data
             });
@@ -465,21 +463,17 @@ function getCookie(name) {
         get(champId, search = '', status = 'all') {
             const cached = this.tournamentData.get(champId);
             if (!cached) return null;
-            
-            if (Date.now() - cached.timestamp > this.maxAge) {
+            if (Date.now() - cached.timestamp > this.maxAge || 
+                cached.search !== search || cached.status !== status) {
                 this.tournamentData.delete(champId);
                 return null;
             }
-            
-            if (cached.search !== search || cached.status !== status) return null;
-            
             return cached;
         },
         
         getOldestKey() {
             let oldestKey = null;
             let oldestTime = Infinity;
-            
             for (const [key, value] of this.tournamentData.entries()) {
                 if (value.timestamp < oldestTime) {
                     oldestTime = value.timestamp;
@@ -489,22 +483,8 @@ function getCookie(name) {
             return oldestKey;
         },
         
-        clear() {
-            this.tournamentData.clear();
-        },
-        
-        invalidate(champId) {
-            this.tournamentData.delete(champId);
-        },
-        
-        getStats() {
-            return {
-                size: this.tournamentData.size,
-                keys: Array.from(this.tournamentData.keys()),
-                maxSize: this.maxSize,
-                maxAge: this.maxAge
-            };
-        }
+        clear() { this.tournamentData.clear(); },
+        invalidate(champId) { this.tournamentData.delete(champId); }
     };
 
     // State management
@@ -514,11 +494,10 @@ function getCookie(name) {
         currentStatus: 'all',
         filterFormHandler: null,
         isLoading: false,
-        initialLoadDone: false,
         lastLoadedChamp: null
     };
 
-    // DOM elementlarini cache qilish
+    // DOM elementlari
     const elements = {
         bookmarksList: document.getElementById('bookmarks-list'),
         tournamentContent: document.getElementById('tournament-content'),
@@ -526,248 +505,131 @@ function getCookie(name) {
         ligaTabs: document.querySelectorAll('.liga-tab'),
         homePage: document.getElementById('home'),
         tournamentsPage: document.getElementById('tournaments'),
+        ratingsPage: document.getElementById('ratings'),
         navLinks: document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]'),
-        homeButtons: document.querySelectorAll('.home-btn[data-page]')
+        homeButtons: document.querySelectorAll('.home-btn[data-page]'),
+        hamburger: document.getElementById('hamburger'),
+        mobileMenu: document.getElementById('mobileMenu')
     };
 
-// ==================== RATINGS FUNCTIONS ====================
-
-function initRatingsPage() {
-    console.log('Initializing ratings page...');
-    
-    // Admin ekanligini tekshirish
-    const isAdmin = document.body.classList.contains('user-admin') || 
-                    document.querySelector('.navbar a[href*="admin"]') !== null;
-    
-    if (!isAdmin) {
-        console.log('User is not admin, skipping ratings initialization');
-        return;
-    }
-    
-    console.log('Admin detected, setting up ratings handlers');
-    
-    // Yakka tartibda saqlash tugmalari
-    setupSingleRatingButtons();
-    
-    // Ommaviy saqlash formi
-    setupBulkRatingForm();
-}
-
-function setupSingleRatingButtons() {
-    // TO'G'RI SELECTOR: .save-single-btn (class nomi to'g'ri)
-    const buttons = document.querySelectorAll('.save-single-btn');
-    console.log(`Found ${buttons.length} single rating buttons`);
-    
-    buttons.forEach(btn => {
-        // Eski event listenerlarni olib tashlash
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
+    // ==================== RATINGS FUNCTIONS ====================
+    function initRatingsPage() {
+        if (!document.body.classList.contains('user-admin')) return;
         
-        newBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const userId = this.dataset.userId;
-            const row = this.closest('.rating-row');
-            
-            if (!row) {
-                showNotification('Rating row topilmadi', 'error');
-                return;
-            }
-            
-            const gamesInput = row.querySelector('input[name="games_played"]');
-            const pointsInput = row.querySelector('input[name="points"]');
-            
-            if (gamesInput && pointsInput) {
-                const games = gamesInput.value;
-                const points = pointsInput.value;
-                console.log(`Saving single rating - User: ${userId}, Games: ${games}, Points: ${points}`);
-                updateSingleRating(userId, games, points);
-            } else {
-                showNotification('Inputlar topilmadi', 'error');
-            }
+        // Yakka tartibda saqlash tugmalari
+        document.querySelectorAll('.save-single-btn').forEach(btn => {
+            btn.removeEventListener('click', handleSingleRatingClick);
+            btn.addEventListener('click', handleSingleRatingClick);
         });
-    });
-}
-
-function setupBulkRatingForm() {
-    const bulkForm = document.getElementById('ratings-bulk-update-form');
-    if (!bulkForm) {
-        console.log('Bulk form not found');
-        return;
+        
+        // Ommaviy saqlash formi
+        const bulkForm = document.getElementById('ratings-bulk-update-form');
+        if (bulkForm) {
+            bulkForm.removeEventListener('submit', handleBulkSubmit);
+            bulkForm.addEventListener('submit', handleBulkSubmit);
+        }
     }
-    
-    console.log('Setting up bulk form handler');
-    
-    // Eski event listenerlarni olib tashlash
-    const newBulkForm = bulkForm.cloneNode(true);
-    bulkForm.parentNode.replaceChild(newBulkForm, bulkForm);
-    
-    newBulkForm.addEventListener('submit', function(e) {
+
+    async function handleSingleRatingClick(e) {
         e.preventDefault();
-        e.stopPropagation();
-        console.log('Bulk form submitted');
-        submitAllRatings();
-    });
-}
-
-async function updateSingleRating(userId, games, points) {
-    try {
-        console.log('Sending rating update:', {userId, games, points});
+        const btn = e.currentTarget;
+        const userId = btn.dataset.userId;
+        const row = btn.closest('.rating-row');
         
-        const formData = new FormData();
-        // MUHIM: Qavslarni olib tashlash kerak! 'user_ids' emas 'user_ids[]'
-        formData.append('user_ids', userId);
-        formData.append('games_played', games);
-        formData.append('points', points);
+        if (!row) return showNotification('Rating row topilmadi', 'error');
         
-        const csrfToken = getCookie('csrftoken');
-        if (csrfToken) {
-            formData.append('csrfmiddlewaretoken', csrfToken);
-        }
+        const games = row.querySelector('input[name="games_played"]')?.value;
+        const points = row.querySelector('input[name="points"]')?.value;
         
-        // Debug: formData tarkibini ko'rish
-        console.log('FormData entries:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
+        if (!games || !points) return showNotification('Qiymatlarni kiriting', 'error');
         
-        // Tugmani "loading" holatiga o'tkazish
-        const button = document.querySelector(`.save-single-btn[data-user-id="${userId}"]`);
-        if (button) {
-            button.classList.add('saving');
-            button.disabled = true;
-        }
+        btn.classList.add('saving');
+        btn.disabled = true;
         
-        const response = await fetch(CONFIG.API_ENDPOINTS.UPDATE_RATINGS, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-        
-        const data = await response.json();
-        console.log('Response:', data);
-        
-        if (data.success) {
-            showNotification(`✅ ${data.message}`, 'success');
+        try {
+            const formData = new FormData();
+            formData.append('user_ids', userId);
+            formData.append('games_played', games);
+            formData.append('points', points);
             
-            // UI ni yangilash
-            updateRatingDisplay(userId, games, points);
-        } else {
-            showNotification('❌ Xatolik: ' + (data.error || 'Noma\'lum xato'), 'error');
-        }
-    } catch (error) {
-        console.error('Error updating rating:', error);
-        showNotification('❌ Xatolik yuz berdi: ' + error.message, 'error');
-    } finally {
-        // Tugmani normal holatga qaytarish
-        const button = document.querySelector(`.save-single-btn[data-user-id="${userId}"]`);
-        if (button) {
-            button.classList.remove('saving');
-            button.disabled = false;
-        }
-    }
-}
-
-// submitAllRatings funksiyasida ham 'user_ids[]' ni 'user_ids' ga o'zgartirish kerak
-async function submitAllRatings() {
-    const form = document.getElementById('ratings-form');
-    if (!form) {
-        showNotification('Form topilmadi', 'error');
-        return;
-    }
-    
-    const formData = new FormData(form);
-    
-    // CSRF token qo'shish (agar yo'q bo'lsa)
-    if (!formData.has('csrfmiddlewaretoken')) {
-        const csrfToken = getCookie('csrftoken');
-        if (csrfToken) {
-            formData.append('csrfmiddlewaretoken', csrfToken);
-        }
-    }
-    
-    // Debug: formData tarkibini ko'rish
-    console.log('Bulk form data:');
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
-    
-    // "Barcha o'zgarishlarni saqlash" tugmasini loading holatiga o'tkazish
-    const saveAllBtn = document.querySelector('.admin-save-all-btn');
-    if (saveAllBtn) {
-        saveAllBtn.classList.add('saving');
-        saveAllBtn.disabled = true;
-    }
-    
-    try {
-        showNotification('⏳ Saqlanmoqda...', 'info');
-        
-        const response = await fetch(CONFIG.API_ENDPOINTS.UPDATE_RATINGS, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+            const csrfToken = getCookie('csrftoken');
+            if (csrfToken) formData.append('csrfmiddlewaretoken', csrfToken);
+            
+            const response = await fetch(CONFIG.API_ENDPOINTS.UPDATE_RATINGS, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showNotification(`✅ ${data.message}`, 'success');
+                // UI ni yangilash
+                const gamesSpan = row.querySelector('.rating-games .stat-value');
+                const pointsSpan = row.querySelector('.rating-points .stat-value');
+                if (gamesSpan) gamesSpan.textContent = games;
+                if (pointsSpan) pointsSpan.textContent = points;
+            } else {
+                showNotification('❌ Xatolik: ' + (data.error || 'Noma\'lum xato'), 'error');
             }
-        });
-        
-        const data = await response.json();
-        console.log('Response:', data);
-        
-        if (data.success) {
-            showNotification(`✅ ${data.message}`, 'success');
-            // Page reload qilmasdan, faqat qiymatlarni yangilash
-            updateAllRatingsDisplay();
-        } else {
-            showNotification('❌ Xatolik: ' + (data.error || 'Noma\'lum xato'), 'error');
-        }
-    } catch (error) {
-        console.error('Error submitting ratings:', error);
-        showNotification('❌ Xatolik yuz berdi: ' + error.message, 'error');
-    } finally {
-        // Tugmani normal holatga qaytarish
-        if (saveAllBtn) {
-            saveAllBtn.classList.remove('saving');
-            saveAllBtn.disabled = false;
+        } catch (error) {
+            showNotification('❌ Xatolik: ' + error.message, 'error');
+        } finally {
+            btn.classList.remove('saving');
+            btn.disabled = false;
         }
     }
-}
-// Yangi funksiya: bitta rating displayini yangilash
-function updateRatingDisplay(userId, games, points) {
-    const row = document.querySelector(`.rating-row[data-user-id="${userId}"]`);
-    if (!row) return;
-    
-    // Admin bo'lmagan view uchun (agar kerak bo'lsa)
-    const gamesSpan = row.querySelector('.rating-games .stat-value');
-    const pointsSpan = row.querySelector('.rating-points .stat-value');
-    
-    // Agar oddiy user view bo'lsa, qiymatlarni yangilash
-    if (gamesSpan) gamesSpan.textContent = games;
-    if (pointsSpan) pointsSpan.textContent = points;
-}
 
-// Yangi funksiya: barcha ratinglarni yangilash (page reloadsiz)
-function updateAllRatingsDisplay() {
-    // Inputlardan olingan qiymatlarni spanlarga ko'chirish (agar mavjud bo'lsa)
-    document.querySelectorAll('.rating-row').forEach(row => {
-        const gamesInput = row.querySelector('input[name="games_played"]');
-        const pointsInput = row.querySelector('input[name="points"]');
-        const gamesSpan = row.querySelector('.rating-games .stat-value');
-        const pointsSpan = row.querySelector('.rating-points .stat-value');
+    async function handleBulkSubmit(e) {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const formData = new FormData(form);
         
-        if (gamesInput && gamesSpan) {
-            gamesSpan.textContent = gamesInput.value;
+        if (!formData.has('csrfmiddlewaretoken')) {
+            const csrfToken = getCookie('csrftoken');
+            if (csrfToken) formData.append('csrfmiddlewaretoken', csrfToken);
         }
-        if (pointsInput && pointsSpan) {
-            pointsSpan.textContent = pointsInput.value;
+        
+        const saveAllBtn = document.querySelector('.admin-save-all-btn');
+        if (saveAllBtn) {
+            saveAllBtn.classList.add('saving');
+            saveAllBtn.disabled = true;
         }
-    });
-}
-    
+        
+        try {
+            showNotification('⏳ Saqlanmoqda...', 'info');
+            const response = await fetch(CONFIG.API_ENDPOINTS.UPDATE_RATINGS, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showNotification(`✅ ${data.message}`, 'success');
+                // Input qiymatlarni stat displayga ko'chirish
+                document.querySelectorAll('.rating-row').forEach(row => {
+                    const gamesInput = row.querySelector('input[name="games_played"]');
+                    const pointsInput = row.querySelector('input[name="points"]');
+                    const gamesSpan = row.querySelector('.rating-games .stat-value');
+                    const pointsSpan = row.querySelector('.rating-points .stat-value');
+                    if (gamesInput && gamesSpan) gamesSpan.textContent = gamesInput.value;
+                    if (pointsInput && pointsSpan) pointsSpan.textContent = pointsInput.value;
+                });
+            } else {
+                showNotification('❌ Xatolik: ' + (data.error || 'Noma\'lum xato'), 'error');
+            }
+        } catch (error) {
+            showNotification('❌ Xatolik: ' + error.message, 'error');
+        } finally {
+            if (saveAllBtn) {
+                saveAllBtn.classList.remove('saving');
+                saveAllBtn.disabled = false;
+            }
+        }
+    }
+
     // ==================== BOOKMARK FUNCTIONS ====================
-    
     async function loadUserBookmarks() {
         if (!elements.bookmarksList) return;
         
@@ -784,13 +646,11 @@ function updateAllRatingsDisplay() {
             
             const data = await response.json();
             updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
-            
         } catch (error) {
             console.error('Error loading bookmarks:', error);
             elements.bookmarksList.innerHTML = `
                 <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
                     <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
-                    <p style="color: #64748b; font-size: 12px; margin-top: 8px;">${error.message}</p>
                     <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
                         Qayta urinish
                     </button>
@@ -800,12 +660,10 @@ function updateAllRatingsDisplay() {
     }
     
     function updateBookmarksList(bookmarks, isAuthenticated = false) {
-        if (!elements.bookmarksList) return;
-        
-        if (!bookmarks || bookmarks.length === 0) {
+        if (!elements.bookmarksList || !bookmarks?.length) {
             elements.bookmarksList.innerHTML = `
                 <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                    <span style="color: #94a3b8;">📌 Hali bookmark qo'shilmagan</span>
+                    <span style="color: #94a3b8;">Top o'yinlar qo'shilmagan</span>
                 </div>
             `;
             return;
@@ -831,32 +689,21 @@ function updateAllRatingsDisplay() {
                      style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
                      onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-                        <!-- Home team avatar -->
                         <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${bm.home_user?.avatar ? 
-                                `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                                `<span>${homeInitial}</span>`}
+                            ${bm.home_user?.avatar ? `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<span>${homeInitial}</span>`}
                         </div>
-                        
                         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
-                                ${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}
-                            </div>
+                            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}</div>
                             <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
                                 <span style="color: #f8fafc; font-size: 13px;">${homeName}</span>
                                 <span style="color: #22d3ee; font-weight: 700;">${bm.score || '0:0'}</span>
                                 <span style="color: #f8fafc; font-size: 13px;">${awayName}</span>
                             </div>
                         </div>
-                        
-                        <!-- Away team avatar -->
                         <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${bm.away_user?.avatar ? 
-                                `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
-                                `<span>${awayInitial}</span>`}
+                            ${bm.away_user?.avatar ? `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<span>${awayInitial}</span>`}
                         </div>
                     </div>
-                    
                     <div style="display: flex; flex-direction: column; align-items: center;">
                         <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: ${isFinished ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${isFinished ? '#10b981' : '#f59e0b'};">
                             ${isFinished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
@@ -870,7 +717,6 @@ function updateAllRatingsDisplay() {
     }
 
     // ==================== TOURNAMENT FUNCTIONS ====================
-    
     function initScrollableTabs() {
         const container = document.querySelector('.tabs-container');
         if (!container) return;
@@ -879,32 +725,15 @@ function updateAllRatingsDisplay() {
         const scrollRightBtn = document.querySelector('.scroll-right');
         
         if (scrollLeftBtn && scrollRightBtn) {
-            scrollLeftBtn.addEventListener('click', () => {
-                container.scrollBy({ left: -200, behavior: 'smooth' });
-            });
-            
-            scrollRightBtn.addEventListener('click', () => {
-                container.scrollBy({ left: 200, behavior: 'smooth' });
-            });
+            scrollLeftBtn.addEventListener('click', () => container.scrollBy({ left: -200, behavior: 'smooth' }));
+            scrollRightBtn.addEventListener('click', () => container.scrollBy({ left: 200, behavior: 'smooth' }));
             
             container.addEventListener('scroll', () => {
                 const maxScroll = container.scrollWidth - container.clientWidth;
-                
-                if (container.scrollLeft <= 10) {
-                    scrollLeftBtn.style.opacity = '0.3';
-                    scrollLeftBtn.style.pointerEvents = 'none';
-                } else {
-                    scrollLeftBtn.style.opacity = '1';
-                    scrollLeftBtn.style.pointerEvents = 'auto';
-                }
-                
-                if (container.scrollLeft >= maxScroll - 10) {
-                    scrollRightBtn.style.opacity = '0.3';
-                    scrollRightBtn.style.pointerEvents = 'none';
-                } else {
-                    scrollRightBtn.style.opacity = '1';
-                    scrollRightBtn.style.pointerEvents = 'auto';
-                }
+                scrollLeftBtn.style.opacity = container.scrollLeft <= 10 ? '0.3' : '1';
+                scrollLeftBtn.style.pointerEvents = container.scrollLeft <= 10 ? 'none' : 'auto';
+                scrollRightBtn.style.opacity = container.scrollLeft >= maxScroll - 10 ? '0.3' : '1';
+                scrollRightBtn.style.pointerEvents = container.scrollLeft >= maxScroll - 10 ? 'none' : 'auto';
             });
         }
         
@@ -914,166 +743,82 @@ function updateAllRatingsDisplay() {
                 container.scrollBy({ left: e.deltaY > 0 ? 100 : -100, behavior: 'smooth' });
             }
         });
+    }
+
+    function addStyles() {
+        if (document.getElementById('tournament-styles')) return;
         
-        document.querySelectorAll('.liga-tab').forEach(tab => {
-            tab.addEventListener('mousemove', function(e) {
-                const rect = this.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                this.style.setProperty('--x', `${x}%`);
-                this.style.setProperty('--y', `${y}%`);
-            });
+        const style = document.createElement('style');
+        style.id = 'tournament-styles';
+        style.textContent = `
+            @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+            @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+            @keyframes spin { to { transform: rotate(360deg); } }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            
+            .tournament-loading-spinner {
+                width: 50px; height: 50px;
+                border: 3px solid rgba(34,211,238,0.1);
+                border-top-color: #22d3ee;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto;
+            }
+            
+            .custom-notification {
+                position: fixed; top: 20px; right: 20px;
+                padding: 12px 20px; border-radius: 8px;
+                color: white; font-weight: 600;
+                z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease;
+            }
+            .custom-notification.success { background: #10b981; }
+            .custom-notification.error { background: #ef4444; }
+            .custom-notification.warning { background: #f59e0b; }
+            .custom-notification.info { background: #22d3ee; }
+            
+            .fade-enter { animation: fadeIn 0.3s ease; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function switchPage(pageId) {
+        // Barcha sahifalardan active classni olib tashlash
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) targetPage.classList.add('active');
+        
+        // Navbar linklarini yangilash
+        document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
+            link.classList.toggle('active', link.dataset.page === pageId);
         });
-    }
-
-    function initStyles() {
-        if (!document.getElementById('tournament-styles')) {
-            const style = document.createElement('style');
-            style.id = 'tournament-styles';
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                .tournament-loading-spinner {
-                    width: 50px;
-                    height: 50px;
-                    border: 3px solid rgba(34,211,238,0.1);
-                    border-top-color: #22d3ee;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                    margin: 0 auto;
-                }
-                .custom-notification {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 12px 20px;
-                    border-radius: 8px;
-                    color: white;
-                    font-weight: 600;
-                    z-index: 9999;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                }
-                .custom-notification.success { background: #10b981; }
-                .custom-notification.error { background: #ef4444; }
-                .custom-notification.warning { background: #f59e0b; }
-                .custom-notification.info { background: #22d3ee; }
-                
-                .fade-enter {
-                    animation: fadeIn 0.3s ease;
-                }
-                
-                .cache-badge {
-                    position: fixed;
-                    bottom: 10px;
-                    left: 10px;
-                    background: rgba(0,0,0,0.7);
-                    color: #22d3ee;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 11px;
-                    z-index: 999;
-                    border: 1px solid #22d3ee33;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    }
-
-function switchPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    const selectedPage = document.getElementById(pageId);
-    if (selectedPage) {
-        selectedPage.classList.add('active');
-    }
-    
-    document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
-        if (link.dataset.page === pageId) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
-
-    // RATINGS sahifasi ochilganda initRatingsPage ni chaqirish
-    if (pageId === 'ratings') {
-        setTimeout(initRatingsPage, 100);
-    }
-    
-    if (pageId === 'tournaments' && state.lastLoadedChamp) {
-        const tab = document.querySelector(`.liga-tab[data-champ-id="${state.lastLoadedChamp}"]`);
-        if (tab) {
-            elements.ligaTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            loadTournamentContent(state.lastLoadedChamp, state.currentSearch, state.currentStatus, true);
-        }
-    }
-
-    // CHAMPIONS sahifasi ochilganda ma'lumotlarni yuklash
-    if (pageId === 'champions') {
-        setTimeout(loadChampions, 100);
-    }
-}
-
-    function handleTabClick(e) {
-        e.preventDefault();
         
-        const champId = e.currentTarget.dataset.champId;
-        if (!champId || state.isLoading) return;
-        
-        elements.ligaTabs.forEach(t => t.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const search = urlParams.get('search') || '';
-        const status = urlParams.get('status') || 'all';
-        
-        loadTournamentContent(champId, search, status);
-    }
-
-    function handlePopState() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get('page');
-        const champId = urlParams.get('champ');
-        const search = urlParams.get('search') || '';
-        const status = urlParams.get('status') || 'all';
-        
-        if (pageParam) {
-            switchPage(pageParam);
-        }
-        
-        if (champId && champId !== state.currentChampId) {
-            const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
+        // Sahifaga xos initializatsiya
+        if (pageId === 'ratings') setTimeout(initRatingsPage, 100);
+        if (pageId === 'champions') setTimeout(loadChampions, 100);
+        if (pageId === 'tournaments' && state.lastLoadedChamp) {
+            const tab = document.querySelector(`.liga-tab[data-champ-id="${state.lastLoadedChamp}"]`);
             if (tab) {
-                tab.click();
-                loadTournamentContent(champId, search, status);
+                elements.ligaTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                loadTournamentContent(state.lastLoadedChamp, state.currentSearch, state.currentStatus, true);
             }
         }
+        
+        // URL ni yangilash
+        const url = new URL(window.location);
+        url.searchParams.set('page', pageId);
+        history.pushState({}, '', url);
     }
 
     async function loadTournamentContent(champId, search = '', status = 'all', skipCache = false) {
-        if (!elements.tournamentContent || !elements.tournamentLoading) return;
-        if (state.isLoading) return;
+        if (!elements.tournamentContent || !elements.tournamentLoading || state.isLoading) return;
         
+        // Cacheni tekshirish
         if (!skipCache) {
             const cached = cache.get(champId, search, status);
             if (cached) {
-                console.log(`⚡ Loading tournament ${champId} from cache`);
                 elements.tournamentContent.innerHTML = cached.html;
                 elements.tournamentContent.classList.add('fade-enter');
                 setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
@@ -1084,7 +829,6 @@ function switchPage(pageId) {
                 state.lastLoadedChamp = champId;
                 
                 setupFilterForm(champId);
-                addCacheBadge(champId);
                 return;
             }
         }
@@ -1104,7 +848,6 @@ function switchPage(pageId) {
                 url.searchParams.append('status', status);
             }
             
-            console.log(`🌐 Loading tournament ${champId} from server`);
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
@@ -1120,17 +863,16 @@ function switchPage(pageId) {
                 
                 setupFilterForm(champId);
                 
+                // URL ni yangilash
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('page', 'tournaments');
                 newUrl.searchParams.set('champ', champId);
                 if (search) newUrl.searchParams.set('search', search);
                 else newUrl.searchParams.delete('search');
-                
                 if (status !== 'all') newUrl.searchParams.set('status', status);
                 else newUrl.searchParams.delete('status');
                 
                 history.pushState({}, '', newUrl);
-                
             } else {
                 throw new Error(data.error || 'Unknown error');
             }
@@ -1142,7 +884,6 @@ function switchPage(pageId) {
                 <div style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
                     <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
                     <p style="color: #ef4444;">Xatolik yuz berdi</p>
-                    <p style="color: #64748b; font-size: 14px; margin-top: 10px;">Qaytadan urinib ko'ring</p>
                     <button onclick="window.location.reload()" style="margin-top: 20px; padding: 10px 30px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                         Qayta yuklash
                     </button>
@@ -1155,31 +896,6 @@ function switchPage(pageId) {
         }
     }
 
-    function addCacheBadge(champId) {
-        const oldBadge = document.querySelector('.cache-badge');
-        if (oldBadge) oldBadge.remove();
-        
-        const badge = document.createElement('div');
-        badge.className = 'cache-badge';
-        badge.innerHTML = `⚡ Cache: ${champId} | ${cache.tournamentData.size}/${cache.maxSize}`;
-        
-        badge.addEventListener('click', () => {
-            const stats = cache.getStats();
-            showNotification(`Cache: ${stats.size}/${stats.maxSize} | Keys: ${stats.keys.join(', ')}`, 'info');
-        });
-        
-        document.body.appendChild(badge);
-        
-        setTimeout(() => {
-            if (badge.parentNode) badge.remove();
-        }, 3000);
-    }
-
-    function showCacheStats() {
-        const stats = cache.getStats();
-        console.log('📊 Cache Stats:', stats);
-    }
-
     function setupFilterForm(champId) {
         const filterForm = document.querySelector('#tournament-content form');
         if (!filterForm) return;
@@ -1190,15 +906,8 @@ function switchPage(pageId) {
         
         state.filterFormHandler = function(e) {
             e.preventDefault();
-            
-            const searchInput = this.querySelector('input[name="search"]');
-            const statusSelect = this.querySelector('select[name="status"]');
-            
-            if (!searchInput || !statusSelect) return;
-            
-            const search = searchInput.value.trim();
-            const status = statusSelect.value;
-            
+            const search = this.querySelector('input[name="search"]')?.value.trim() || '';
+            const status = this.querySelector('select[name="status"]')?.value || 'all';
             loadTournamentContent(champId, search, status, false);
         };
         
@@ -1220,7 +929,6 @@ function switchPage(pageId) {
         const notification = document.createElement('div');
         notification.className = `custom-notification ${type}`;
         notification.textContent = message;
-        notification.style.animation = 'slideIn 0.3s ease';
         
         document.body.appendChild(notification);
         
@@ -1230,487 +938,372 @@ function switchPage(pageId) {
         }, CONFIG.NOTIFICATION_DURATION);
     }
 
-    // ==================== INITIALIZATION ====================
-    
-function init() {
-    console.log('Initializing application...');
-    
-    initStyles();
-    initScrollableTabs();
-    
-    // Navigatsiya linklariga event listener qo'shish
-    elements.navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const pageId = link.dataset.page;
-            if (pageId) switchPage(pageId);
-        });
-    });
-    
-    // Home page buttons
-    elements.homeButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const pageId = btn.dataset.page;
-            if (pageId) switchPage(pageId);
-        });
-    });
-    
-    // Bookmarklarni yuklash
-    if (elements.bookmarksList) {
-        loadUserBookmarks();
-    }
-    
-    // Tournament tablar uchun event listener
-    if (elements.ligaTabs.length) {
-        elements.ligaTabs.forEach(tab => {
-            tab.addEventListener('click', handleTabClick);
-        });
-    }
-    
-    // Agar ratings sahifasi active bo'lsa, initRatingsPage ni chaqirish
-    if (document.getElementById('ratings').classList.contains('active')) {
-        setTimeout(initRatingsPage, 200);
-    }
-    
-    // URL parametrini tekshirish
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageParam = urlParams.get('page');
-    const champId = urlParams.get('champ');
-    const searchParam = urlParams.get('search') || '';
-    const statusParam = urlParams.get('status') || 'all';
-    
-    // MUHIM: BARCHA page'lardan active classni olib tashlash
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    // Agar pageParam mavjud bo'lsa, o'sha sahifani active qilish
-    if (pageParam) {
-        const targetPage = document.getElementById(pageParam);
-        if (targetPage) {
-            targetPage.classList.add('active');
-            
-            // Navbar linklarini yangilash
-            document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
-                link.classList.remove('active');
-                if (link.dataset.page === pageParam) {
-                    link.classList.add('active');
+    // ==================== CHAMPIONS MODAL FUNCTIONS ====================
+    function openChampionModal(userId) {
+        const modal = document.getElementById('championModal');
+        const modalContent = document.getElementById('modal-content');
+        
+        modal.dataset.currentUserId = userId;
+        
+        // Detail modalni yopish
+        const detailModal = document.getElementById('championDetailModal');
+        if (detailModal?.classList.contains('active')) {
+            detailModal.classList.remove('active');
+        }
+        
+        modalContent.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div class="tournament-loading-spinner"></div>
+                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+            </div>
+        `;
+        
+        modal.classList.add('active');
+        document.body.classList.add('modal-open');
+        
+        fetch(`/app/api/user-champions/${userId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderChampionModal(data);
+                } else {
+                    throw new Error(data.error || 'Noma\'lum xato');
                 }
+            })
+            .catch(error => {
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        <p>Xatolik yuz berdi</p>
+                        <p style="font-size: 14px;">${error.message}</p>
+                        <button onclick="closeUserChampionModal()" style="margin-top: 20px; padding: 8px 20px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer;">Yopish</button>
+                    </div>
+                `;
             });
-        } else {
-            // Agar pageParam noto'g'ri bo'lsa, home ga o'tish
-            document.getElementById('home').classList.add('active');
-        }
-    } else {
-        // Agar pageParam yo'q bo'lsa, home sahifasini active qilish
-        document.getElementById('home').classList.add('active');
-        
-        // Navbar linklaridan active classni olib tashlash va home ga qo'shish
-        document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
-            link.classList.remove('active');
-            if (link.dataset.page === 'home') {
-                link.classList.add('active');
-            }
-        });
     }
-    
-    // Tournament ma'lumotlarini yuklash (backgroundda, sahifaga o'tmasdan)
-    if (champId) {
-        setTimeout(() => {
-            console.log(`🔄 Preloading tournament ${champId} data in background...`);
-            
-            // Cacheni tekshirish
-            const cached = cache.get(champId, searchParam, statusParam);
-            if (!cached) {
-                // Backgroundda yuklash
-                const url = new URL(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`, window.location.origin);
-                if (searchParam || statusParam !== 'all') {
-                    url.searchParams.append('search', searchParam);
-                    url.searchParams.append('status', statusParam);
-                }
-                
-                fetch(url)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            cache.set(champId, data, searchParam, statusParam);
-                            console.log(`✅ Tournament ${champId} preloaded successfully`);
+
+    function closeUserChampionModal() {
+        const modal = document.getElementById('championModal');
+        modal.classList.remove('active');
+        
+        const detailModal = document.getElementById('championDetailModal');
+        if (!detailModal?.classList.contains('active')) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    function renderChampionModal(data) {
+        const modalContent = document.getElementById('modal-content');
+        const user = data.user;
+        const championsByYear = data.champions_by_year;
+        const isMobile = window.innerWidth <= 768;
+        
+        let html = '';
+        
+        if (isMobile) {
+            // MOBILE VERSION
+            html = `
+                <div class="user-info-mobile" style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid #FFC400;">
+                        ${user.avatar ? 
+                            `<img src="${user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                            `<div style="width:100%; height:100%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">${user.first_name?.charAt(0).toUpperCase() || 'U'}</div>`
                         }
-                    })
-                    .catch(err => console.log('Preload error:', err));
-            } else {
-                console.log(`⚡ Tournament ${champId} already in cache`);
-            }
-        }, 200);
-    }
-    
-    window.addEventListener('popstate', handlePopState);
-    
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        showCacheStats();
-    }
-}
-    // Cache API ni global qilish (debugging uchun)
-    window.tournamentCache = cache;
-
-    // Global funksiyalarni expose qilish
-    window.loadUserBookmarks = loadUserBookmarks;
-    window.showNotification = showNotification;
-    window.switchPage = switchPage;
-    window.clearTournamentCache = () => {
-        cache.clear();
-        showNotification('Cache tozalandi', 'success');
-    };
-
-    // Initialize
-    init();
-})();
-
-function adjustForMobile() {
-    if (window.innerWidth <= 768) {
-        document.querySelectorAll('.player-name').forEach(el => {
-            const text = el.textContent;
-        });
-        
-        document.querySelectorAll('.extra-col').forEach(el => {
-            el.style.display = 'none';
-        });
-    }
-}
-
-window.addEventListener('resize', adjustForMobile);
-adjustForMobile();
-
-// Sahifani almashtirish funksiyasi
-function showPage(pageId) {
-    // Barcha sahifalardan 'active' klassini olib tashlash
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    // Tanlangan sahifani ko'rsatish
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) {
-        targetPage.classList.add('active');
-    }
-
-    // Navbatdagi menyu linklarini 'active' qilish
-    document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
-        if (link.getAttribute('data-page') === pageId) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. Doim Home sahifasidan boshlash
-    showPage('home');
-
-    // 2. Oxirgi turnir ma'lumotlarini fonda yuklab qo'yish
-    const activeLigaTab = document.querySelector('.liga-tab.active');
-    if (activeLigaTab) {
-        const champId = activeLigaTab.dataset.champId;
-        // Bu funksiya faqat ma'lumotni yuklaydi (fetch), sahifani o'zgartirmaydi
-        loadTournamentDataInBackground(champId); 
-    }
-
-    // 3. Navigatsiya tugmalariga event listenerlar
-    setupNavigation();
-});
-
-// Fonda yuklash funksiyasi (Tournaments sahifasiga o'tmaydi)
-async function loadTournamentDataInBackground(champId) {
-    if (!champId) return;
-    
-    try {
-        // Tournament content containerini topish
-        const container = document.getElementById('tournament-content');
-        
-        // Agar keshda bo'lsa, yuklab o'tirmaymiz
-        if (cache.get(champId)) {
-            container.innerHTML = cache.get(champId).html;
-            return;
-        }
-
-        const response = await fetch(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        const data = await response.json();
-        
-        if (data.html) {
-            container.innerHTML = data.html;
-            cache.set(champId, data); // Keshga saqlash
-        }
-    } catch (error) {
-        console.error("Turnirni yuklashda xatolik:", error);
-    }
-}
-function setupNavigation() {
-    // Navbar va Mobile menyu linklari uchun
-    document.querySelectorAll('[data-page]').forEach(element => {
-        element.addEventListener('click', function(e) {
-            const pageId = this.getAttribute('data-page');
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; color: white; font-size: 18px;">${user.full_name}</h3>
+                        <p style="margin: 3px 0 0; color: #94a3b8; font-size: 12px;">@${user.username || 'username'} • ${Object.values(championsByYear).flat().length} ta champion</p>
+                    </div>
+                </div>
+                <div class="champions-list-mobile">
+            `;
             
-            // Agar link bo'lsa (href="#"), sahifa sakrab ketmasligi uchun
-            if (this.tagName === 'A') {
-                e.preventDefault();
-            }
-
-            // Sahifani almashtirish
-            showPage(pageId);
-
-            // Agar Tournaments sahifasiga o'tayotgan bo'lsa va hali yuklanmagan bo'lsa
-            if (pageId === 'tournaments') {
-                const activeTab = document.querySelector('.liga-tab.active');
-                if (activeTab && !document.getElementById('tournament-content').innerHTML.trim()) {
-                    loadTournamentDataInBackground(activeTab.dataset.champId);
-                }
-            }
-        });
-    });
-}
-
-// Asosiy faylning oxiriga (index.html yoki base template) qo'shing
-document.addEventListener('DOMContentLoaded', function() {
-    // Tournament filter formni to'g'ri ishlashi uchun
-    const filterForm = document.getElementById('tournament-filter-form');
-    if (filterForm) {
-        filterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const search = this.querySelector('input[name="search"]').value;
-            const status = this.querySelector('select[name="status"]').value;
-            
-            // URL ni yangilash
-            const url = new URL(window.location);
-            url.searchParams.set('search', search);
-            url.searchParams.set('status', status);
-            
-            // Sahifani qayta yuklash
-            window.location.href = url.toString();
-        });
-    }
-    
-    // Reset linkini to'g'ri ishlashi uchun
-    const resetLink = document.querySelector('.filter-reset');
-    if (resetLink) {
-        resetLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = window.location.pathname; // Filterlarni tozalash
-        });
-    }
-});
-
-// Eng sodda va ishonchli usul
-document.addEventListener('click', function(e) {
-    // Mobile menu linklari uchun
-    if (e.target.matches('.mobile-menu a[data-page]')) {
-        e.preventDefault();
-        
-        const link = e.target.closest('a');
-        const pageId = link.getAttribute('data-page');
-        
-        if (pageId) {
-            // Mobile menyuni yopish
-            document.getElementById('mobileMenu').classList.remove('active');
-            document.getElementById('hamburger').classList.remove('active');
-            
-            // Sahifani almashtirish
-            showPage(pageId);
-        }
-    }
-    
-    // Hamburger menu uchun
-    if (e.target.closest('#hamburger')) {
-        e.preventDefault();
-        document.getElementById('hamburger').classList.toggle('active');
-        document.getElementById('mobileMenu').classList.toggle('active');
-    }
-});
-
-// ==================== CHAMPIONS FUNCTIONS ====================
-window.loadChampions = function() {
-    console.log('Loading champions...');
-    const container = document.getElementById('champions-list');
-    if (!container) {
-        console.error('Champions container not found');
-        return;
-    }
-    
-    // Loading indicator
-    container.innerHTML = `
-        <div class="loading-spinner" style="text-align: center; padding: 40px;">
-            <div class="tournament-loading-spinner"></div>
-            <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
-        </div>
-    `;
-    
-    // Fetch champions data
-    fetch('/app/champions/data/')
-        .then(response => {
-            console.log('Response status:', response.status);
-            if (!response.ok) {
-                return response.text().then(text => {
-                    console.error('Error response:', text);
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            const sortedYears = Object.keys(championsByYear).sort((a, b) => b - a);
+            for (const year of sortedYears) {
+                championsByYear[year].forEach(champ => {
+                    const positionClass = champ.position === 1 ? 'gold' : champ.position === 2 ? 'silver' : 'bronze';
+                    html += `
+                        <div class="champion-item-mobile" onclick="showChampionDetail(${champ.id})" 
+                             style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 8px; cursor: pointer;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center;">
+                                    ${champ.tournament_image ? `<img src="${champ.tournament_image}" style="width:100%; height:100%; object-fit:cover;">` : '🏆'}
+                                </div>
+                                <div>
+                                    <div style="color: white; font-size: 14px; font-weight: 500;">${champ.tournament_name}</div>
+                                    <div style="color: #94a3b8; font-size: 11px;">${champ.formatted_date || year}</div>
+                                </div>
+                            </div>
+                            <div style="background: ${champ.position === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : champ.position === 2 ? 'linear-gradient(135deg, #C0C0C0, #A0A0A0)' : 'linear-gradient(135deg, #CD7F32, #B87333)'}; color: #0f172a; padding: 3px 8px; border-radius: 50px; font-size: 11px; font-weight: 600;">
+                                ${champ.position === 1 ? '🥇' : champ.position === 2 ? '🥈' : '🥉'} ${champ.position_display}
+                            </div>
+                        </div>
+                    `;
                 });
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Champions data received:', data);
+            html += `</div>`;
+        } else {
+            // DESKTOP VERSION
+            html = `
+                <div style="padding: 20px 0;">
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 25px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #FFC400; margin-bottom: 10px;">
+                            ${user.avatar ? 
+                                `<img src="${user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : 
+                                `<div style="width:100%; height:100%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold;">${user.first_name?.charAt(0).toUpperCase() || 'U'}</div>`
+                            }
+                        </div>
+                        <h3 style="margin: 0; color: white; font-size: 22px;">${user.full_name}</h3>
+                        <p style="margin: 5px 0 0; color: #94a3b8;">@${user.username || 'username'} • ${Object.values(championsByYear).flat().length} ta champion</p>
+                    </div>
+            `;
             
-            if (data.success) {
-                if (data.years && data.years.length > 0) {
-                    renderChampions(data.years);
-                } else {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
-                            <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
-                            <p style="color: #94a3b8; font-size: 18px;">Hali chempionlar mavjud emas</p>
-                            <p style="color: #64748b; font-size: 14px; margin-top: 10px;">Bazada ${data.debug?.total_champions || 0} ta champion bor</p>
+            const sortedYears = Object.keys(championsByYear).sort((a, b) => b - a);
+            for (const year of sortedYears) {
+                html += `<h2 style="margin: 20px 0 15px 20px; color: #FFC400; font-size: 20px;">${year}</h2>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; padding: 0 15px;">`;
+                
+                championsByYear[year].forEach(champ => {
+                    html += `
+                        <div onclick="showChampionDetail(${champ.id})" style="cursor: pointer; text-align: center; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px 5px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="width: 70px; height: 70px; margin: 0 auto; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,196,0,0.3); background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center;">
+                                ${champ.tournament_image ? `<img src="${champ.tournament_image}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size: 35px;">🏆</span>'}
+                            </div>
+                            <h3 style="color: white; font-size: 13px; margin: 8px 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${champ.tournament_name}">${champ.tournament_name}</h3>
+                            <span style="color: #FFC400; font-size: 11px; font-weight: 600;">${champ.position === 1 ? '🥇' : champ.position === 2 ? '🥈' : '🥉'} ${champ.position_display}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+        }
+        
+        modalContent.innerHTML = html;
+    }
+
+    function showChampionDetail(championId) {
+        closeUserChampionModal();
+        
+        const modal = document.getElementById('championDetailModal');
+        const modalContent = document.getElementById('championDetailContent');
+        
+        modalContent.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div class="tournament-loading-spinner"></div>
+                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+            </div>
+        `;
+        
+        modal.classList.add('active');
+        document.body.classList.add('modal-open');
+        
+        fetch(`/app/champions/${championId}/data/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const champ = data.champion;
+                    modalContent.innerHTML = `
+                        <div style="padding: 25px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                                <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #FFC400; margin-bottom: 10px;">
+                                    <img src="${champ.user.avatar || '/static/images/default-avatar.jpg'}" style="width:100%; height:100%; object-fit:cover;">
+                                </div>
+                                <h3 style="color: white; margin: 0; font-size: 22px;">${champ.user.full_name}</h3>
+                                <p style="color: #94a3b8; margin: 3px 0 0;">@${champ.user.username || 'username'}</p>
+                            </div>
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div style="width: 150px; height: 150px; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 2px solid rgba(255,196,0,0.3); background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center;">
+                                    ${champ.tournament_image ? `<img src="${champ.tournament_image}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size: 70px;">🏆</span>'}
+                                </div>
+                            </div>
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <h4 style="color: #FFC400; margin: 0 0 10px;">${champ.tournament_name}</h4>
+                                <div style="display: flex; justify-content: center; gap: 10px;">
+                                    <span style="background: ${champ.position === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : champ.position === 2 ? 'linear-gradient(135deg, #C0C0C0, #A0A0A0)' : 'linear-gradient(135deg, #CD7F32, #B87333)'}; color: #0f172a; padding: 5px 15px; border-radius: 50px; font-weight: 700; font-size: 14px;">
+                                        ${champ.position === 1 ? '🥇' : champ.position === 2 ? '🥈' : '🥉'} ${champ.position_display}
+                                    </span>
+                                    <span style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 50px; color: white;">${champ.formatted_date || new Date().getFullYear()}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: center;">
+                                <button onclick="closeDetailModal()" style="padding: 12px 50px; background: #FFC400; color: #0f172a; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; max-width: 200px;">Yopish</button>
+                            </div>
                         </div>
                     `;
                 }
-            } else {
-                throw new Error(data.error || 'Unknown error');
-            }
-        })
-        .catch(error => {
-            console.error('Error loading champions:', error);
-            container.innerHTML = `
-                <div class="error" style="text-align: center; padding: 50px;">
-                    <p style="color: #ef4444; font-size: 48px; margin-bottom: 20px;">❌</p>
-                    <p style="color: #ef4444; font-size: 18px;">Xatolik yuz berdi</p>
-                    <p style="color: #94a3b8; margin-top: 10px;">${error.message}</p>
-                    <button onclick="loadChampions()" style="margin-top: 20px; padding: 10px 30px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        Qayta urinish
-                    </button>
-                </div>
-            `;
-        });
-};
-
-function renderChampions(years) {
-    console.log('Rendering champions with years:', years);
-    const container = document.getElementById('champions-list');
-    if (!container) return;
-    
-    let html = '';
-    
-    years.forEach(yearData => {
-        html += `
-            <div class="champion-year-section" style="margin-bottom: 50px;">
-                <h2 class="champion-year" style="color: #FFC400; font-size: 32px; margin-bottom: 25px; border-left: 4px solid #FFC400; padding-left: 15px;">
-                    ${yearData.year} YIL CHEMPIONLARI
-                </h2>
-                <div class="champions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-        `;
-        
-        yearData.champions.forEach(champ => {
-            const fullName = [champ.user.first_name, champ.user.last_name].filter(Boolean).join(' ') || champ.user.username || 'Noma\'lum';
-            const avatarUrl = champ.user.avatar || '/static/images/default-avatar.jpg';
-            const tournamentImage = champ.tournament_image || '/static/images/default-tournament.jpg';
-            
-            // Xavfsiz JSON string
-            const champJson = JSON.stringify(champ).replace(/'/g, "&apos;").replace(/"/g, '&quot;');
-            
-            html += `
-                <div class="champion-card" onclick='showChampionDetail(${champJson})' 
-                     style="background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 16px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,196,0,0.1); transition: all 0.3s ease;">
-                    
-                    <!-- Tournament Image -->
-                    <div style="height: 150px; overflow: hidden; position: relative;">
-                        <img src="${tournamentImage}" alt="tournament" style="width: 100%; height: 100%; object-fit: cover;" 
-                             onerror="this.src='/static/images/default-tournament.jpg'">
-                        <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 20px; color: #FFC400; font-weight: bold;">
-                            ${champ.position_display || champ.position + '-o\'rin'}
-                        </div>
+            })
+            .catch(error => {
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        <p>Xatolik yuz berdi</p>
+                        <p style="font-size: 14px;">${error.message}</p>
+                        <button onclick="closeDetailModal()" style="margin-top: 20px; padding: 8px 20px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer;">Yopish</button>
                     </div>
-                    
-                    <!-- Content -->
-                    <div style="padding: 15px; display: flex; gap: 15px;">
-                        <!-- Avatar -->
-                        <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid #FFC400;">
-                            <img src="${avatarUrl}" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;" 
-                                 onerror="this.src='/static/images/default-avatar.jpg'">
-                        </div>
-                        
-                        <!-- Info -->
-                        <div style="flex: 1;">
-                            <h3 style="color: white; margin: 0 0 5px 0; font-size: 18px;">${fullName}</h3>
-                            <p style="color: #94a3b8; margin: 0 0 5px 0; font-size: 14px;">🏆 ${champ.tournament_name || 'Noma\'lum turnir'}</p>
-                            <p style="color: #FFC400; margin: 0; font-size: 14px;">⭐ ${champ.position_display || champ.position + '-o\'rin'}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += `</div></div>`;
-    });
-    
-    container.innerHTML = html;
-}
-
-// Champion detail modalini ochish
-window.showChampionDetail = function(champ) {
-    console.log('Showing champion detail:', champ);
-    
-    const modalContent = document.getElementById('championDetailContent');
-    const modal = document.getElementById('championDetailModal');
-    
-    if (!modalContent || !modal) {
-        console.error('Modal elements not found');
-        return;
+                `;
+            });
     }
-    
-    const fullName = [champ.user.first_name, champ.user.last_name].filter(Boolean).join(' ') || champ.user.username || 'Noma\'lum';
-    const avatarUrl = champ.user.avatar || '/static/images/default-avatar.jpg';
-    const tournamentImage = champ.tournament_image || '/static/images/default-tournament.jpg';
-    
-    modalContent.innerHTML = `
-        <div style="padding: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <span style="background: ${champ.position === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : champ.position === 2 ? 'linear-gradient(135deg, #C0C0C0, #A0A0A0)' : 'linear-gradient(135deg, #CD7F32, #B87333)'}; color: #0f172a; padding: 8px 20px; border-radius: 50px; font-weight: 700;">
-                    ${champ.position_display || champ.position + '-o\'rin'}
-                </span>
-                <span style="background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 50px; color: white;">
-                    ${champ.year}
-                </span>
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
-                <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee);">
-                    <img src="${avatarUrl}" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;" 
-                         onerror="this.src='/static/images/default-avatar.jpg'">
-                </div>
-                <div>
-                    <h3 style="color: white; margin: 0 0 5px 0; font-size: 24px;">${fullName}</h3>
-                    <p style="color: #94a3b8; margin: 0;">@${champ.user.username || 'username'}</p>
-                </div>
-            </div>
-            
-            <div style="text-align: center;">
-                <img src="${tournamentImage}" alt="tournament" style="width: 100%; max-width: 300px; height: 200px; object-fit: cover; border-radius: 16px; margin-bottom: 20px;" 
-                     onerror="this.src='/static/images/default-tournament.jpg'">
-                <h4 style="color: #FFC400; margin: 0;">${champ.tournament_name || 'Noma\'lum turnir'}</h4>
-            </div>
-        </div>
-    `;
-    
-    modal.classList.add('active');
-    document.body.classList.add('modal-open');
-};
 
-// Modalni yopish
-window.closeChampionModal = function() {
-    const modal = document.getElementById('championDetailModal');
-    modal.classList.remove('active');
-    document.body.classList.remove('modal-open');
-};
+    function closeDetailModal() {
+        const modal = document.getElementById('championDetailModal');
+        modal.classList.remove('active');
+        
+        const userModal = document.getElementById('championModal');
+        if (!userModal?.classList.contains('active')) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    // ==================== MOBILE MENU ====================
+    function initMobileMenu() {
+        if (!elements.hamburger || !elements.mobileMenu) return;
+        
+        elements.hamburger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            elements.mobileMenu.classList.toggle('active');
+            elements.hamburger.classList.toggle('active');
+        });
+        
+        // Mobile menu linklari bosilganda menyuni yopish
+        elements.mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                elements.mobileMenu.classList.remove('active');
+                elements.hamburger.classList.remove('active');
+            });
+        });
+        
+        // Tashqariga bosilganda yopish
+        document.addEventListener('click', (e) => {
+            if (elements.mobileMenu?.classList.contains('active') &&
+                !elements.hamburger.contains(e.target) && 
+                !elements.mobileMenu.contains(e.target)) {
+                elements.mobileMenu.classList.remove('active');
+                elements.hamburger.classList.remove('active');
+            }
+        });
+    }
+
+    // ==================== INITIALIZATION ====================
+    function init() {
+        addStyles();
+        initScrollableTabs();
+        initMobileMenu();
+        
+        // Navigatsiya linklari
+        elements.navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.dataset.page;
+                if (pageId) switchPage(pageId);
+            });
+        });
+        
+        // Home page buttons
+        elements.homeButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = btn.dataset.page;
+                if (pageId) switchPage(pageId);
+            });
+        });
+        
+        // Tournament tabs
+        elements.ligaTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                const champId = tab.dataset.champId;
+                if (!champId || state.isLoading) return;
+                
+                elements.ligaTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                loadTournamentContent(champId, urlParams.get('search') || '', urlParams.get('status') || 'all');
+            });
+        });
+        
+        // Load initial data
+        if (elements.bookmarksList) loadUserBookmarks();
+        
+        // URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageParam = urlParams.get('page');
+        const champId = urlParams.get('champ');
+        
+        // Sahifani aktivlashtirish
+        if (pageParam && document.getElementById(pageParam)) {
+            switchPage(pageParam);
+        } else {
+            switchPage('home');
+        }
+        
+        // Tournament ma'lumotlarini oldindan yuklash
+        if (champId) {
+            setTimeout(() => {
+                if (!cache.get(champId)) {
+                    fetch(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) cache.set(champId, data);
+                        })
+                        .catch(() => {});
+                }
+            }, 500);
+        }
+        
+        // Event listeners
+        window.addEventListener('popstate', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = urlParams.get('page');
+            const champId = urlParams.get('champ');
+            
+            if (pageParam) switchPage(pageParam);
+            if (champId) {
+                const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
+                if (tab) {
+                    tab.click();
+                    loadTournamentContent(champId, urlParams.get('search') || '', urlParams.get('status') || 'all');
+                }
+            }
+        });
+        
+        // Resize event
+        window.addEventListener('resize', () => {
+            const modal = document.getElementById('championModal');
+            if (modal?.classList.contains('active') && modal.dataset.currentUserId) {
+                fetch(`/app/api/user-champions/${modal.dataset.currentUserId}/`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) renderChampionModal(data);
+                    });
+            }
+        });
+        
+        // ESC tugmasi
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('championDetailModal')?.classList.contains('active')) {
+                    closeDetailModal();
+                } else if (document.getElementById('championModal')?.classList.contains('active')) {
+                    closeUserChampionModal();
+                }
+            }
+        });
+    }
+
+    // Global funksiyalar (keraklari)
+    window.loadUserBookmarks = loadUserBookmarks;
+    window.showNotification = showNotification;
+    window.switchPage = switchPage;
+    window.openChampionModal = openChampionModal;
+    window.closeUserChampionModal = closeUserChampionModal;
+    window.showChampionDetail = showChampionDetail;
+    window.closeDetailModal = closeDetailModal;
+    window.clearTournamentCache = () => { cache.clear(); showNotification('Cache tozalandi', 'success'); };
+
+    // Start
+    init();
+})();
 </script>
+
 </html>

@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('championships/', views.championship_list, name='championship_list'),
@@ -21,7 +20,6 @@ urlpatterns = [
 
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/championship/<int:pk>/settings/', views.admin_championship_detail, name='admin_championship_detail'),
-    # path('match/<int:match_id>/update/', views.update_match_score, name='update_match_score'),
     path('admin/championship/<int:pk>/bulk-add/', views.bulk_add_participants, name='bulk_add_participants'),
     path('admin/championship/<int:pk>/generate/', views.generate_matches, name='generate_matches'),
     path('get-championship-data/<int:pk>/', views.get_championship_data, name='get_championship_data'),
@@ -34,9 +32,19 @@ urlpatterns = [
     path('tournament/<int:pk>/', views.tournament_public_view, name='tournament_public_view'),
     path('tournament-detail/<int:pk>/partial/', views.tournament_detail_partial, name='tournament_detail_partial'),
     path('update-ratings/', views.update_ratings, name='update_ratings'),
-    
-    path('champions/data/', views.champions_page_data, name='champions_data'),
-    path('champions/', views.champions_page, name='champions_page'),
-    path('admin/champions/add/', views.add_manual_champion, name='add_manual_champion'),
     path('admin/championship/<int:pk>/finish/', views.finish_championship, name='finish_championship'),
+    
+    # CHAMPIONS HALL URLS - FAQAT SHULAR
+    path('champions/', views.champions_page, name='champions_page'),
+    path('champions/data/', views.champions_page_data, name='champions_data'),
+    path('admin/champions/add/', views.add_champion_hall, name='add_champion_hall'),
+    path('admin/champions/<int:pk>/edit/', views.edit_champion_hall, name='champion_hall_edit'),
+    path('admin/champions/<int:pk>/delete/', views.champion_hall_delete, name='champion_hall_delete'),
+    path('admin/users/<int:user_id>/champions/', views.user_champions, name='user_champions'),
+    path('admin/users/<int:user_id>/champions/add/', views.add_champion_to_user, name='add_champion_to_user'),
+    path('champions/<int:pk>/data/', views.champion_detail_data, name='champion_detail_data'),
+    path('admin/ratings/delete/<int:user_id>/', views.delete_rating, name='delete_rating'),
+    path('admin/ratings/delete/<int:user_id>/ajax/', views.delete_rating_ajax, name='delete_rating_ajax'),
+    path('api/user-champions/<int:user_id>/', views.user_champions_api, name='user_champions_api'),
+    path('champions/<int:pk>/data/', views.champion_detail_data, name='champion_detail_data'),
 ]

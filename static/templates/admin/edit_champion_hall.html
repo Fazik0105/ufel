@@ -1,0 +1,477 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Championni tahrirlash | Admin Panel</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e, #000);
+            color: #fff;
+        }
+
+        header {
+            padding: 18px 40px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header a {
+            color: #22d3ee;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 40px rgba(124, 58, 237, 0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 24px;
+            color: #22d3ee;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #FFC400;
+            margin: 20px 0 15px 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .field.full-width {
+            grid-column: span 2;
+        }
+
+        .field label {
+            font-size: 13px;
+            color: #94a3b8;
+            letter-spacing: 1px;
+        }
+
+        .field input,
+        .field select {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 2px rgba(34,211,238,0.2);
+        }
+
+        .field input[type="file"] {
+            padding: 10px;
+        }
+
+        .current-image {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .current-image img {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed, #22d3ee);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #22d3ee);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .btn-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .user-header {
+            background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(34,211,238,0.2));
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #22d3ee;
+        }
+
+        .user-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-avatar-large .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #7c3aed, #22d3ee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-info h3 {
+            margin: 0;
+            color: #fff;
+            font-size: 24px;
+        }
+
+        .user-info p {
+            margin: 5px 0 0 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .champions-list {
+            margin-top: 20px;
+        }
+
+        .champion-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .champion-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .champion-badge.position-1 { background: rgba(255, 215, 0, 0.2); color: #FFD700; }
+        .champion-badge.position-2 { background: rgba(192, 192, 192, 0.2); color: #C0C0C0; }
+        .champion-badge.position-3 { background: rgba(205, 127, 50, 0.2); color: #CD7F32; }
+
+        .champion-details {
+            flex: 1;
+        }
+
+        .champion-details .tournament {
+            font-weight: 600;
+            color: #22d3ee;
+        }
+
+        .champion-details .year {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-left: 10px;
+        }
+
+        .champion-details .added {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+
+        .section-divider {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'admin_dashboard' %}">← Admin Dashboard</a>
+        <span>Championni tahrirlash</span>
+    </header>
+
+    <div class="container">
+        <!-- User Header -->
+        <div class="user-header">
+            <div class="user-avatar-large">
+                {% if target_user.avatar %}
+                    <img src="{{ target_user.avatar.url }}" alt="{{ target_user.username }}">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {{ target_user.first_name|first|upper|default:target_user.username|first|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <h3>
+                    {% if target_user.first_name and target_user.last_name %}
+                        {{ target_user.first_name }} {{ target_user.last_name }}
+                    {% elif target_user.first_name %}
+                        {{ target_user.first_name }}
+                    {% elif target_user.last_name %}
+                        {{ target_user.last_name }}
+                    {% elif target_user.username %}
+                        {{ target_user.username }}
+                    {% else %}
+                        Foydalanuvchi #{{ target_user.id }}
+                    {% endif %}
+                </h3>
+                <p>@{{ target_user.username|default:"username" }} • Jami championlar: {{ other_champions|length|add:1 }}</p>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Edit Current Champion Form -->
+        <div class="card">
+            <h2 class="title">✏️ Joriy championni tahrirlash</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit">
+
+                <div class="form-grid">
+                    <div class="field full-width">
+                        <label>👑 Chempion</label>
+                        <select name="user_id" required>
+                            <option value="">-- Chempionni tanlang --</option>
+                            {% for user in users %}
+                                <option value="{{ user.id }}" {% if user.id == champion.user.id %}selected{% endif %}>
+                                    {{ user.first_name }} {{ user.last_name }} 
+                                    {% if user.username %}(@{{ user.username }}){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field full-width">
+                        <label>🏆 Turnir nomi</label>
+                        <input type="text" name="tournament_name" value="{{ champion.tournament_name }}" required>
+                    </div>
+
+                    <div class="field full-width">
+                        <label>📆 Turnir sanasi</label>
+                        <input type="date" name="tournament_date" value="{{ champion.tournament_date|date:'Y-m-d' }}" required>
+                        <small style="color: #94a3b8; font-size: 10px;">December 15, 2023 formatida ko'rsatiladi</small>
+                    </div>
+
+                    <div class="field">
+                        <label>O'rin</label>
+                        <select name="position" required>
+                            {% for value, label in positions %}
+                                <option value="{{ value }}" {% if value == champion.position %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field full-width">
+                        <label>🖼️ Turnir rasmi (ixtiyoriy)</label>
+                        <input type="file" name="tournament_image" accept="image/*">
+                        
+                        {% if champion.tournament_image %}
+                        <div class="current-image">
+                            <p style="color: #94a3b8; margin-bottom: 5px;">Joriy rasm:</p>
+                            <img src="{{ champion.tournament_image.url }}" alt="Current tournament image">
+                        </div>
+                        {% endif %}
+                        <small style="color: #94a3b8; font-size: 10px;">Yangi rasm tanlanmasa, eski rasm saqlanadi</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 O'zgarishlarni saqlash</button>
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">⬅️ Bekor qilish</a>
+                    <a href="{% url 'champion_hall_delete' champion.id %}" 
+                       class="btn btn-danger"
+                       onclick="return confirm('Rostdan ham bu championni o\'chirmoqchimisiz?')">
+                        🗑️ O'chirish
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Add New Champion for Same User -->
+        <div class="card">
+            <h2 class="title">➕ Yangi champion qo'shish ({{ target_user }})</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+
+                <div class="form-grid">
+                    <div class="field full-width">
+                        <label>🏆 Turnir nomi</label>
+                        <input type="text" name="new_tournament_name" placeholder="Masalan: UFEL Winter Cup 2025" required>
+                    </div>
+
+                    <div class="field full-width">
+                        <label>📆 Turnir sanasi</label>
+                        <input type="date" name="tournament_date" value="{{ champion.tournament_date|date:'Y-m-d' }}" required>
+                        <small style="color: #94a3b8; font-size: 10px;">December 15, 2023 formatida ko'rsatiladi</small>
+                    </div>
+
+                    <div class="field">
+                        <label>O'rin</label>
+                        <select name="new_position" required>
+                            {% for value, label in positions %}
+                                <option value="{{ value }}">
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field full-width">
+                        <label>🖼️ Turnir rasmi (ixtiyoriy)</label>
+                        <input type="file" name="new_tournament_image" accept="image/*">
+                        <small style="color: #94a3b8; font-size: 10px;">Rasm o'lchami: 300x200 px tavsiya etiladi</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">➕ Yangi champion qo'shish</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Other Champions of This User -->
+        {% if other_champions %}
+        <div class="card">
+            <h2 class="title">📋 {{ target_user }} ning boshqa championlari</h2>
+            
+            <div class="champions-list">
+                {% for champ in other_champions %}
+                <div class="champion-item">
+                    <div class="champion-badge position-{{ champ.position }}">
+                        {% if champ.position == 1 %}
+                        {% elif champ.position == 2 %}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                    <div class="champion-details">
+                        <div>
+                            <span class="tournament">{{ champ.tournament_name }}</span>
+                        </div>
+                        <span style="color: #94a3b8;">{{ champ.tournament_date|date:"F d, Y" }}</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="{% url 'champion_hall_edit' champ.id %}" 
+                           style="color: #22d3ee; text-decoration: none; font-size: 12px; padding: 4px 8px; border-radius: 4px; background: rgba(34,211,238,0.1);">
+                            ✏️
+                        </a>
+                        <a href="{% url 'champion_hall_delete' champ.id %}" 
+                           style="color: #ef4444; text-decoration: none; font-size: 12px; padding: 4px 8px; border-radius: 4px; background: rgba(239,68,68,0.1);"
+                           onclick="return confirm('O\'chirishni tasdiqlaysizmi?')">
+                            🗑️
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

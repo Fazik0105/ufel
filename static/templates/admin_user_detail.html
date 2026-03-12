@@ -97,6 +97,29 @@
             box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.6);
         }
 
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-top: 5px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #22d3ee;
+        }
+
         .btn-save {
             padding: 14px;
             border-radius: 14px;
@@ -120,6 +143,13 @@
             color: #94a3b8;
             font-size: 12px;
             margin-top: 4px;
+        }
+
+        .section-title {
+            color: #22d3ee;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 15px 0 5px 0;
         }
 
         @keyframes fadeInUp {
@@ -189,8 +219,6 @@
                 <select name="nation">
                     <option value="" {% if not target_user.nation %}selected{% endif %}>-- Tanlanmagan --</option>
                     <option value="UZ" {% if target_user.nation == 'UZ' %}selected{% endif %}>🇺🇿 O'zbekiston</option>
-                    <option value="" {% if not target_user.nation %}selected{% endif %}>-- Tanlanmagan --</option>
-                    <option value="UZ" {% if target_user.nation == 'UZ' %}selected{% endif %}>🇺🇿 O'zbekiston</option>
                     <option value="KG" {% if target_user.nation == 'KG' %}selected{% endif %}>🇰🇬 Qirg'iziston</option>
                     <option value="KZ" {% if target_user.nation == 'KZ' %}selected{% endif %}>🇰🇿 Qozog'iston</option>
                     <option value="TJ" {% if target_user.nation == 'TJ' %}selected{% endif %}>🇹🇯 Tojikiston</option>
@@ -200,6 +228,26 @@
                     <option value="RU" {% if target_user.nation == 'RU' %}selected{% endif %}>🇷🇺 Rossiya</option>
                     <option value="OTHER" {% if target_user.nation == 'OTHER' %}selected{% endif %}>🌍 Boshqa</option>
                 </select>
+            </div>
+
+            <!-- USER TYPE SECTION - QAYSI BO'LIMLARDA KO'RINISHI -->
+            <div class="section-title">Qaysi sectionlarda ko'rinadi</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" name="in_tournament" id="in_tournament" {% if type_settings.in_tournament %}checked{% endif %}>
+                    <label for="in_tournament">Turnirlarda 🏆</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="in_rating" id="in_rating" {% if type_settings.in_rating %}checked{% endif %}>
+                    <label for="in_rating">Reytingda 📊</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="in_champions" id="in_champions" {% if type_settings.in_champions %}checked{% endif %}>
+                    <label for="in_champions">Chempionlar ro'yxatida 👑</label>
+                </div>
+            </div>
+            <div class="field-hint">
+                Diqqat: Reytingda ko'rinadigan foydalanuvchilar uchun avtomatik ravishda UserRating yozuvi yaratiladi (agar mavjud bo'lmasa). Belgini olib tashlasangiz, reytingdan o'chiriladi.
             </div>
 
             <div class="field">
