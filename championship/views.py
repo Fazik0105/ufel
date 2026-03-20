@@ -327,7 +327,8 @@ def admin_users(request):
                 # Agar mavjud bo'lsa o'chirish
                 UserRating.objects.filter(user=user).delete()
             
-            messages.success(request, f"O'yinchi {first_name or last_name or username} muvaffaqiyatli qo'shildi!")
+            name = first_name or last_name or "Noma'lum"
+            messages.success(request, f"O'yinchi {name} muvaffaqiyatli qo'shildi!")   
             
         except Exception as e:
             messages.error(request, f"Kutilmagan xato: {e}")
@@ -765,8 +766,8 @@ def admin_dashboard(request):
             else:
                 # Agar mavjud bo'lsa o'chirish
                 UserRating.objects.filter(user=user).delete()
-
-            messages.success(request, f"O'yinchi {first_name or last_name or 'Noma\'lum'} muvaffaqiyatli qo'shildi!")
+            name = first_name or last_name or "Noma'lum"
+            messages.success(request, f"O'yinchi {name} muvaffaqiyatli qo'shildi!")   
         except Exception as e:
             messages.error(request, f"Kutilmagan xato: {e}")
 
