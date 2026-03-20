@@ -49,3 +49,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// // Playoff bracket interaktivligi
+// function initPlayoffBracket() {
+//     const bracketMatches = document.querySelectorAll('.bracket-match');
+    
+//     bracketMatches.forEach(match => {
+//         match.addEventListener('click', function(e) {
+//             // Agar admin bo'lsa, match tahrirlash modalini ochish
+//             if (document.body.classList.contains('user-admin')) {
+//                 const matchId = this.dataset.matchId;
+//                 if (matchId) {
+//                     openMatchEditor(matchId);
+//                 }
+//             }
+//         });
+        
+//         // Hover effekti
+//         match.addEventListener('mouseenter', function() {
+//             const winnerTeam = this.querySelector('.match-team.winner');
+//             if (winnerTeam) {
+//                 winnerTeam.style.transform = 'scale(1.02)';
+//             }
+//         });
+        
+//         match.addEventListener('mouseleave', function() {
+//             const winnerTeam = this.querySelector('.match-team.winner');
+//             if (winnerTeam) {
+//                 winnerTeam.style.transform = 'scale(1)';
+//             }
+//         });
+//     });
+// }
+
+// Match tahrirlash modalini ochish (admin uchun)
+function openMatchEditor(matchId) {
+    // Bu funksiyani admin panelga moslab yozish mumkin
+    const modal = document.createElement('div');
+    modal.className = 'match-editor-modal';
+    modal.innerHTML = `
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <h3>O'yin natijasini tahrirlash</h3>
+            <form id="match-edit-form-${matchId}">
+                <input type="number" name="home_score" placeholder="Home score">
+                <input type="number" name="away_score" placeholder="Away score">
+                <button type="submit">Saqlash</button>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Form submit
+    document.getElementById(`match-edit-form-${matchId}`).addEventListener('submit', function(e) {
+        e.preventDefault();
+        // AJAX orqali yuborish
+        // ...
+    });
+}
+
+// Sahifa yuklanganda ishga tushirish
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.bracket-wrapper')) {
+        initPlayoffBracket();
+    }
+});

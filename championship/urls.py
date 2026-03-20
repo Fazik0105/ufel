@@ -29,7 +29,7 @@ urlpatterns = [
     path('match/<int:match_id>/update-single/', views.update_single_match, name='update_single_match'),
     path('toggle-bookmark/<int:match_id>/', views.toggle_bookmark, name='toggle_bookmark'),
     path('get-bookmarks/', views.get_user_bookmarks, name='get_user_bookmarks'),
-    path('tournament/<int:pk>/', views.tournament_public_view, name='tournament_public_view'),
+    # path('tournament/<int:pk>/', views.tournament_public_view, name='tournament_public_view'),
     path('tournament-detail/<int:pk>/partial/', views.tournament_detail_partial, name='tournament_detail_partial'),
     path('update-ratings/', views.update_ratings, name='update_ratings'),
     path('admin/championship/<int:pk>/finish/', views.finish_championship, name='finish_championship'),
@@ -47,4 +47,9 @@ urlpatterns = [
     path('admin/ratings/delete/<int:user_id>/ajax/', views.delete_rating_ajax, name='delete_rating_ajax'),
     path('api/user-champions/<int:user_id>/', views.user_champions_api, name='user_champions_api'),
     path('champions/<int:pk>/data/', views.champion_detail_data, name='champion_detail_data'),
+    path('undo-match/<int:match_id>/', views.undo_match, name='undo_match'),
+
+    path('reglament/', views.reglament_view, name='reglament'),
+    path('api/reglament-content/', views.get_reglament_content, name='reglament_content'),
+    path('set-language/', views.set_language, name='set_language'),
 ]

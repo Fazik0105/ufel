@@ -55,7 +55,6 @@ def get_standings(championship_id):
                     stats['pts'] += 1
                 else:
                     stats['l'] += 1
-                    stats['pts'] += 0
             else:
                 # Away o'yinchi
                 stats['gf'] += m.away_score
@@ -69,13 +68,11 @@ def get_standings(championship_id):
                     stats['pts'] += 1
                 else:
                     stats['l'] += 1
-                    stats['pts'] += 0
         
         stats['gd'] = stats['gf'] - stats['ga']
         standings.append(stats)
-    
-    # Ochkolar bo'yicha saralash (agar teng bo'lsa, gol farqi)
-    return sorted(standings, key=lambda x: (-x['pts'], -x['gd'], -x['gf']))
+  
+    return sorted(standings, key=lambda x: (-x['pts'], -x['gf'], x['ga']))
 
 def generate_league_matches(championship, users):
     Match.objects.filter(championship=championship).delete()
@@ -697,7 +694,7 @@ def get_group_standings(championship_id):
     except Championship.DoesNotExist:
         return []
         
-    # Guruh o'yinlarini olish (tugagan va tugamagan)
+    # Guruh o'yinlarini olish
     matches = Match.objects.filter(
         championship=championship
     ).exclude(group_label__isnull=True).exclude(group_label='')
@@ -782,8 +779,11 @@ def get_group_standings(championship_id):
     result = []
     for group_label in sorted(groups.keys()):
         standings = list(groups[group_label].values())
-        # Ochkolar, gol farqi, urilgan gollar bo'yicha tartiblash
-        standings.sort(key=lambda x: (-x['pts'], -x['gd'], -x['gf']))
+        # TO'G'RI SARALASH:
+        # 1. Ochkolar (pts)
+        # 2. Urilgan gollar (gf) - kim ko'p gol urgan bo'lsa
+        # 3. O'tkazilgan gollar (ga) - kim kam gol o'tkazgan bo'lsa
+        standings.sort(key=lambda x: (-x['pts'], -x['gf'], x['ga']))
         result.append({
             'label': group_label,
             'standings': standings

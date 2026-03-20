@@ -1,0 +1,2024 @@
+
+/* ============= CUSTOM TABLES (LEAGUE & GROUP) ============= */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #111827;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    min-width: 450px;
+}
+
+/* Header stillari */
+.custom-table th {
+    padding: 12px 4px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+/* Hujayra stillari */
+.custom-table td {
+    padding: 12px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #f8fafc;
+    font-size: 12px;
+}
+
+/* Ranglar */
+.text-green { color: #10b981 !important; }
+.text-red { color: #ef4444 !important; }
+.font-bold { font-weight: 700 !important; }
+
+/* ===== USTUN KENGLIKLARI ===== */
+.col-rank { 
+    width: 35px; 
+    text-align: center; 
+    padding: 12px 2px !important;
+}
+
+.col-stat { 
+    width: 38px;
+    text-align: center; 
+    padding: 12px 0px !important;
+}
+
+/* O'yinchi ustuni - dinamik */
+.player-info-th { 
+    text-align: left; 
+    padding-left: 10px !important; 
+    padding-right: 0 !important; 
+    width: auto;
+}
+
+.player-cell { 
+    text-align: left; 
+    padding-left: 10px !important; 
+    padding-right: 0 !important; 
+}
+
+/* OCH ustuni */
+.och-col {
+    padding-right: 16px !important;
+}
+
+/* Sticky Column */
+.sticky-col {
+    position: sticky;
+    left: 0;
+    background: #111827;
+    z-index: 10;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+}
+
+/* ===== PLAYER WRAPPER ===== */
+.player-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+}
+
+/* Avatar */
+.player-wrapper .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #22d3ee);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+}
+
+.player-wrapper .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ===== NAME-BOX - ASOSIY LOGIKA ===== */
+.name-box {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+    max-width: 140px; /* Standart maksimal kenglik */
+}
+
+.full-name {
+    color: #f8fafc;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.username {
+    color: #64748b;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== KATTA EKRANLAR - FULL NAME TO'LIQ KO'RINSIN ===== */
+@media (min-width: 1200px) {
+    .name-box {
+        max-width: 200px;
+    }
+    
+    .full-name {
+        overflow: visible;
+        text-overflow: clip;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .name-box {
+        max-width: 180px;
+    }
+    
+    .full-name {
+        overflow: visible;
+        text-overflow: clip;
+    }
+}
+
+/* ===== MOBILE OPTIMIZATSIYA ===== */
+@media (max-width: 768px) {
+    .custom-table {
+        min-width: 380px;
+    }
+    
+    .col-rank { 
+        width: 28px; 
+        padding: 10px 1px !important;
+    }
+    
+    .col-stat { 
+        width: 32px;
+        padding: 10px 0px !important;
+        font-size: 11px !important;
+    }
+    
+    .player-info-th { 
+        min-width: 120px;
+        padding-left: 8px !important;
+    }
+    
+    .player-cell {
+        padding-left: 8px !important;
+    }
+    
+    .player-wrapper {
+        gap: 6px;
+    }
+    
+    .player-wrapper .avatar { 
+        width: 26px; 
+        height: 26px; 
+        font-size: 11px;
+    }
+    
+    .name-box {
+        max-width: 100px;
+    }
+    
+    .full-name { 
+        font-size: 11px; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .username { 
+        font-size: 9px; 
+    }
+    
+    .och-col {
+        padding-right: 8px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-table {
+        min-width: 340px;
+    }
+    
+    .col-rank { 
+        width: 25px; 
+    }
+    
+    .col-stat { 
+        width: 28px; 
+        font-size: 10px !important;
+        padding: 8px 0px !important;
+    }
+    
+    .player-info-th { 
+        min-width: 100px;
+        padding-left: 6px !important;
+    }
+    
+    .player-cell {
+        padding-left: 6px !important;
+    }
+    
+    .player-wrapper .avatar { 
+        width: 24px; 
+        height: 24px; 
+        font-size: 10px;
+    }
+    
+    .name-box {
+        max-width: 85px;
+    }
+    
+    .full-name { 
+        font-size: 10px; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .username { 
+        display: none;
+    }
+    
+    .och-col {
+        padding-right: 4px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .custom-table {
+        min-width: 300px;
+    }
+    
+    .col-stat { 
+        width: 25px; 
+        font-size: 9px !important;
+    }
+    
+    .col-rank { 
+        width: 22px; 
+    }
+    
+    .player-wrapper .avatar { 
+        width: 22px; 
+        height: 22px; 
+        font-size: 9px;
+    }
+    
+    .name-box {
+        max-width: 70px;
+    }
+    
+    .full-name { 
+        font-size: 9px; 
+    }
+}
+
+/* ===== MOBILE NAME-BOX VA COL-STAT ORALIG'I ===== */
+@media (max-width: 768px) {
+    .custom-table {
+        table-layout: fixed;
+        width: 100%;
+    }
+    
+    /* O'yinchi ustuni kengligi */
+    .player-cell {
+        width: auto !important;
+        max-width: none !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Player wrapper - to'liq kenglikdan foydalanadi */
+    .player-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+    }
+    
+    /* Avatar o'lchami */
+    .player-wrapper .avatar { 
+        width: 26px; 
+        height: 26px; 
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+    
+    /* NAME-BOX - dinamik kenglik */
+    .name-box {
+        display: flex;
+        flex-direction: column;
+        min-width: 0; /* Flex item kichrayishi uchun */
+        flex: 1 1 auto; /* Moslashuvchan */
+        max-width: none; /* Hech qanday cheklov yo'q */
+        width: auto; /* Avtomatik kenglik */
+    }
+    
+    /* Full name - dinamik */
+    .full-name { 
+        font-size: 11px; 
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%; /* Ota elementdan katta bo'lmasin */
+    }
+    
+    /* Username - kichik va qisqaradi */
+    .username { 
+        font-size: 9px; 
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* COL-STAT - minimal kenglik */
+    .col-stat { 
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        padding: 10px 0px !important;
+        font-size: 11px !important;
+        text-align: center !important;
+        box-sizing: border-box;
+    }
+    
+    /* Jadval ustunlari kengligi */
+    .col-rank { 
+        width: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .col-stat { 
+        width: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        font-size: 10px !important;
+        padding: 8px 0px !important;
+    }
+    
+    .col-rank { 
+        width: 25px !important;
+        min-width: 25px !important;
+        max-width: 25px !important;
+    }
+    
+    .player-wrapper .avatar { 
+        width: 24px; 
+        height: 24px; 
+        font-size: 10px;
+    }
+    
+    .full-name { 
+        font-size: 10px; 
+    }
+    
+    .username { 
+        display: none; /* Juda kichik ekranda username yashiriladi */
+    }
+}
+
+@media (max-width: 360px) {
+    .col-stat { 
+        width: 25px !important;
+        min-width: 25px !important;
+        max-width: 25px !important;
+        font-size: 9px !important;
+    }
+    
+    .col-rank { 
+        width: 22px !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
+    }
+    
+    .player-wrapper .avatar { 
+        width: 22px; 
+        height: 22px; 
+        font-size: 9px;
+    }
+    
+    .full-name { 
+        font-size: 9px; 
+    }
+}
+
+/* ===== JADVAL USTUNLARI KENGLIGI - FIXED LAYOUT UCHUN ===== */
+.custom-table {
+    width: 100%;
+    table-layout: auto; /* Desktopda auto */
+}
+
+@media (max-width: 768px) {
+    .custom-table {
+        table-layout: fixed; /* Mobile da fixed - ustunlar aniq eni bilan */
+    }
+    
+    /* Ustun enlari foizlarda */
+    .custom-table colgroup col:nth-child(1) { width: 28px; } /* # */
+    .custom-table colgroup col:nth-child(2) { width: auto; } /* Player - qolgan joy */
+    .custom-table colgroup col:nth-child(3) { width: 32px; } /* O'yn */
+    .custom-table colgroup col:nth-child(4) { width: 32px; } /* G */
+    .custom-table colgroup col:nth-child(5) { width: 32px; } /* D */
+    .custom-table colgroup col:nth-child(6) { width: 32px; } /* M */
+    .custom-table colgroup col:nth-child(7) { width: 32px; } /* ± */
+    .custom-table colgroup col:nth-child(8) { width: 32px; } /* OCH */
+}
+
+@media (max-width: 480px) {
+    .custom-table colgroup col:nth-child(3),
+    .custom-table colgroup col:nth-child(4),
+    .custom-table colgroup col:nth-child(5),
+    .custom-table colgroup col:nth-child(6),
+    .custom-table colgroup col:nth-child(7),
+    .custom-table colgroup col:nth-child(8) { 
+        width: 28px; 
+    }
+}
+
+
+
+/* ============= TOURNAMENT MOBILE OPTIMIZATIONS ============= */
+/* ============= LEAGUE TABLE - TOP 3 POSITIONS ============= */
+.league-table tbody tr:nth-child(1) {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent) !important;
+    border-left: 3px solid #FFD700 !important;
+}
+
+.league-table tbody tr:nth-child(2) {
+    background: linear-gradient(90deg, rgba(192, 192, 192, 0.15), transparent) !important;
+    border-left: 3px solid #C0C0C0 !important;
+}
+
+.league-table tbody tr:nth-child(3) {
+    background: linear-gradient(90deg, rgba(205, 127, 50, 0.15), transparent) !important;
+    border-left: 3px solid #CD7F32 !important;
+}
+
+.league-table tbody tr:nth-child(1) .col-rank {
+    color: #FFD700 !important;
+    font-weight: 700 !important;
+}
+
+.league-table tbody tr:nth-child(2) .col-rank {
+    color: #C0C0C0 !important;
+    font-weight: 700 !important;
+}
+
+.league-table tbody tr:nth-child(3) .col-rank {
+    color: #CD7F32 !important;
+    font-weight: 700 !important;
+}
+
+/* ============= GROUP TABLE - FAQAT SARALANGANLAR ============= */
+.group-table tbody tr {
+    /* Default holat - hech qanday maxsus rang yo'q */
+    background: transparent !important;
+    border-left: none !important;
+}
+
+/* Group table - faqat saralanganlar qualified row */
+.group-table tbody tr.qualified-row {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-left: 3px solid #10b981 !important;
+    position: relative;
+}
+
+.group-table tbody tr.qualified-row:hover {
+    background: rgba(16, 185, 129, 0.25) !important;
+}
+
+/* Qualified row animation */
+@keyframes qualifiedPulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.group-table tbody tr.qualified-row {
+    animation: qualifiedPulse 2s infinite;
+}
+
+.group-table tbody tr.qualified-row:hover {
+    animation: none;
+}
+
+/* ============= TABLE CONTAINER FIX ============= */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+    border-radius: 16px;
+}
+
+/* Table base styles */
+.custom-table {
+    width: 100%;
+    min-width: 100%;  /* Static size emas, dinamik */
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Column width definitions - nisbiy o'lchamlar */
+.custom-table th.col-rank,
+.custom-table td.col-rank {
+    width: 45px;
+    min-width: 45px;
+    text-align: center;
+}
+
+.custom-table th.player-info-th,
+.custom-table td.player-cell {
+    min-width: 180px;
+    width: auto;  /* Avtomatik kengayish */
+}
+
+.custom-table th.col-stat,
+.custom-table td.col-stat {
+    width: 50px;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Ochko ustuni */
+.custom-table th.och-col,
+.custom-table td.och-col {
+    width: 60px;
+    min-width: 50px;
+}
+
+/* Player wrapper - container flex */
+.player-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Avatar styles */
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #22d3ee);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar span {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+}
+
+/* Name box */
+.name-box {
+    flex: 1;
+    min-width: 0; /* Text truncate uchun */
+}
+
+.full-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #f8fafc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+/* Sticky column for rank */
+.sticky-col {
+    position: sticky;
+    left: 0;
+    background: inherit;
+    z-index: 2;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .custom-table th.col-rank,
+    .custom-table td.col-rank {
+        width: 35px;
+        min-width: 35px;
+    }
+    
+    .custom-table th.player-info-th,
+    .custom-table td.player-cell {
+        min-width: 140px;
+    }
+    
+    .custom-table th.col-stat,
+    .custom-table td.col-stat {
+        width: 35px;
+        min-width: 30px;
+    }
+    
+    .custom-table th.och-col,
+    .custom-table td.och-col {
+        width: 45px;
+        min-width: 40px;
+    }
+    
+    .avatar {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .full-name {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-table th.col-rank,
+    .custom-table td.col-rank {
+        width: 30px;
+        min-width: 30px;
+    }
+    
+    .custom-table th.player-info-th,
+    .custom-table td.player-cell {
+        min-width: 120px;
+    }
+    
+    .avatar {
+        width: 26px;
+        height: 26px;
+    }
+    
+    .avatar span {
+        font-size: 14px;
+    }
+}
+
+/* ============= QUALIFIED BADGE STYLES ============= */
+.qualified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: rgba(16, 185, 129, 0.2);
+    border-radius: 50%;
+    color: #10b981;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.qualified-row:hover .qualified-badge {
+    transform: scale(1.1);
+    background: rgba(16, 185, 129, 0.3);
+}
+
+.not-qualified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* Mobile responsive for badges */
+@media (max-width: 768px) {
+    .qualified-badge,
+    .not-qualified-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+    }
+}
+
+/* ============= TEXT COLORS ============= */
+
+
+.text-white {
+    color: #ffffff !important;
+}
+
+.text-green {
+    color: #10b981 !important;
+}
+
+.text-red {
+    color: #ef4444 !important;
+}
+
+.font-bold {
+    font-weight: 800 !important;
+}
+
+/* ============= MOBILE OPTIMIZATIONS ============= */
+@media (max-width: 768px) {
+    /* Table styles mobile */
+    .custom-table th {
+        font-size: 10px !important;
+        padding: 8px 2px !important;
+    }
+    
+    .custom-table td {
+        font-size: 11px !important;
+    }
+    
+    /* Filter section */
+    .filter-section label {
+        font-size: 11px !important;
+    }
+    
+    .filter-section input,
+    .filter-section select {
+        font-size: 12px !important;
+        padding: 8px !important;
+    }
+    
+    .filter-actions button,
+    .filter-actions a {
+        font-size: 12px !important;
+        padding: 8px 12px !important;
+        height: 38px !important;
+        line-height: 22px !important;
+    }
+}
+
+/* ============= PLAYOFF BRACKET STYLES ============= */
+/* Bracket container */
+.playoff-container {
+    margin: 40px 0;
+    overflow-x: auto;
+    background: transparent;
+}
+
+.playoff-title {
+    font-size: 24px;
+    color: var(--primary-cyan, #22d3ee) !important;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Futura', 'Arial', sans-serif;
+    letter-spacing: 1px;
+}
+
+.title-icon {
+    font-size: 28px;
+    filter: drop-shadow(0 0 10px rgba(255, 196, 0, 0.3));
+}
+
+/* Bracket wrapper */
+.bracket-container {
+    min-width: max-content;
+    padding: 20px 0;
+}
+
+.bracket-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+/* Round styles */
+.round {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    margin: 0 20px;
+}
+
+.round > div:first-child {
+    text-align: center;
+    color: var(--text-secondary, #94a3b8);
+    font-size: 12px;
+    margin-bottom: 10px;
+    font-family: 'Geosans', 'Arial', sans-serif;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px 0;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+}
+
+/* Match container */
+.match {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex: 1;
+    position: relative;
+    min-height: 100px;
+    margin-bottom: 8px;
+}
+
+/* Team container - base */
+.team-container {
+    height: 48px;
+    margin: 2px 0;
+}
+
+/* Team card - redesigned to match site style */
+.team {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, var(--bg-card, #1e293b), var(--bg-darker, #0f172a)) !important;
+    border: 1px solid rgba(124, 58, 237, 0.3) !important;
+    border-left: 4px solid var(--primary-cyan, #22d3ee) !important;
+    border-radius: var(--border-radius-sm, 12px) !important;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary, #fff);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Team card hover effect */
+.team:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-gold, #FFC400) !important;
+    border-left-color: var(--primary-gold, #FFC400) !important;
+    box-shadow: 0 8px 20px rgba(255, 196, 0, 0.2);
+}
+
+/* Team card with gradient overlay */
+.team::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.team > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Avatar in team card */
+.team img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 2px solid rgba(255, 196, 0, 0.3);
+    object-fit: cover;
+}
+
+/* Score in team card */
+.team span:last-child {
+    margin-left: auto;
+    font-weight: 700;
+    color: var(--primary-gold, #FFC400);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid rgba(255, 196, 0, 0.2);
+}
+
+/* Champion team card */
+.champion-team {
+    background: linear-gradient(145deg, rgba(255, 196, 0, 0.15), rgba(124, 58, 237, 0.15)) !important;
+    border: 2px solid var(--primary-gold, #FFC400) !important;
+    border-left: 4px solid var(--primary-gold, #FFC400) !important;
+    color: var(--primary-gold, #FFC400) !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 196, 0, 0.3);
+    animation: championGlow 2s infinite alternate;
+}
+
+@keyframes championGlow {
+    from {
+        box-shadow: 0 0 20px rgba(255, 196, 0, 0.3);
+        border-color: rgba(255, 196, 0, 0.8);
+    }
+    to {
+        box-shadow: 0 0 40px rgba(255, 196, 0, 0.6);
+        border-color: #FFC400;
+    }
+}
+
+/* Finalist (center) */
+.finalist {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+}
+
+/* Center column */
+.center-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 20px;
+    width: 240px;
+}
+
+.center-column .round {
+    width: 100%;
+}
+
+/* Champion in center */
+.center-column .champion {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.center-column .champion .team-container {
+    height: 60px;
+}
+
+.center-column .champion .team {
+    height: 100%;
+    font-size: 16px;
+    background: linear-gradient(145deg, rgba(255, 196, 0, 0.2), rgba(124, 58, 237, 0.2)) !important;
+}
+
+/* ===== LINES (LEFT AS IS, ONLY COLOR UPDATED) ===== */
+/* Mathematical Lines - Left Side */
+.left-side .match::after {
+    content: "";
+    position: absolute;
+    right: -20px;
+    width: 20px;
+    top: 25%;
+    height: 50%;
+    border-right: 2px solid rgba(255, 196, 0, 0.4);
+    border-top: 2px solid rgba(255, 196, 0, 0.4);
+    border-bottom: 2px solid rgba(255, 196, 0, 0.4);
+    border-radius: 0 4px 4px 0;
+    z-index: 1;
+}
+.left-side .match::before {
+    content: "";
+    position: absolute;
+    right: -40px;
+    width: 20px;
+    top: 50%;
+    border-top: 2px solid rgba(255, 196, 0, 0.4);
+    z-index: 1;
+}
+
+/* Mathematical Lines - Right Side (bo'sh bo'lsa ham stil saqlanadi) */
+.right-side .match::after {
+    content: "";
+    position: absolute;
+    left: -20px;
+    width: 20px;
+    top: 25%;
+    height: 50%;
+    border-left: 2px solid rgba(255, 196, 0, 0.4);
+    border-top: 2px solid rgba(255, 196, 0, 0.4);
+    border-bottom: 2px solid rgba(255, 196, 0, 0.4);
+    border-radius: 4px 0 0 4px;
+    z-index: 1;
+}
+.right-side .match::before {
+    content: "";
+    position: absolute;
+    left: -40px;
+    width: 20px;
+    top: 50%;
+    border-top: 2px solid rgba(255, 196, 0, 0.4);
+    z-index: 1;
+}
+
+/* Finalist line connections to Center */
+.left-side .finalist::after {
+    content: "";
+    position: absolute;
+    right: -40px;
+    width: 40px;
+    top: 50%;
+    border-top: 2px solid rgba(255, 196, 0, 0.4);
+    z-index: 1;
+}
+.right-side .finalist::after {
+    content: "";
+    position: absolute;
+    left: -40px;
+    width: 40px;
+    top: 50%;
+    border-top: 2px solid rgba(255, 196, 0, 0.4);
+    z-index: 1;
+}
+
+/* One-Sided exception */
+.one-sided .finalist.champion::after {
+    display: none;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+    .round {
+        width: 180px;
+        margin: 0 10px;
+    }
+    
+    .center-column {
+        width: 200px;
+        margin: 0 10px;
+    }
+    
+    .team {
+        font-size: 11px !important;
+        padding: 0 8px !important;
+    }
+    
+    .team img {
+        width: 20px;
+        height: 20px;
+        margin-right: 4px;
+    }
+    
+    .team span:last-child {
+        font-size: 11px;
+        padding: 1px 4px;
+    }
+    
+    .champion-team {
+        font-size: 13px !important;
+    }
+    
+    /* Line adjustments for mobile (keep positions) */
+    .left-side .match::after {
+        right: -15px;
+        width: 15px;
+    }
+    .left-side .match::before {
+        right: -30px;
+        width: 15px;
+    }
+    .right-side .match::after {
+        left: -15px;
+        width: 15px;
+    }
+    .right-side .match::before {
+        left: -30px;
+        width: 15px;
+    }
+    .left-side .finalist::after {
+        right: -30px;
+        width: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .round {
+        width: 150px;
+        margin: 0 5px;
+    }
+    
+    .center-column {
+        width: 160px;
+        margin: 0 5px;
+    }
+    
+    .team {
+        font-size: 10px !important;
+        padding: 0 6px !important;
+    }
+    
+    .team img {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .playoff-title {
+        font-size: 20px;
+    }
+}
+
+/* Team container - height increased */
+.team-container {
+    height: 58px !important;  /* 48px dan 58px ga oshirildi */
+    margin: 4px 0;
+}
+
+/* Match container min-height increased */
+.match {
+    min-height: 130px !important;  /* 100px dan 130px ga oshirildi */
+}
+
+/* Final champion container */
+.center-column .champion .team-container {
+    height: 70px !important;  /* 60px dan 70px ga oshirildi */
+}
+
+/* Team card - padding and font adjustments */
+.team {
+    font-size: 14px !important;  /* 13px dan 14px ga */
+    padding: 0 14px !important;
+}
+
+/* Champion team card */
+.champion-team {
+    font-size: 18px !important;  /* 16px dan 18px ga */
+    letter-spacing: 2px;
+}
+
+/* Avatar size increased */
+.team img {
+    width: 28px !important;  /* 24px dan 28px ga */
+    height: 28px !important;
+    margin-right: 10px !important;
+}
+
+/* Score badge */
+.team span:last-child {
+    font-size: 15px !important;  /* 13px dan 15px ga */
+    padding: 3px 10px !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .team-container {
+        height: 52px !important;
+    }
+    
+    .match {
+        min-height: 115px !important;
+    }
+    
+    .team {
+        font-size: 12px !important;
+        padding: 0 10px !important;
+    }
+    
+    .team img {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    
+    .center-column .champion .team-container {
+        height: 62px !important;
+    }
+    
+    .champion-team {
+        font-size: 15px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .team-container {
+        height: 48px !important;
+    }
+    
+    .match {
+        min-height: 105px !important;
+    }
+    
+    .team {
+        font-size: 11px !important;
+        padding: 0 8px !important;
+    }
+    
+    .team img {
+        width: 22px !important;
+        height: 22px !important;
+    }
+}
+
+/* ============= MOBILE BRACKET OPTIMIZATION ============= */
+@media (max-width: 768px) {
+    /* Playoff container - scrollni yaxshilash */
+    .playoff-container {
+        margin: 20px 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-gold) var(--bg-darker);
+        padding-bottom: 10px; /* Scrollbar uchun joy */
+        position: relative;
+        width: 100%;
+    }
+
+    /* Scrollbar styling */
+    .playoff-container::-webkit-scrollbar {
+        height: 6px;
+        background: var(--bg-darker);
+        border-radius: 10px;
+    }
+
+    .playoff-container::-webkit-scrollbar-thumb {
+        background: var(--primary-gold);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .playoff-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+    }
+
+    /* Bracket container - minimal width */
+    .bracket-container {
+        min-width: min-content; /* max-content dan min-content ga */
+        padding: 10px 0;
+    }
+
+    /* Round width - biroz kichraytirildi */
+    .round {
+        width: 160px !important; /* 200px dan 160px ga */
+        margin: 0 8px !important;
+    }
+
+    /* Center column */
+    .center-column {
+        width: 180px !important; /* 220px dan 180px ga */
+        margin: 0 8px !important;
+    }
+
+    /* Team container - optimallashgan height */
+    .team-container {
+        height: 48px !important;
+        margin: 3px 0;
+    }
+
+    /* Match container */
+    .match {
+        min-height: 105px !important;
+        margin-bottom: 5px;
+    }
+
+    /* Team card */
+    .team {
+        font-size: 11px !important;
+        padding: 0 8px !important;
+    }
+
+    .team img {
+        width: 22px !important;
+        height: 22px !important;
+        margin-right: 5px !important;
+    }
+
+    .team span:last-child {
+        font-size: 11px !important;
+        padding: 2px 6px !important;
+    }
+
+    /* Title */
+    .playoff-title {
+        font-size: 20px;
+        margin-bottom: 15px;
+        padding: 0 10px;
+    }
+
+    /* Round name */
+    .round > div:first-child {
+        font-size: 10px !important;
+        padding: 2px 0;
+        margin-bottom: 5px;
+    }
+
+    /* Champion card */
+    .center-column .champion .team-container {
+        height: 60px !important;
+    }
+
+    .champion-team {
+        font-size: 14px !important;
+    }
+
+    /* Lines adjustment - joylashuvi o'zgarmaydi, lekin o'lchamlari kichrayadi */
+    .left-side .match::after {
+        right: -15px;
+        width: 15px;
+        border-width: 1.5px;
+    }
+    
+    .left-side .match::before {
+        right: -30px;
+        width: 15px;
+        border-width: 1.5px;
+    }
+    
+    .right-side .match::after {
+        left: -15px;
+        width: 15px;
+        border-width: 1.5px;
+    }
+    
+    .right-side .match::before {
+        left: -30px;
+        width: 15px;
+        border-width: 1.5px;
+    }
+    
+    .left-side .finalist::after {
+        right: -30px;
+        width: 30px;
+        border-width: 1.5px;
+    }
+}
+
+/* Kichik telefonlar uchun */
+@media (max-width: 480px) {
+    .round {
+        width: 140px !important;
+        margin: 0 5px !important;
+    }
+
+    .center-column {
+        width: 150px !important;
+        margin: 0 5px !important;
+    }
+
+    .team-container {
+        height: 44px !important;
+    }
+
+    .match {
+        min-height: 98px !important;
+    }
+
+    .team {
+        font-size: 10px !important;
+        padding: 0 6px !important;
+    }
+
+    .team img {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .playoff-title {
+        font-size: 18px;
+    }
+
+    /* Lines yanada kichraytirildi */
+    .left-side .match::after {
+        right: -12px;
+        width: 12px;
+    }
+    
+    .left-side .match::before {
+        right: -24px;
+        width: 12px;
+    }
+    
+    .right-side .match::after {
+        left: -12px;
+        width: 12px;
+    }
+    
+    .right-side .match::before {
+        left: -24px;
+        width: 12px;
+    }
+    
+    .left-side .finalist::after {
+        right: -24px;
+        width: 24px;
+    }
+}
+
+/* Juda kichik ekranlar uchun - zoom qilish imkoniyati */
+@media (max-width: 360px) {
+    .playoff-container {
+        -webkit-overflow-scrolling: touch;
+        cursor: grab;
+    }
+    
+    .playoff-container:active {
+        cursor: grabbing;
+    }
+    
+    /* Minimal o'lchamlar */
+    .round {
+        width: 130px !important;
+    }
+    
+    .center-column {
+        width: 140px !important;
+    }
+}
+
+/* ===== TOURNAMENT TABS - FIXED VERTICAL SCROLL ISSUE ===== */
+.tournaments-liga {
+    width: calc(100% - 40px);
+    margin: 20px auto 12px;
+    display: flex;
+    flex-wrap: nowrap !important;                /* prevent wrapping */
+    overflow-x: auto !important;                  /* enable horizontal scroll */
+    overflow-y: hidden !important;                /* VERTICAL SCROLLNI BUTUNLAY YO'Q QILISH */
+    -webkit-overflow-scrolling: touch;            /* smooth scrolling on iOS */
+    scrollbar-width: none;                         /* hide scrollbar Firefox */
+    justify-content: flex-start;                   /* tabs start from left */
+    padding: 8px;                                   /* consistent padding */
+    background: rgba(10, 10, 15, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 196, 0, 0.15);
+    border-radius: 60px;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 196, 0, 0.1);
+    position: relative;
+    gap: 8px;
+    max-height: 90px;                              /* Maksimal balandlikni cheklash */
+    min-height: 70px;                               /* Minimal balandlik */
+    height: auto;                                    /* Avtomatik balandlik */
+}
+
+/* Scrollbar styling - optional */
+.tournaments-liga::-webkit-scrollbar {
+    display: none; /* hide scrollbar Chrome/Safari */
+}
+
+/* Ligatab balandligini aniqlab qo'yish */
+.liga-tab {
+    flex: 0 0 auto;
+    min-width: 120px;
+    height: 70px !important;                        /* Fiksirlangan balandlik */
+    max-height: 70px !important;                    /* Maksimal balandlik */
+    min-height: 70px !important;                    /* Minimal balandlik */
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    background: rgba(20, 20, 25, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-family: 'Futura', 'Arial', sans-serif;
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    overflow: hidden;
+    padding: 0 20px;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+/* Mobile uchun qo'shimcha */
+@media (max-width: 768px) {
+    .tournaments-liga {
+        max-height: 80px !important;
+        min-height: 60px !important;
+        height: auto !important;
+        overflow-y: hidden !important;  /* Yana bir marta guarantee */
+    }
+    
+    .liga-tab {
+        height: 60px !important;
+        min-height: 60px !important;
+        max-height: 60px !important;
+    }
+}
+
+/* QO'SHILGAN: Loading spinner uchun stillar */
+.tournament-loading-container {
+    position: relative;
+    min-height: 200px;
+    width: 100%;
+    margin-top: 30px; /* Mini tablardan keyin joy */
+}
+
+.tournament-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(34,211,238,0.1);
+    border-top-color: #22d3ee;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+.tournament-loading-text {
+    color: #94a3b8;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* 16+ ishtirokchi uchun mobil bracketni yanada kichraytirish */
+@media (max-width: 768px) {
+    .playoff-container.many-playoff .round {
+        width: 130px !important;   /* standart 160px → 130px */
+        margin: 0 5px !important;
+    }
+    
+    .playoff-container.many-playoff .center-column {
+        width: 140px !important;    /* standart 180px → 140px */
+        margin: 0 5px !important;
+    }
+    
+    .playoff-container.many-playoff .team-container {
+        height: 42px !important;    /* biroz kichik */
+    }
+    
+    .playoff-container.many-playoff .team {
+        font-size: 10px !important;
+        padding: 0 5px !important;
+    }
+    
+    .playoff-container.many-playoff .team img {
+        width: 18px !important;
+        height: 18px !important;
+        margin-right: 3px !important;
+    }
+    
+    .playoff-container.many-playoff .team span:last-child {
+        font-size: 9px !important;
+        padding: 1px 4px !important;
+    }
+    
+    .playoff-container.many-playoff .match {
+        min-height: 90px !important;
+    }
+    
+    /* Champion markazi */
+    .playoff-container.many-playoff .center-column .champion .team-container {
+        height: 52px !important;
+    }
+    
+    .playoff-container.many-playoff .champion-team {
+        font-size: 12px !important;
+    }
+    
+    /* Chiziqlarni moslash (agar xohlasangiz) */
+    .playoff-container.many-playoff .left-side .match::after {
+        right: -10px;
+        width: 10px;
+    }
+    .playoff-container.many-playoff .left-side .match::before {
+        right: -20px;
+        width: 10px;
+    }
+    /* ... va hokazo */
+}
+
+/* Juda kichik ekranlar (480px) uchun yanada kichraytirish */
+@media (max-width: 480px) {
+    .playoff-container.many-playoff .round {
+        width: 110px !important;
+    }
+    
+    .playoff-container.many-playoff .center-column {
+        width: 120px !important;
+    }
+    
+    .playoff-container.many-playoff .team-container {
+        height: 38px !important;
+    }
+    
+    .playoff-container.many-playoff .team {
+        font-size: 9px !important;
+    }
+}
+
+.lang-btn.active {
+    background-color: #FFC400;
+    color: #000000;
+    border-color: #FFC400;
+}
+
+.reglament-points.no-icon li::before {
+    content: none;
+}
+
+
+/* ============= MATCH ITEMS - ULTRA COMPACT FIX ============= */
+/* Matches Content Styles */
+#matches-content {
+    display: none; /* This will be overridden by JS when needed */
+}
+
+#matches-content h2 {
+    font-size: 20px;
+    color: #22d3ee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#matches-content h2 span:first-of-type {
+    /* This targets the text span after the emoji */
+}
+
+#matches-content h2 span:last-of-type {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-left: auto;
+}
+
+/* Matches Container */
+#matches-content > div {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Match Item */
+.match-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(34, 211, 238, 0.05));
+    border-radius: 14px;
+    border-left: 4px solid #f59e0b; /* Default color for non-finished matches */
+}
+
+.match-item.match-finished {
+    border-left-color: #10b981;
+}
+
+/* Round Info */
+.match-item > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.match-item .round-name {
+    font-weight: 500;
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.match-item .leg-badge {
+    background: rgba(34, 211, 238, 0.1);
+    border-radius: 20px;
+    font-size: 10px;
+    color: #22d3ee;
+}
+
+.match-item .group-name {
+    /* Group name styling if needed */
+}
+
+/* Match Main Content */
+.match-main-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 8px;
+    padding: 0 16px;
+    box-sizing: border-box;
+}
+
+/* Home Side */
+.home-side {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Away Side */
+.away-side {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Team Name */
+.team-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #f8fafc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.home-name {
+    text-align: right;
+}
+
+.away-name {
+    text-align: left;
+}
+
+/* Avatar Container */
+.avatar-container {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #22d3ee);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.home-side .avatar-container {
+    margin-left: 8px;
+}
+
+.away-side .avatar-container {
+    margin-right: 8px;
+}
+
+.avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-container span {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Score */
+.match-score {
+    text-align: center;
+    min-width: 50px;
+    flex-shrink: 0;
+    padding: 0 4px;
+}
+
+.match-score div {
+    font-size: 18px;
+    font-weight: 700;
+    color: #22d3ee;
+    line-height: 1;
+}
+
+/* No Matches Card */
+.card {
+    text-align: center;
+    padding: 60px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 24px;
+}
+
+.card div:first-child {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.card p {
+    color: #94a3b8;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .match-item {
+        padding: 8px 12px !important;
+        margin-bottom: 0px !important;
+    }
+    
+    .match-item .match-main-content {
+        padding: 0 12px !important;
+        gap: 2px !important;
+        margin-bottom: 0px !important;
+    }
+    
+    .match-item .team-name {
+        font-size: 14px !important;
+        max-width: none !important;
+        flex: 1;
+    }
+    
+    .match-item .home-side,
+    .match-item .away-side {
+        flex: 1;
+        min-width: 0;
+        gap: 4px !important;
+    }
+
+    .match-item .home-side .avatar-container,
+    .match-item .away-side .avatar-container {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .home-name, .away-name {
+        font-size: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .match-item .match-main-content {
+        padding: 0 8px !important;
+    }
+    
+    .match-item .team-name {
+        font-size: 10px !important;
+        max-width: none !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .match-item {
+        padding: 4px 6px !important;
+    }
+    
+    .match-item .team-name {
+        font-size: 9px !important;
+        max-width: 50px !important;
+    }
+    
+    .match-item .home-side .avatar-container,
+    .match-item .away-side .avatar-container {
+        width: 22px !important;
+        height: 22px !important;
+    }
+}
+
+/* ============= MOBILE - TOURNAMENTS LIGA ULTRA COMPACT ============= */
+/* MUHIM: Bu override faqat mobile da ishlaydi - tournaments-liga va uning textini eng kichik qilish */
+@media (max-width: 768px) {
+    /* Asosiy container - minimal */
+    .tournaments-liga {
+        margin: 8px auto 12px !important;
+        padding: 4px !important;
+        gap: 4px !important;
+        border-radius: 30px !important;
+        max-height: 52px !important;
+        min-height: 52px !important;
+        height: 52px !important;
+        overflow-y: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    /* Tablar - minimal */
+    .liga-tab {
+        min-width: 60px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+        padding: 0 8px !important;
+        border-radius: 30px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* Tab text - eng kichik */
+    .liga-tab-text {
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        letter-spacing: 0px !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Chiziq - minimal */
+    .liga-line {
+        width: 12px !important;
+        height: 2px !important;
+        margin-top: 2px !important;
+    }
+    
+    /* Active/hover holatida chiziq */
+    .liga-tab:hover .liga-line,
+    .liga-tab.active .liga-line {
+        width: 16px !important;
+        height: 2px !important;
+    }
+    
+    /* Tab active holat */
+    .liga-tab.active {
+        transform: translateY(0) !important;
+    }
+    
+    /* Gradient animatsiyani o'chirish (opsiyonel) */
+    .tournaments-liga::before {
+        animation: none !important;
+        opacity: 0.3 !important;
+    }
+}
+
+/* Juda kichik telefonlar (480px dan kichik) - yanada kichraytirish */
+@media (max-width: 480px) {
+    .tournaments-liga {
+        margin: 6px auto 10px !important;
+        padding: 3px !important;
+        gap: 3px !important;
+        border-radius: 25px !important;
+        max-height: 48px !important;
+        min-height: 48px !important;
+        height: 48px !important;
+    }
+    
+    .liga-tab {
+        min-width: 55px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        max-height: 42px !important;
+        padding: 0 6px !important;
+    }
+    
+    .liga-tab-text {
+        font-size: 10px !important;
+    }
+    
+    .liga-line {
+        width: 10px !important;
+        height: 1.5px !important;
+    }
+    
+    .liga-tab:hover .liga-line,
+    .liga-tab.active .liga-line {
+        width: 14px !important;
+    }
+}
+
+/* Ekstremal kichik ekranlar (360px dan kichik) */
+@media (max-width: 360px) {
+    .tournaments-liga {
+        max-height: 44px !important;
+        min-height: 44px !important;
+        height: 44px !important;
+        border-radius: 22px !important;
+    }
+    
+    .liga-tab {
+        min-width: 50px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        padding: 0 4px !important;
+    }
+    
+    .liga-tab-text {
+        font-size: 9px !important;
+    }
+    
+    .liga-line {
+        width: 8px !important;
+        height: 1.5px !important;
+    }
+    
+    .liga-tab:hover .liga-line,
+    .liga-tab.active .liga-line {
+        width: 12px !important;
+    }
+}
+

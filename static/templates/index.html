@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -9,6 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UFEL</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dash_style.css' %}">
+
     <script src="{% static 'js/app.js' %}"></script>
     <script src="{% static 'JavaScripts/tournaments.js' %}"></script>
 </head>
@@ -27,74 +30,77 @@
   <img src="{% static 'images/UFEL.png' %}" alt="UFEL logo" class="panel-logo">
   
 
-<nav class="navbar">
-    <a href="#" data-page="home" class="active">HOME</a>
-    <a href="#" data-page="tournaments">TOURNAMENTS</a>
-    <a href="#" data-page="champions" onclick="switchPage('champions')">UFEL CHAMPIONS</a>
-    <a href="#" data-page="ratings">RATINGS</a>
-    
-    {% if user.is_authenticated %}
-        {% if user.is_admin %}
-            <a href="{% url 'admin_dashboard' %}" style="color: gold;">ADMIN PANEL</a>
+    <nav class="navbar">
+        <a href="#" data-page="home" class="active">{% trans "HOME" %}</a>
+        <a href="#" data-page="tournaments">{% trans "TOURNAMENTS" %}</a>
+        <a href="#" data-page="champions" onclick="switchPage('champions')">{% trans "UFEL CHAMPIONS" %}</a>
+        <a href="#" data-page="ratings">{% trans "RATINGS" %}</a>
+        <a href="{% url 'reglament' %}">{% trans "REGLAMENT" %}</a>
+        {% if user.is_authenticated %}
+            {% if user.is_admin %}
+                <a href="{% url 'admin_dashboard' %}" style="color: gold;">{% trans "ADMIN PANEL" %}</a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="login-link">{% trans "LOGOUT" %} ({{ user.username }})</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="login-link">{% trans "LOGIN" %}</a>
         {% endif %}
-        <a href="{% url 'logout' %}" class="login-link">LOGOUT ({{ user.username }})</a>
-    {% else %}
-        <a href="{% url 'login' %}" class="login-link">LOGIN</a>
-    {% endif %}
-</nav>
+    </nav>
 
-  <a href="#" class="lang-btn">UZ</a>
+    <div class="lang-buttons">
+        <a href="#" onclick="setLanguage('uz'); return false;" class="lang-btn {% if request.LANGUAGE_CODE == 'uz' %}active{% endif %}">UZ</a>
+        <a href="#" onclick="setLanguage('ru'); return false;" class="lang-btn {% if request.LANGUAGE_CODE == 'ru' %}active{% endif %}">RU</a>
+    </div>
 </div>
 
 <div class="mobile-menu" id="mobileMenu">
-    <a href="#" data-page="home">HOME</a>
-    <a href="#" data-page="tournaments">TOURNAMENTS</a>
-    <a href="#" data-page="champions" onclick="switchPage('champions')">UFEL CHAMPIONS</a>
-    <a href="#" data-page="ratings">RATINGS</a>
-
+        <a href="#" data-page="home">{% trans "HOME" %}</a>
+        <a href="#" data-page="tournaments">{% trans "TOURNAMENTS" %}</a>
+        <a href="#" data-page="champions" onclick="switchPage('champions')">{% trans "UFEL CHAMPIONS" %}</a>
+        <a href="#" data-page="ratings">{% trans "RATINGS" %}</a>
+        <a href="{% url 'reglament' %}">{% trans "REGLAMENT" %}</a>
         {% if user.is_authenticated %}
             {% if user.role == 'ADMIN' %}
-                <a href="{% url 'admin_dashboard' %}" style="color: gold;">ADMIN PANEL</a>
+                <a href="{% url 'admin_dashboard' %}" style="color: gold;">{% trans "ADMIN PANEL" %}</a>
             {% endif %}
-            <a href="{% url 'logout' %}" class="login-link">LOGOUT ({{ user.username }})</a>
+            <a href="{% url 'logout' %}" class="login-link">{% trans "LOGOUT" %} ({{ user.username }})</a>
         {% else %}
-            <a href="{% url 'login' %}" class="login-link">LOGIN</a>
+            <a href="{% url 'login' %}" class="login-link">{% trans "LOGIN" %}</a>
         {% endif %}
-</div>
+    </div>
 
 
 <!-- HOME PAGE -->
 <section id="home" class="page active">
   <div class="home-hero">
-    <p class="home-badge">Uzbekistan Football e-League</p>
-    <h1 class="home-title">OFFICIAL UFEL<br>PLATFORM</h1>
+    <p class="home-badge">{% trans "Uzbekistan Football e-League" %}</p>
+    <h1 class="home-title">{% trans "OFFICIAL UFEL" %}<br>{% trans "PLATFORM" %}</h1>
     <p class="home-text">
-      The Only professional eFootball<br>League in Uzbekistan
+    {% trans "The Only professional eFootball" %}<br>{% trans "League in Uzbekistan" %}
     </p>
 
     <div class="home-buttons">
       <a href="#" class="home-btn" data-page="tournaments">
-        TOURNAMENTS<br>
-        <span class="home-btn-sub">TURNIR JADVALI</span>
+            {% trans "TOURNAMENTS" %}
+    <span class="home-btn-sub">{% trans "TURNIR JADVALI" %}</span>
       </a>
       
-      <a href="#" class="home-btn" data-page="champions">
-        CHAMPIONS<br>
-        <span class="home-btn-sub">UFEL CHEMPIONLARI</span>
-      </a>
-      
-      <a href="#" class="home-btn" data-page="ratings">
-        RATINGS<br>
-        <span class="home-btn-sub">O'YINCHILAR YILLIK REYTINGI</span>
-      </a>
+     <a href="#" class="home-btn" data-page="champions">
+        {% trans "CHAMPIONS" %}<br>
+        <span class="home-btn-sub">{% trans "UFEL CHEMPIONLARI" %}</span>
+    </a>
+    
+    <a href="#" class="home-btn" data-page="ratings">
+        {% trans "RATINGS" %}<br>
+        <span class="home-btn-sub">{% trans "O'YINCHILAR YILLIK REYTINGI" %}</span>
+    </a>
 
-      <a href="https://t.me/ufel_uz" class="join-group">JOIN GROUP</a>
+    <a href="https://t.me/ufel_uz" class="join-group">{% trans "JOIN GROUP" %}</a>
     </div>
     
     <div class="bookmarks-section" style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(34,211,238,0.2);">
         <div id="bookmarks-list" style="display: flex; flex-direction: column; gap: 12px; min-height: 100px;">
             <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                Yuklanmoqda...
+                {% trans "Yuklanmoqda..." %}
             </div>
         </div>
     </div>
@@ -102,7 +108,7 @@
     <!-- ============= TOP 5 RATINGS SECTION ============= -->
     <div class="home-ratings-section" style="margin-top: 40px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,196,0,0.2);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-            <h3 style="color: #FFC400; font-family: 'Futura', serif; font-size: 24px; margin: 0;">TOP 5 RATINGS</h3>
+            <h3 style="color: #FFC400; font-family: 'Futura', serif; font-size: 24px; margin: 0;">{% trans "TOP 5 RATINGS" %}</h3>
         </div>
         
         <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -168,12 +174,12 @@
                 <!-- Points -->
                 <div style="text-align: right;">
                     <div style="font-weight: 800; font-size: 24px; color: #FFC400; line-height: 1;">{{ rating.points }}</div>
-                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">BALL</div>
+                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">{% trans "BALL" %}</div>
                 </div>
             </div>
             {% empty %}
             <div style="text-align: center; padding: 40px; color: #94a3b8;">
-                <p>Hali rating ma'lumotlari mavjud emas</p>
+                <p>{% trans "Hali rating ma'lumotlari mavjud emas" %}</p>
             </div>
             {% endfor %}
         </div>
@@ -191,7 +197,7 @@
       </a>
     </div>
 
-    <h6 class="end-text" style="margin-top: 16px;">© 2026 UFeL | All Rights Reserved</h6>
+    <h6 class="end-text" style="margin-top: 16px;">{% trans "© 2026 UFeL | All Rights Reserved" %}</h6>
 
   </div>
 </section>
@@ -209,24 +215,24 @@
         {% endfor %}
     </div>
 
-    <!-- Loading indicator -->
-    <div id="tournament-loading" style="display: none; text-align: center; padding: 40px;">
-        <div style="width: 50px; height: 50px; border: 3px solid rgba(34,211,238,0.1); border-top-color: #22d3ee; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-        <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
-    </div>
-
     <!-- Tournament content container -->
     <div id="tournament-content">
         {% include 'tournament_content_partial.html' %}
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="tournament-loading" style="display: none; text-align: center; padding: 40px;">
+        <div style="width: 50px; height: 50px; border: 3px solid rgba(34,211,238,0.1); border-top-color: #22d3ee; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+        <p style="color: #94a3b8; margin-top: 15px;">{% trans "Yuklanmoqda..." %}</p>
     </div>
 </section>
 
 <!-- CHAMPIONS PAGE -->
 <section id="champions" class="page">
     <div class="ratings-header">
-        <h2 class="champions-title">UFEL CHAMPIONS</h2>
+        <h2 class="champions-title">{% trans "UFEL CHAMPIONS" %}</h2>
         <div class="champions-line"></div>
-        <p style="color: #94a3b8; margin-top: 5px; font-size: 14px;">Jami: {{ total_champions }} ta champion</p>
+        <p style="color: #94a3b8; margin-top: 5px; font-size: 14px;">{% trans "Jami:" %} {{ total_champions }} {% trans "ta champion" %}</p>
     </div>
 
     <div class="champions-list">
@@ -256,8 +262,8 @@
                     {% endif %}
                 </h2>
                 <p style="margin: 5px; color: #94a3b8; font-size: 14px;">
-                    @{{ user_data.user.username|default:"username" }} • 
-                    Jami: {{ user_data.champions|length }} ta champion
+                    {{ user_data.user.username|default:"username" }} • 
+                    {% trans "Jami:" %} {{ user_data.champions|length }} {% trans "ta champion" %}
                 </p>
                 <!-- UFEL CHAMPION tugmasi olib tashlandi -->
             </div>
@@ -265,7 +271,7 @@
         {% empty %}
         <div style="text-align: center; padding: 60px; color: #64748b;">
             <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
-            <p style="font-size: 18px;">Hali chempionlar mavjud emas</p>
+            <p style="font-size: 18px;">{% trans "Hali chempionlar mavjud emas" %}</p>
         </div>
         {% endfor %}
     </div>
@@ -282,12 +288,11 @@
             <!-- Dinamik yuklanadigan content -->
             <div style="text-align: center; padding: 40px;">
                 <div class="tournament-loading-spinner"></div>
-                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+                <p style="color: #94a3b8; margin-top: 15px;">{% trans "Yuklanmoqda..." %}</p>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- CHAMPION DETAIL MODAL -->
 <div class="modal" id="championDetailModal">
@@ -300,7 +305,7 @@
             <!-- Dinamik yuklanadigan content -->
             <div style="text-align: center; padding: 40px;">
                 <div class="tournament-loading-spinner"></div>
-                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+                <p style="color: #94a3b8; margin-top: 15px;">{% trans "Yuklanmoqda..." %}</p>
             </div>
         </div>
     </div>
@@ -309,28 +314,32 @@
 <!-- RATINGS PAGE - ODDIY USERLAR UCHUN -->
 <section id="ratings" class="page ratings">
   <div class="ratings-header">
-    <h2 class="ratings-title">RATINGS</h2>
+    <h2 class="ratings-title">{% trans "RATINGS" %}</h2>
     <div class="ratings-line"></div>
   </div>
 
   <div class="rating-list">
+    <!-- SARLAVHA PANELI - USTUNLAR TO'G'RI JOYLASHGAN -->
     <div class="rating-panel">
       <div class="r-pos">#</div>
       <div class="r-avatar"></div>
-      <div class="r-name">O'YINCHI</div>
-      <div class="r-nation">NAT</div>
-      <div class="r-games">O'YIN</div>
-      <div class="r-points">REYTING</div>
+      <div class="r-name">{% trans "O'YINCHI" %}</div>
+    <div class="r-nation">{% trans "NAT" %}</div>
+    <div class="r-games">{% trans "O'YIN" %}</div>
+    <div class="r-points">{% trans "REYTING" %}</div>
     </div>
 
     {% for r in ratings %}
-    <div class="rating-row" data-user-id="{{ r.user.id }}" style="margin-bottom: 8px;">
+    <!-- MA'LUMOT QATORI - AYNAN BIR XIL KLASS NOMLARI -->
+    <div class="rating-row" data-user-id="{{ r.user.id }}">
+      <!-- # (pozitsiya) -->
       <div class="rating-pos">
         <span class="pos-badge {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
           {{ forloop.counter }}
         </span>
       </div>
 
+      <!-- AVATAR -->
       <div class="rating-avatar">
         <div class="avatar-wrapper">
           {% if r.user.avatar %}
@@ -353,6 +362,7 @@
         </div>
       </div>
       
+      <!-- O'YINCHI ISMI -->
       <div class="rating-name">
         <span class="player-name">
           {% if r.user.first_name and r.user.last_name %}
@@ -368,10 +378,11 @@
           {% endif %}
         </span>
         <span class="player-username">
-          {% if r.user.username %}{{ r.user.username }}{% endif %}
+          {{ r.user.username }}
         </span>
       </div>
       
+      <!-- MILLAT (FLAG) -->
       <div class="rating-nation">
         <span class="nation-flag">
           {% if r.user.nation %}
@@ -391,24 +402,27 @@
         </span>
       </div>
       
+      <!-- O'YINLAR SONI -->
       <div class="rating-games">
         <span class="stat-value">{{ r.games_played }}</span>
       </div>
+      
+      <!-- REYTING BALLARI -->
       <div class="rating-points">
         <span class="stat-value points-value">{{ r.points }}</span>
       </div>
     </div>
     {% empty %}
     <div class="rating-row" style="justify-content: center; padding: 30px; color: #64748b;">
-      <p>Hozircha reyting ma'lumotlari mavjud emas</p>
+        <p>{% trans "Hozircha reyting ma'lumotlari mavjud emas" %}</p>
     </div>
     {% endfor %}
   </div>
 </section>
+
 </body>
 
 <script>
-// CSRF token olish funksiyasi (global zarur)
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -494,7 +508,10 @@ function getCookie(name) {
         currentStatus: 'all',
         filterFormHandler: null,
         isLoading: false,
-        lastLoadedChamp: null
+        lastLoadedChamp: null,
+        // MUHIM: Mini tablar uchun state
+        activeMainTab: 'standings',
+        isInitialized: false
     };
 
     // DOM elementlari
@@ -637,7 +654,7 @@ function getCookie(name) {
             elements.bookmarksList.innerHTML = `
                 <div style="text-align: center; padding: 20px; color: #94a3b8;">
                     <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
-                    Yuklanmoqda...
+                    {% trans "Yuklanmoqda..." %}
                 </div>
             `;
             
@@ -663,7 +680,7 @@ function getCookie(name) {
         if (!elements.bookmarksList || !bookmarks?.length) {
             elements.bookmarksList.innerHTML = `
                 <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                    <span style="color: #94a3b8;">Top o'yinlar qo'shilmagan</span>
+                    <span style="color: #94a3b8;">{% trans "Top o'yinlar qo'shilmagan" %}</span>
                 </div>
             `;
             return;
@@ -716,7 +733,7 @@ function getCookie(name) {
         elements.bookmarksList.innerHTML = html;
     }
 
-    // ==================== TOURNAMENT FUNCTIONS ====================
+ // ==================== TOURNAMENT FUNCTIONS - TUZATILGAN ====================
     function initScrollableTabs() {
         const container = document.querySelector('.tabs-container');
         if (!container) return;
@@ -778,123 +795,260 @@ function getCookie(name) {
             .custom-notification.info { background: #22d3ee; }
             
             .fade-enter { animation: fadeIn 0.3s ease; }
+            
+            /* Mini tablar uchun stillar */
+            .tournament-main-tab {
+                transition: all 0.2s ease;
+            }
+            
+            .tournament-main-tab:hover {
+                transform: translateY(-2px);
+            }
+            
+            .tournament-main-tab.active {
+                background: linear-gradient(135deg, rgba(255,196,0,0.2), rgba(255,140,0,0.2)) !important;
+                border-color: #FFC400 !important;
+                color: #FFC400 !important;
+                box-shadow: 0 5px 15px rgba(255,196,0,0.2);
+            }
+            
+            @media (max-width: 768px) {
+                .tournament-tabs-container {
+                    padding: 0 10px;
+                }
+                
+                .tournament-main-tab {
+                    padding: 8px 15px !important;
+                    font-size: 13px !important;
+                }
+                
+                #filter-bar form {
+                    flex-direction: column !important;
+                    gap: 15px !important;
+                }
+                
+                #filter-bar form > div {
+                    width: 100% !important;
+                    min-width: 100% !important;
+                }
+                
+                #filter-bar form > div:last-child {
+                    flex-direction: column !important;
+                    margin-left: 0 !important;
+                }
+                
+                #filter-bar form button,
+                #filter-bar form a {
+                    width: 100% !important;
+                    text-align: center !important;
+                }
+            }
         `;
         document.head.appendChild(style);
     }
 
     function switchPage(pageId) {
-        // Barcha sahifalardan active classni olib tashlash
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        
-        const targetPage = document.getElementById(pageId);
-        if (targetPage) targetPage.classList.add('active');
-        
-        // Navbar linklarini yangilash
-        document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
-            link.classList.toggle('active', link.dataset.page === pageId);
-        });
-        
-        // Sahifaga xos initializatsiya
-        if (pageId === 'ratings') setTimeout(initRatingsPage, 100);
-        if (pageId === 'champions') setTimeout(loadChampions, 100);
-        if (pageId === 'tournaments' && state.lastLoadedChamp) {
-            const tab = document.querySelector(`.liga-tab[data-champ-id="${state.lastLoadedChamp}"]`);
-            if (tab) {
-                elements.ligaTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                loadTournamentContent(state.lastLoadedChamp, state.currentSearch, state.currentStatus, true);
+    // Barcha sahifalardan active classni olib tashlash
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) targetPage.classList.add('active');
+    
+    // Navbar linklarini yangilash
+    document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]').forEach(link => {
+        link.classList.toggle('active', link.dataset.page === pageId);
+    });
+    
+    // Sahifaga xos initializatsiya
+    if (pageId === 'ratings') setTimeout(initRatingsPage, 100);
+    if (pageId === 'champions') setTimeout(loadChampions, 100);
+    
+    // MUHIM: Tournament sahifasiga o'tganda last tournamentni ko'rsatish
+    if (pageId === 'tournaments') {
+        setTimeout(() => {
+            // Eng oxirgi turnirni topish (agar tanlanmagan bo'lsa)
+            if (!state.lastLoadedChamp) {
+                const lastTab = document.querySelector('.liga-tab.active') || 
+                               document.querySelector('.liga-tab:first-child');
+                if (lastTab) {
+                    state.lastLoadedChamp = lastTab.dataset.champId;
+                }
             }
+            
+            // Agar lastLoadedChamp bo'lsa, uni yuklash
+            if (state.lastLoadedChamp) {
+                const tab = document.querySelector(`.liga-tab[data-champ-id="${state.lastLoadedChamp}"]`);
+                if (tab) {
+                    elements.ligaTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Cache dan yuklash yoki yangi yuklash
+                    const cached = cache.get(state.lastLoadedChamp, state.currentSearch, state.currentStatus);
+                    if (cached) {
+                        // Cache dan ko'rsatish
+                        elements.tournamentContent.innerHTML = cached.html;
+                        setupFilterForm(state.lastLoadedChamp);
+                        setTimeout(reinitializeMiniTabs, 100);
+                        console.log('Loaded from cache:', state.lastLoadedChamp);
+                    } else {
+                        // Yangi yuklash
+                        loadTournamentContent(state.lastLoadedChamp, state.currentSearch, state.currentStatus, true);
+                    }
+                }
+            }
+            
+            // Mini tablarni qayta ishga tushirish
+            if (window.reinitTournamentTabs) {
+                window.reinitTournamentTabs();
+            }
+        }, 100);
+    }
+    
+    // URL ni yangilash
+    const url = new URL(window.location);
+    url.searchParams.set('page', pageId);
+    
+    // Agar tournament sahifasida va lastLoadedChamp bo'lsa, champ parametrini qo'shish
+    if (pageId === 'tournaments' && state.lastLoadedChamp) {
+        url.searchParams.set('champ', state.lastLoadedChamp);
+    }
+    
+    history.pushState({}, '', url);
+}
+    
+    // MUHIM: Yangi funksiya - tournament content yuklangandan keyin mini tablarni ishga tushirish
+    function reinitializeMiniTabs() {
+        // Mini tablarni qayta ishga tushirish uchun eventlarni yuborish
+        if (window.reinitTournamentTabs) {
+            window.reinitTournamentTabs();
         }
         
-        // URL ni yangilash
-        const url = new URL(window.location);
-        url.searchParams.set('page', pageId);
-        history.pushState({}, '', url);
+        // MUHIM: Agar oldingi aktiv tab bo'lsa, uni qayta tiklash
+        if (state.activeMainTab) {
+            setTimeout(() => {
+                activateMainTab(state.activeMainTab);
+            }, 50);
+        }
     }
 
-    async function loadTournamentContent(champId, search = '', status = 'all', skipCache = false) {
-        if (!elements.tournamentContent || !elements.tournamentLoading || state.isLoading) return;
+    // MUHIM: Yangi funksiya - main tablarni aktivlashtirish
+    function activateMainTab(tabType) {
+        const mainTabs = document.querySelectorAll('.tournament-main-tab');
+        const standingsContent = document.getElementById('standings-content');
+        const matchesContent = document.getElementById('matches-content');
+        const filterBar = document.getElementById('filter-bar');
         
-        // Cacheni tekshirish
-        if (!skipCache) {
-            const cached = cache.get(champId, search, status);
-            if (cached) {
-                elements.tournamentContent.innerHTML = cached.html;
-                elements.tournamentContent.classList.add('fade-enter');
-                setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
-                
-                state.currentChampId = champId;
-                state.currentSearch = search;
-                state.currentStatus = status;
-                state.lastLoadedChamp = champId;
-                
-                setupFilterForm(champId);
-                return;
-            }
+        if (!standingsContent || !matchesContent) return;
+        
+        // Aktiv tabni state ga saqlash
+        state.activeMainTab = tabType;
+        
+        // Barcha tab larni reset
+        mainTabs.forEach(tab => {
+            tab.classList.remove('active');
+            tab.style.background = 'transparent';
+            tab.style.borderColor = 'rgba(255,255,255,0.2)';
+            tab.style.color = '#94a3b8';
+        });
+        
+        // Tanlangan tab ni faollashtirish
+        const activeTab = document.querySelector(`.tournament-main-tab[data-tab="${tabType}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+            activeTab.style.background = 'linear-gradient(135deg, rgba(255,196,0,0.2), rgba(255,140,0,0.2))';
+            activeTab.style.borderColor = '#FFC400';
+            activeTab.style.color = '#FFC400';
         }
         
-        try {
-            state.isLoading = true;
-            state.currentChampId = champId;
-            state.currentSearch = search;
-            state.currentStatus = status;
-            
-            elements.tournamentContent.style.opacity = '0.5';
-            elements.tournamentLoading.style.display = 'block';
-            
-            const url = new URL(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`, window.location.origin);
-            if (search || status !== 'all') {
-                url.searchParams.append('search', search);
-                url.searchParams.append('status', status);
-            }
-            
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                elements.tournamentContent.innerHTML = data.html;
-                elements.tournamentContent.classList.add('fade-enter');
-                setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
-                
-                cache.set(champId, data, search, status);
-                state.lastLoadedChamp = champId;
-                
-                setupFilterForm(champId);
-                
-                // URL ni yangilash
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.set('page', 'tournaments');
-                newUrl.searchParams.set('champ', champId);
-                if (search) newUrl.searchParams.set('search', search);
-                else newUrl.searchParams.delete('search');
-                if (status !== 'all') newUrl.searchParams.set('status', status);
-                else newUrl.searchParams.delete('status');
-                
-                history.pushState({}, '', newUrl);
-            } else {
-                throw new Error(data.error || 'Unknown error');
-            }
-        } catch (error) {
-            console.error('Error loading tournament:', error);
-            showNotification(error.message || 'Server bilan bog\'lanishda xatolik', 'error');
-            
-            elements.tournamentContent.innerHTML = `
-                <div style="text-align: center; padding: 60px; background: rgba(255,255,255,0.02); border-radius: 24px;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
-                    <p style="color: #ef4444;">Xatolik yuz berdi</p>
-                    <button onclick="window.location.reload()" style="margin-top: 20px; padding: 10px 30px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        Qayta yuklash
-                    </button>
-                </div>
-            `;
-        } finally {
-            elements.tournamentContent.style.opacity = '1';
-            elements.tournamentLoading.style.display = 'none';
-            state.isLoading = false;
+        // Content ni ko‘rsatish
+        if (tabType === 'standings') {
+            standingsContent.style.display = 'block';
+            matchesContent.style.display = 'none';
+            if (filterBar) filterBar.style.display = 'none';
+        } else if (tabType === 'matches') {
+            standingsContent.style.display = 'none';
+            matchesContent.style.display = 'block';
+            if (filterBar) filterBar.style.display = 'block';
         }
     }
+
+async function loadTournamentContent(champId, search = '', status = 'all', skipCache = false) {
+    if (!elements.tournamentContent || !elements.tournamentLoading || state.isLoading) return;
+    
+    try {
+        state.isLoading = true;
+        state.currentChampId = champId;
+        state.currentSearch = search;
+        state.currentStatus = status;
+        
+        elements.tournamentContent.style.opacity = '0.5';
+        elements.tournamentLoading.style.display = 'block';
+        
+        const url = new URL(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`, window.location.origin);
+        if (search || status !== 'all') {
+            url.searchParams.append('player', player);
+            url.searchParams.append('status', status);
+        }
+        
+        const response = await fetch(url, {
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            elements.tournamentContent.innerHTML = data.html;
+            elements.tournamentContent.classList.add('fade-enter');
+            setTimeout(() => elements.tournamentContent.classList.remove('fade-enter'), 300);
+            
+            cache.set(champId, data, search, status);
+            state.lastLoadedChamp = champId;
+            
+            setupFilterForm(champId);
+            
+            // MUHIM: Yangi content yuklanganda mini tablarni ishga tushirish
+            setTimeout(reinitializeMiniTabs, 100);
+            
+            // URL ni yangilash
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('page', 'tournaments');
+            newUrl.searchParams.set('champ', champId);
+            if (search) newUrl.searchParams.set('search', search);
+            else newUrl.searchParams.delete('search');
+            if (status !== 'all') newUrl.searchParams.set('status', status);
+            else newUrl.searchParams.delete('status');
+            
+            history.pushState({}, '', newUrl);
+        } else {
+            throw new Error(data.error || 'Unknown error');
+        }
+    } catch (error) {
+        console.error('Error loading tournament:', error);
+        
+        // Xatolikni UI da ko'rsatish
+        elements.tournamentContent.innerHTML = `
+            <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 24px;">
+                <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                <p style="color: #ef4444; margin-bottom: 10px;">Xatolik yuz berdi</p>
+                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">${error.message || 'Noma\'lum xato'}</p>
+                <button onclick="window.location.reload()" style="padding: 10px 30px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    Qayta yuklash
+                </button>
+            </div>
+        `;
+    } finally {
+        elements.tournamentContent.style.opacity = '1';
+        elements.tournamentLoading.style.display = 'none';
+        state.isLoading = false;
+    }
+}
 
     function setupFilterForm(champId) {
         const filterForm = document.querySelector('#tournament-content form');
@@ -937,7 +1091,7 @@ function getCookie(name) {
             setTimeout(() => notification.remove(), 300);
         }, CONFIG.NOTIFICATION_DURATION);
     }
-
+    
     // ==================== CHAMPIONS MODAL FUNCTIONS ====================
     function openChampionModal(userId) {
         const modal = document.getElementById('championModal');
@@ -954,7 +1108,7 @@ function getCookie(name) {
         modalContent.innerHTML = `
             <div style="text-align: center; padding: 40px;">
                 <div class="tournament-loading-spinner"></div>
-                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+                <p style="color: #94a3b8; margin-top: 15px;">{% trans "Yuklanmoqda..." %}</p>
             </div>
         `;
         
@@ -975,7 +1129,7 @@ function getCookie(name) {
                     <div style="text-align: center; padding: 40px; color: #ef4444;">
                         <p>Xatolik yuz berdi</p>
                         <p style="font-size: 14px;">${error.message}</p>
-                        <button onclick="closeUserChampionModal()" style="margin-top: 20px; padding: 8px 20px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer;">Yopish</button>
+                        <button onclick="closeUserChampionModal()" style="margin-top: 20px; padding: 8px 20px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer;">{% trans "Yopish" %}</button>
                     </div>
                 `;
             });
@@ -1034,7 +1188,7 @@ function getCookie(name) {
                                 </div>
                             </div>
                             <div style="background: ${champ.position === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : champ.position === 2 ? 'linear-gradient(135deg, #C0C0C0, #A0A0A0)' : 'linear-gradient(135deg, #CD7F32, #B87333)'}; color: #0f172a; padding: 3px 8px; border-radius: 50px; font-size: 11px; font-weight: 600;">
-                                ${champ.position === 1 ? '🥇' : champ.position === 2 ? '🥈' : '🥉'} ${champ.position_display}
+                                ${champ.position_display}
                             </div>
                         </div>
                     `;
@@ -1069,7 +1223,7 @@ function getCookie(name) {
                                 ${champ.tournament_image ? `<img src="${champ.tournament_image}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size: 35px;">🏆</span>'}
                             </div>
                             <h3 style="color: white; font-size: 13px; margin: 8px 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${champ.tournament_name}">${champ.tournament_name}</h3>
-                            <span style="color: #FFC400; font-size: 11px; font-weight: 600;">${champ.position === 1 ? '🥇' : champ.position === 2 ? '🥈' : '🥉'} ${champ.position_display}</span>
+                            <span style="color: #FFC400; font-size: 11px; font-weight: 600;">${champ.position_display}</span>
                         </div>
                     `;
                 });
@@ -1090,7 +1244,7 @@ function getCookie(name) {
         modalContent.innerHTML = `
             <div style="text-align: center; padding: 40px;">
                 <div class="tournament-loading-spinner"></div>
-                <p style="color: #94a3b8; margin-top: 15px;">Yuklanmoqda...</p>
+                <p style="color: #94a3b8; margin-top: 15px;">{% trans "Yuklanmoqda..." %}</p>
             </div>
         `;
         
@@ -1120,13 +1274,13 @@ function getCookie(name) {
                                 <h4 style="color: #FFC400; margin: 0 0 10px;">${champ.tournament_name}</h4>
                                 <div style="display: flex; justify-content: center; gap: 10px;">
                                     <span style="background: ${champ.position === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : champ.position === 2 ? 'linear-gradient(135deg, #C0C0C0, #A0A0A0)' : 'linear-gradient(135deg, #CD7F32, #B87333)'}; color: #0f172a; padding: 5px 15px; border-radius: 50px; font-weight: 700; font-size: 14px;">
-                                        ${champ.position === 1 ? '🥇' : champ.position === 2 ? '🥈' : '🥉'} ${champ.position_display}
+                                        ${champ.position_display}
                                     </span>
                                     <span style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 50px; color: white;">${champ.formatted_date || new Date().getFullYear()}</span>
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: center;">
-                                <button onclick="closeDetailModal()" style="padding: 12px 50px; background: #FFC400; color: #0f172a; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; max-width: 200px;">Yopish</button>
+                                <button onclick="closeDetailModal()" style="padding: 12px 50px; background: #FFC400; color: #0f172a; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; max-width: 200px;">{% trans "Yopish" %}</button>
                             </div>
                         </div>
                     `;
@@ -1137,7 +1291,7 @@ function getCookie(name) {
                     <div style="text-align: center; padding: 40px; color: #ef4444;">
                         <p>Xatolik yuz berdi</p>
                         <p style="font-size: 14px;">${error.message}</p>
-                        <button onclick="closeDetailModal()" style="margin-top: 20px; padding: 8px 20px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer;">Yopish</button>
+                        <button onclick="closeDetailModal()" style="margin-top: 20px; padding: 8px 20px; background: #22d3ee; color: #0f172a; border: none; border-radius: 8px; cursor: pointer;">{% trans "Yopish" %}</button>
                     </div>
                 `;
             });
@@ -1183,115 +1337,226 @@ function getCookie(name) {
         });
     }
 
-    // ==================== INITIALIZATION ====================
-    function init() {
-        addStyles();
-        initScrollableTabs();
-        initMobileMenu();
-        
-        // Navigatsiya linklari
-        elements.navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = link.dataset.page;
-                if (pageId) switchPage(pageId);
-            });
-        });
-        
-        // Home page buttons
-        elements.homeButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = btn.dataset.page;
-                if (pageId) switchPage(pageId);
-            });
-        });
-        
-        // Tournament tabs
-        elements.ligaTabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                const champId = tab.dataset.champId;
-                if (!champId || state.isLoading) return;
-                
+    // ==================== URL PARAMSLARNI QAYTA ISHLASH ====================
+    function handleUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
+    const champId = urlParams.get('champ');
+    const hash = window.location.hash;
+    
+    // Sahifani aktivlashtirish
+    if (pageParam && document.getElementById(pageParam)) {
+        switchPage(pageParam);
+    } else {
+        // MUHIM: Agar page parametri bo'lmasa, home da qolish
+        const homePage = document.getElementById('home');
+        if (homePage && !homePage.classList.contains('active')) {
+            switchPage('home');
+        }
+    }
+    
+    // Tournament ma'lumotlarini yuklash FAQAT page=tournaments bo'lsa
+    if (pageParam === 'tournaments' && champId) {
+        setTimeout(() => {
+            const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
+            if (tab) {
                 elements.ligaTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
-                const urlParams = new URLSearchParams(window.location.search);
-                loadTournamentContent(champId, urlParams.get('search') || '', urlParams.get('status') || 'all');
-            });
+                loadTournamentContent(
+                    champId, 
+                    urlParams.get('search') || '', 
+                    urlParams.get('status') || 'all'
+                );
+            }
+        }, 200);
+    }
+    
+    // Hash bo'yicha tabni aktivlashtirish FAQAT tournaments sahifasida
+    if (pageParam === 'tournaments' && hash === '#matches') {
+        state.activeMainTab = 'matches';
+    }
+}
+
+    // ==================== INITIALIZATION - FIXED VERSION ====================
+function init() {
+    // Stillarni qo'shish
+    addStyles();
+    
+    // Scrollable tablar
+    initScrollableTabs();
+    
+    // Mobile menu
+    initMobileMenu();
+    
+    // Navigatsiya linklari
+    elements.navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageId = link.dataset.page;
+            if (pageId) switchPage(pageId);
         });
+    });
+    
+    // Home page buttons
+    elements.homeButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageId = btn.dataset.page;
+            if (pageId) switchPage(pageId);
+        });
+    });
+    
+    // Tournament tabs - Delegation orqali
+    const tournamentsPage = document.getElementById('tournaments');
+    if (tournamentsPage) {
+        tournamentsPage.addEventListener('click', (e) => {
+            const tab = e.target.closest('.liga-tab');
+            if (!tab) return;
+            
+            e.preventDefault();
+            const champId = tab.dataset.champId;
+            if (!champId || state.isLoading) return;
+            
+            elements.ligaTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            loadTournamentContent(champId, '', 'all');
+        });
+    }
+    
+    // Load initial data
+    if (elements.bookmarksList) loadUserBookmarks();
+    
+    // ===== MUHIM: Birinchi yuklanishda last tournamentni background yuklash =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
+    
+    // Eng oxirgi turnirni topish
+    const lastTournamentTab = document.querySelector('.liga-tab.active') || 
+                              document.querySelector('.liga-tab:first-child');
+    const lastChampId = lastTournamentTab ? lastTournamentTab.dataset.champId : null;
+    
+    if (lastChampId) {
+        // Background yuklash (home sahifasida qolgan holda)
+        console.log('Background loading tournament:', lastChampId);
         
-        // Load initial data
-        if (elements.bookmarksList) loadUserBookmarks();
+        // Cache ga saqlash uchun yuklash
+        setTimeout(() => {
+            fetch(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${lastChampId}/partial/`, {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cachga saqlash
+                    cache.set(lastChampId, data, '', 'all');
+                    state.lastLoadedChamp = lastChampId;
+                    console.log('Tournament data cached:', lastChampId);
+                }
+            })
+            .catch(error => console.error('Background load error:', error));
+        }, 500);
+    }
+    
+    // Agar URL da page parametri bo'lsa, o'sha sahifaga o'tish
+    if (pageParam && document.getElementById(pageParam)) {
+        switchPage(pageParam);
         
-        // URL params
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get('page');
-        const champId = urlParams.get('champ');
-        
-        // Sahifani aktivlashtirish
-        if (pageParam && document.getElementById(pageParam)) {
-            switchPage(pageParam);
-        } else {
+        // Tournament ma'lumotlarini yuklash
+        if (pageParam === 'tournaments') {
+            const champId = urlParams.get('champ') || lastChampId;
+            if (champId) {
+                setTimeout(() => {
+                    const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
+                    if (tab) {
+                        elements.ligaTabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        loadTournamentContent(
+                            champId, 
+                            urlParams.get('search') || '', 
+                            urlParams.get('status') || 'all'
+                        );
+                    }
+                }, 100);
+            }
+        }
+    } else {
+        // MUHIM: Agar page parametri bo'lmasa, home sahifasida qolish
+        const homePage = document.getElementById('home');
+        if (homePage && !homePage.classList.contains('active')) {
             switchPage('home');
         }
         
-        // Tournament ma'lumotlarini oldindan yuklash
-        if (champId) {
-            setTimeout(() => {
-                if (!cache.get(champId)) {
-                    fetch(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) cache.set(champId, data);
-                        })
-                        .catch(() => {});
-                }
-            }, 500);
+        // URL dan page parametrini olib tashlash
+        const url = new URL(window.location);
+        if (url.searchParams.has('page')) {
+            url.searchParams.delete('page');
+            history.replaceState({}, '', url);
         }
-        
-        // Event listeners
-        window.addEventListener('popstate', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const pageParam = urlParams.get('page');
-            const champId = urlParams.get('champ');
-            
-            if (pageParam) switchPage(pageParam);
-            if (champId) {
-                const tab = document.querySelector(`.liga-tab[data-champ-id="${champId}"]`);
-                if (tab) {
-                    tab.click();
-                    loadTournamentContent(champId, urlParams.get('search') || '', urlParams.get('status') || 'all');
-                }
-            }
-        });
-        
-        // Resize event
-        window.addEventListener('resize', () => {
-            const modal = document.getElementById('championModal');
-            if (modal?.classList.contains('active') && modal.dataset.currentUserId) {
-                fetch(`/app/api/user-champions/${modal.dataset.currentUserId}/`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) renderChampionModal(data);
-                    });
-            }
-        });
-        
-        // ESC tugmasi
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (document.getElementById('championDetailModal')?.classList.contains('active')) {
-                    closeDetailModal();
-                } else if (document.getElementById('championModal')?.classList.contains('active')) {
-                    closeUserChampionModal();
-                }
-            }
-        });
     }
+    
+    // MUHIM: Hard refresh yoki hot reload da mini tablarni tekshirish
+    if (window.location.pathname.includes('tournaments') || 
+        window.location.search.includes('page=tournaments')) {
+        setTimeout(() => {
+            if (window.reinitTournamentTabs) {
+                window.reinitTournamentTabs();
+            }
+        }, 300);
+    }
+    
+    // Event listeners
+    window.addEventListener('popstate', () => {
+        const newUrlParams = new URLSearchParams(window.location.search);
+        const newPageParam = newUrlParams.get('page');
+        
+        if (newPageParam && document.getElementById(newPageParam)) {
+            switchPage(newPageParam);
+        } else {
+            // Home ga qaytish
+            switchPage('home');
+        }
+    });
+    
+    // Resize event
+    window.addEventListener('resize', () => {
+        const modal = document.getElementById('championModal');
+        if (modal?.classList.contains('active') && modal.dataset.currentUserId) {
+            fetch(`/app/api/user-champions/${modal.dataset.currentUserId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) renderChampionModal(data);
+                });
+        }
+    });
+    
+    // ESC tugmasi
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (document.getElementById('championDetailModal')?.classList.contains('active')) {
+                closeDetailModal();
+            } else if (document.getElementById('championModal')?.classList.contains('active')) {
+                closeUserChampionModal();
+            }
+        }
+    });
 
-    // Global funksiyalar (keraklari)
+    // ========== QO'SHILGAN QISM ==========
+    // Dastlabki filter formasiga ishlov beruvchini biriktirish
+    const initialActiveTab = document.querySelector('.liga-tab.active');
+    if (initialActiveTab) {
+        const champId = initialActiveTab.dataset.champId;
+        if (champId) {
+            setupFilterForm(champId);
+        }
+    }
+    // =====================================
+
+    state.isInitialized = true;
+}
+
+    // Global funksiyalar
     window.loadUserBookmarks = loadUserBookmarks;
     window.showNotification = showNotification;
     window.switchPage = switchPage;
@@ -1300,10 +1565,21 @@ function getCookie(name) {
     window.showChampionDetail = showChampionDetail;
     window.closeDetailModal = closeDetailModal;
     window.clearTournamentCache = () => { cache.clear(); showNotification('Cache tozalandi', 'success'); };
+    window.activateMainTab = activateMainTab; // MUHIM: Mini tablar uchun
+    window.reinitializeMiniTabs = reinitializeMiniTabs; // MUHIM: Qayta ishga tushirish uchun
 
     // Start
-    init();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();
+
+function setLanguage(lang) {
+    // /app/ prefiksini qo'shish
+    window.location.href = `/app/set-language/?lang=${lang}&next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+}
 </script>
 
 </html>

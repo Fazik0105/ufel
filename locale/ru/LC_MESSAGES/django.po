@@ -1,0 +1,1881 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: championship/views.py:2593 championship/views.py:2598
+#: championship/views.py:2600
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-20 03:59+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: championship/views.py:2494
+msgid "Uzbekistan Football e-League — REGLAMENT"
+msgstr "Uzbekistan Football e-League — РЕГЛАМЕНТ"
+
+#: championship/views.py:2497
+msgid "1. UMUMIY MA’LUMOT"
+msgstr "1. ОБЩАЯ ИНФОРМАЦИЯ"
+
+#: championship/views.py:2499
+msgid ""
+"1.1. UFEL (Uzbekistan Football e-League) — eFootball o'yinida turnirlar "
+"tashkil qiluvchi liga hisoblanadi."
+msgstr "1.1. UFEL (Uzbekistan Football e-League) — лига, организующая турниры по игре eFootball."
+
+#: championship/views.py:2500
+msgid ""
+"1.2. Turnirlar eFootball oʻyini asosida va ushbu reglamentga muvofiq tashkil "
+"etiladi."
+msgstr "1.2. Турниры проводятся на основе игры eFootball и в соответствии с данным регламентом."
+
+#: championship/views.py:2501
+msgid "1.3. Ushbu reglament barcha ishtirokchilar uchun majburiy hisoblanadi."
+msgstr "1.3. Данный регламент является обязательным для всех участников."
+
+#: championship/views.py:2502
+msgid ""
+"1.4. Liga maqsadi — eFootballni O'zbekistonda yangi darajada rivojlantirish "
+"va kuchli raqobat muhitini taʼminlash."
+msgstr "1.4. Цель лиги — развитие eFootball в Узбекистане на новом уровне и обеспечение конкурентной среды."
+
+#: championship/views.py:2506
+msgid "2. ISHTIROKCHILAR"
+msgstr "2. УЧАСТНИКИ"
+
+#: championship/views.py:2508
+msgid "2.1. Ligada roʻyxatdan oʻtgan barcha ishtirokchilar qatnashishi mumkin."
+msgstr "2.1. В лиге могут участвовать все зарегистрированные участники."
+
+#: championship/views.py:2509
+msgid ""
+"2.2. Adminlar ishtirokchilardan turnir uchun kerakli bo'lgan malumotlarni "
+"sorashi mumkun."
+msgstr "2.2. Администраторы могут запрашивать у участников информацию, необходимую для турнира."
+
+#: championship/views.py:2510
+msgid ""
+"2.3. Bir ishtirokchi turnirlarda faqat bitta akkaunt orqali qatnashishi "
+"mumkin."
+msgstr "2.3. Один участник может участвовать в турнирах только с одной учетной записи."
+
+#: championship/views.py:2514
+msgid "3. TEXNIK TALABLAR"
+msgstr "3. ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ"
+
+#: championship/views.py:2516
+msgid "3.1. Platformalar: PlayStation 4/5, Kompyuter (PC), Xbox."
+msgstr "3.1. Платформы: PlayStation 4/5, Компьютер (PC), Xbox."
+
+#: championship/views.py:2517
+msgid ""
+"3.2. Barqaror o‘yin uchun internet ulanishi LAN (simli) tarmoq tavsiya "
+"etiladi."
+msgstr "3.2. Для стабильной игры рекомендуется проводное подключение к интернету (LAN)."
+
+#: championship/views.py:2518
+msgid ""
+"3.3. Ishtirokchining internet tezligi pas yoki ulanishi belgilangan texnik "
+"talablarga mos kelmagan hollarda, turnirdan chetlatiladi."
+msgstr "3.3. В случае низкой скорости интернета или несоответствия подключения техническим требованиям, участник может быть отстранен от турнира."
+
+#: championship/views.py:2519
+msgid ""
+"3.4. Match Sozlamalari turnir turiga qarab alohida reglament yoki eʼlonda "
+"belgilanadi."
+msgstr "3.4. Настройки матча определяются отдельным регламентом или анонсом в зависимости от типа турнира."
+
+#: championship/views.py:2520
+msgid ""
+"3.5. O'yin davomida internet uzilishi yoki texnik nosozliklar yuzaga kelsa, "
+"hakamlar qarori bilan qayta o'ynash yoki hisobni saqlab qolish masalasi "
+"ko'rib chiqiladi."
+msgstr "3.5. В случае обрыва интернета или технических неполадок во время игры, вопрос о переигровке или сохранении счета рассматривается судьями."
+
+#: championship/views.py:2524
+msgid "4. O‘YINNI BOSHLASH TARTIBI"
+msgstr "4. ПОРЯДОК НАЧАЛА ИГРЫ"
+
+#: championship/views.py:2526
+msgid ""
+"4.1. O‘yinni boshlash uchun ishtirokchilar o‘zaro kelishgan holda qulay "
+"vaqtni belgilaydi va bir-biri bilan bog‘lanadi."
+msgstr "4.1. Для начала игры участники договариваются между собой об удобном времени и связываются друг с другом."
+
+#: championship/views.py:2527
+msgid ""
+"4.2. Agar raqib xabarlarga javob bermasa yoki kelishilgan vaqtda aloqaga "
+"chiqmasa, UFEL adminlariga murojaat qilinadi."
+msgstr "4.2. Если соперник не отвечает на сообщения или не выходит на связь в оговоренное время, обращайтесь к администраторам UFEL."
+
+#: championship/views.py:2528
+msgid ""
+"4.3. Adminlar holatni ko‘rib chiqib, texnik g‘alaba, yoki boshqa yakuniy "
+"qaror qabul qiladi."
+msgstr "4.3. Администраторы рассматривают ситуацию и принимают решение о технической победе или ином итоге."
+
+#: championship/views.py:2529
+msgid "4.4. Kelishilgan o‘yinlar qat’iyan taqiqlanadi."
+msgstr "4.4. Договорные матчи категорически запрещены."
+
+#: championship/views.py:2533
+msgid "5. LIGA JADVALINI HISOBLASH TARTIBI"
+msgstr "5. ПОРЯДОК РАСЧЕТА ТУРНИРНОЙ ТАБЛИЦЫ"
+
+#: championship/views.py:2535
+msgid ""
+"5.1. Liga bosqichida ishtirokchilarning turnir jadvalidagi o‘rinlari, "
+"to‘plangan ochkolar soni asosida aniqlanadi."
+msgstr "5.1. На групповом этапе места участников в турнирной таблице определяются по количеству набранных очков."
+
+#: championship/views.py:2536
+msgid ""
+"5.2. Agar ishtirokchilarning ochkolari teng bo‘lsa, ustunlik ko‘proq gol "
+"urgan ishtirokchiga beriladi."
+msgstr "5.2. В случае равенства очков у участников, преимущество отдается участнику, забившему больше голов."
+
+#: championship/views.py:2537
+msgid ""
+"5.3. Agar ochkolar va urilgan gollar soni ham teng bo‘lsa, ustunlik kamroq "
+"gol o‘tkazib yuborgan ishtirokchiga beriladi."
+msgstr "5.3. При равенстве очков и количества забитых голов, преимущество отдается участнику, пропустившему меньше голов."
+
+#: championship/views.py:2538
+msgid ""
+"5.4. Agar yuqoridagi barcha ko‘rsatkichlar teng bo‘lib qolsa, "
+"ishtirokchilarning o‘zaro o‘yin natijasi hisobga olinadi."
+msgstr "5.4. Если все вышеперечисленные показатели равны, учитывается результат личных встреч участников."
+
+#: championship/views.py:2539
+msgid ""
+"5.5. Maxsus formatdagi turnirlarda (JCH, CHL va boshqa) turnirlarda jadvalni "
+"hisoblash tartibi ushbu turnir reglamentida alohida belgilanadi."
+msgstr "5.5. В турнирах особого формата (ЧМ, ЛЧ и др.) порядок расчета таблицы определяется отдельно в регламенте этого турнира."
+
+#: championship/views.py:2543
+msgid "6. INTIZOM"
+msgstr "6. ДИСЦИПЛИНА"
+
+#: championship/views.py:2545
+msgid ""
+"6.1. Turnir davomida barcha ishtirokchilar o‘zaro hurmat va sport ruhiga "
+"amal qilishlari tavsiya etiladi."
+msgstr "6.1. На протяжении турнира всем участникам рекомендуется соблюдать взаимоуважение и дух спортивного соперничества."
+
+#: championship/views.py:2546
+msgid ""
+"6.2. Guruhda Haqorat, tahdid yoki boshqa nojo‘ya xatti harakatlar "
+"ogohlantirish yoki Ban ga sabab bo‘ladi."
+msgstr "6.2. Оскорбления, угрозы или другие неподобающие действия в чате ведут к предупреждению или бану."
+
+#: championship/views.py:2550
+msgid "7. YAKUNIY QOIDALAR"
+msgstr "7. ЗАКЛЮЧИТЕЛЬНЫЕ ПОЛОЖЕНИЯ"
+
+#: championship/views.py:2552
+msgid ""
+"7.1. Ishtirokchi turnirda qatnashish orqali ushbu reglamentni to‘liq qabul "
+"qilgan hisoblanadi."
+msgstr "7.1. Участвуя в турнире, участник считается полностью принявшим данный регламент."
+
+#: championship/views.py:2553
+msgid "7.2. UFEL adminlari bahsli vaziyatlarda yakuniy qaror qabul qiladi."
+msgstr "7.2. Администраторы UFEL принимают окончательное решение в спорных ситуациях."
+
+#: championship/views.py:2554
+msgid ""
+"7.3. Adminlar reglamentga o‘zgartirish va qo‘shimchalar kiritish huquqini "
+"o‘zida saqlab qoladi."
+msgstr "7.3. Администраторы оставляют за собой право вносить изменения и дополнения в регламент."
+
+#: championship/views.py:2560 static/templates/reglament.html:272
+msgid "REYTING TIZIMI"
+msgstr "РЕЙТИНГОВАЯ СИСТЕМА"
+
+#: championship/views.py:2561
+msgid ""
+"Reyting Natijalari Bir Mavsum So'ngigacha Yeg'ilib Boradi. Reyting Quyidagi "
+"Qoidalar Asosida Hisoblanadi."
+msgstr "Рейтинговые очки накапливаются до конца одного сезона. Рейтинг рассчитывается по следующим правилам."
+
+#: championship/views.py:2564
+msgid "O'YIN UCHUN REYTING"
+msgstr "РЕЙТИНГ ЗА ИГРУ"
+
+#: championship/views.py:2566
+msgid "G'alaba (90 daqiqa ichida) +40 Reyting"
+msgstr "Победа (в основное время) +40 Рейтинга"
+
+#: championship/views.py:2567
+msgid "Durrang +20 Reyting"
+msgstr "Ничья +20 Рейтинга"
+
+#: championship/views.py:2568
+msgid "Mag'lubiyat 0 Reyting"
+msgstr "Поражение 0 Рейтинга"
+
+#: championship/views.py:2569
+msgid "Qo'shimcha vaqt yoki Penaltilarda G'alaba +20 Reyting"
+msgstr "Победа в дополнительное время или по пенальти +20 Рейтинга"
+
+#: championship/views.py:2573
+msgid "TEXNIK MAG'LUBIYAT"
+msgstr "ТЕХНИЧЕСКОЕ ПОРАЖЕНИЕ"
+
+#: championship/views.py:2575
+msgid "TP – Orqali Mag'lubiyat –20 Reyting"
+msgstr "Поражение через ТП –20 Рейтинга"
+
+#: championship/views.py:2576
+msgid "TP – Orqali G'alaba +40 Reyting"
+msgstr "Победа через ТП +40 Рейтинга"
+
+#: championship/views.py:2580
+msgid "CHEMPIONLIK UCHUN"
+msgstr "ЗА ЧЕМПИОНСТВО"
+
+#: championship/views.py:2582
+msgid "Chempionlik Uchun Qo'shimcha +100 Reyting"
+msgstr "Дополнительно за чемпионство +100 Рейтинга"
+
+#: championship/views.py:2583
+msgid "2-O'rin uchun +50 Reyting"
+msgstr "За 2-е место +50 Рейтинга"
+
+#: championship/views.py:2584
+msgid "3-O'rin uchun +50 Reyting"
+msgstr "За 3-е место +50 Рейтинга"
+
+#: championship/views.py:2585
+msgid "Turnir Top Urari +50 Reyting"
+msgstr "Лучший бомбардир турнира +50 Рейтинга"
+
+#: championship/views.py:2589
+msgid "GOLLAR VIDEOSI UCHUN REYTING"
+msgstr "РЕЙТИНГ ЗА ВИДЕО ГОЛОВ"
+
+#: championship/views.py:2591
+msgid ""
+"Gol Reytingi Barcha Turnir Formatlarida Amal Qiladi (liga, kubok va boshqa)."
+msgstr "Рейтинг за голы действует во всех форматах турниров (лига, кубок и т.д.)."
+
+#: championship/views.py:2592
+msgid "Gol Videosi Majburiy Hisoblanadi."
+msgstr "Видео гола является обязательным."
+
+#: championship/views.py:2594
+msgid "Turnir Eng Chiroyli Goli (eng kop reaksiya top3)"
+msgstr "Самый красивый гол турнира (топ-3 по реакциям)"
+
+#: championship/views.py:2595
+msgid "1-O'rin +100 Reyting"
+msgstr "1-е место +100 Рейтинга"
+
+#: championship/views.py:2596
+msgid "2-O'rin +50 Reyting"
+msgstr "2-е место +50 Рейтинга"
+
+#: championship/views.py:2597
+msgid "3-O'rin +50 Reyting"
+msgstr "3-е место +50 Рейтинга"
+
+#: championship/views.py:2599
+msgid "Har Bir Gol Turidan 1ta Turnirga 1ta Limit"
+msgstr "Лимит: 1 гол каждого типа за 1 турнир"
+
+#: championship/views.py:2601
+msgid "Qaychi Zarbasida Gol +150 REYTING"
+msgstr "Гол ударом «ножницы» +150 РЕЙТИНГА"
+
+#: championship/views.py:2602
+msgid "Scorpion Gol +150 REYTING"
+msgstr "Гол в стиле «скорпион» +150 РЕЙТИНГА"
+
+#: championship/views.py:2603
+msgid "Rabona Gol yoki Asist +100 REYTING"
+msgstr "Гол или голевая передача «рабоной» +100 РЕЙТИНГА"
+
+#: championship/views.py:2604
+msgid "Burchak Zarbasidan Gol (угловой tog'ridan tog'ri gol) +100 REYTING"
+msgstr "Гол с углового (напрямую) +100 РЕЙТИНГА"
+
+#: championship/views.py:2605
+msgid "Uzoq Masofadan Gol (20+ metr va undan uzoq) +100 REYTING"
+msgstr "Гол с дальней дистанции (20+ метров и более) +100 РЕЙТИНГА"
+
+#: championship/views.py:2606
+msgid ""
+"Darvozabondan Gol yoki Asist (penalti yoki jarima zarbasi hisobga olinmaydi) "
+"+100 REYTING"
+msgstr "Гол или голевая передача вратаря (кроме пенальти или штрафного) +100 РЕЙТИНГА"
+
+#: championship/views.py:2607
+msgid "Jarima Zarbasidan Gol +50 REYTING"
+msgstr "Гол со штрафного удара +50 РЕЙТИНГА"
+
+#: championship/views.py:2608
+msgid "Blitz Curler Gol +30 REYTING"
+msgstr "Гол «Blitz Curler» +30 РЕЙТИНГА"
+
+#: championship/views.py:2609
+msgid "Poker (bir o'yinchi 4ta yoki undan kop gol) +50 REYTING"
+msgstr "Покер (4 и более голов одного игрока) +50 РЕЙТИНГА"
+
+#: championship/views.py:2610
+msgid "85+ Hal Qiluvchi Gol (85-daqiqadan so'ng g'alaba goli) +50 REYTING"
+msgstr "Решающий гол на 85+ минуте (гол, принесший победу после 85-й минуты) +50 РЕЙТИНГА"
+
+#: championship/views.py:2611
+msgid "Comeback G'alaba (kamida 2gol ortda qolib kambek) +50 REYTING"
+msgstr "Победа-камбэк (отыгрыш с разницы минимум в 2 гола) +50 РЕЙТИНГА"
+
+#: championship/views.py:2615
+msgid ""
+"Gollar ufel_uz Instagram Sahifasida Ham Joylanadi. Bir Ishtirokchi Bitta "
+"Turnir Davomida Turli xil Gollar Orqali Umumiy Reyting To‘plashi Mumkin. "
+"Reytingni Soxta Oshirish Urinishlari Aniqlansa, Natija Bekor Qilinadi!"
+msgstr "Голы также публикуются на Instagram-странице ufel_uz. Один участник может набрать общий рейтинг за различные типы голов в рамках одного турнира. В случае обнаружения попыток искусственного завышения рейтинга, результат аннулируется!"
+
+#: static/templates/index.html:34 static/templates/index.html:56
+msgid "HOME"
+msgstr "ГЛАВНАЯ"
+
+#: static/templates/index.html:35 static/templates/index.html:57
+#: static/templates/index.html:83
+msgid "TOURNAMENTS"
+msgstr "ТУРНИРЫ"
+
+#: static/templates/index.html:36 static/templates/index.html:58
+msgid "UFEL CHAMPIONS"
+msgstr "ЧЕМПИОНЫ UFEL"
+
+#: static/templates/index.html:37 static/templates/index.html:59
+#: static/templates/index.html:93 static/templates/index.html:317
+msgid "RATINGS"
+msgstr "РЕЙТИНГИ"
+
+#: static/templates/index.html:38 static/templates/index.html:60
+#: static/templates/reglament.html:271
+msgid "REGLAMENT"
+msgstr "РЕГЛАМЕНТ"
+
+#: static/templates/index.html:41 static/templates/index.html:63
+msgid "ADMIN PANEL"
+msgstr "ПАНЕЛЬ АДМИНА"
+
+#: static/templates/index.html:43 static/templates/index.html:65
+msgid "LOGOUT"
+msgstr "ВЫЙТИ"
+
+#: static/templates/index.html:45 static/templates/index.html:67
+msgid "LOGIN"
+msgstr "ВОЙТИ"
+
+#: static/templates/index.html:75
+msgid "Uzbekistan Football e-League"
+msgstr "Футбольная электронная лига Узбекистана"
+
+#: static/templates/index.html:76
+msgid "OFFICIAL UFEL"
+msgstr "ОФИЦИАЛЬНАЯ UFEL"
+
+#: static/templates/index.html:76
+msgid "PLATFORM"
+msgstr "ПЛАТФОРМА"
+
+#: static/templates/index.html:78
+msgid "The Only professional eFootball"
+msgstr "Единственная профессиональная лига"
+
+#: static/templates/index.html:78
+msgid "League in Uzbekistan"
+msgstr "по eFootball в Узбекистане"
+
+#: static/templates/index.html:84
+msgid "TURNIR JADVALI"
+msgstr "РАСПИСАНИЕ ТУРНИРОВ"
+
+#: static/templates/index.html:88
+msgid "CHAMPIONS"
+msgstr "ЧЕМПИОНЫ"
+
+#: static/templates/index.html:89
+msgid "UFEL CHEMPIONLARI"
+msgstr "ЧЕМПИОНЫ UFEL"
+
+#: static/templates/index.html:94
+msgid "O'YINCHILAR YILLIK REYTINGI"
+msgstr "ГОДОВОЙ РЕЙТИНГ ИГРОКОВ"
+
+#: static/templates/index.html:97
+msgid "JOIN GROUP"
+msgstr "ВСТУПИТЬ В ГРУППУ"
+
+#: static/templates/index.html:103 static/templates/index.html:226
+#: static/templates/index.html:291 static/templates/index.html:308
+#: static/templates/index.html:657 static/templates/index.html:1111
+#: static/templates/index.html:1247 static/templates/reglament.html:318
+#: static/templates/reglament.html:343
+msgid "Yuklanmoqda..."
+msgstr "Загрузка..."
+
+#: static/templates/index.html:111
+msgid "TOP 5 RATINGS"
+msgstr "ТОП-5 РЕЙТИНГА"
+
+#: static/templates/index.html:177
+msgid "BALL"
+msgstr "ОЧКИ"
+
+#: static/templates/index.html:182
+msgid "Hali rating ma'lumotlari mavjud emas"
+msgstr "Данных о рейтинге пока нет"
+
+#: static/templates/index.html:200
+msgid "© 2026 UFeL | All Rights Reserved"
+msgstr "© 2026 UFeL | Все права защищены"
+
+#: static/templates/index.html:235 static/templates/index.html:266
+#: static/templates/tournament_content_partial.html:532
+msgid "Jami:"
+msgstr "Всего:"
+
+#: static/templates/index.html:235 static/templates/index.html:266
+msgid "ta champion"
+msgstr "чемпионов"
+
+#: static/templates/index.html:274
+msgid "Hali chempionlar mavjud emas"
+msgstr "Чемпионов пока нет"
+
+#: static/templates/index.html:326
+msgid "O'YINCHI"
+msgstr "ИГРОК"
+
+#: static/templates/index.html:327
+msgid "NAT"
+msgstr "РЕЗ"
+
+#: static/templates/index.html:328
+msgid "O'YIN"
+msgstr "ИГРЫ"
+
+#: static/templates/index.html:329
+msgid "REYTING"
+msgstr "РЕЙТИНГ"
+
+#: static/templates/index.html:417
+msgid "Hozircha reyting ma'lumotlari mavjud emas"
+msgstr "На данный момент данных о рейтинге нет"
+
+#: static/templates/index.html:1132 static/templates/index.html:1283
+#: static/templates/index.html:1294
+msgid "Yopish"
+msgstr "Закрыть"
+
+#: static/templates/reglament.html:9
+msgid "Reglament"
+msgstr "Регламент"
+
+#: static/templates/reglament.html:337 static/templates/reglament.html:388
+msgid "Xatolik yuz berdi"
+msgstr "Произошла ошибка"
+
+#: static/templates/tournament_content_partial.html:11
+msgid "LIGA JADVALI"
+msgstr "ТАБЛИЦА ЛИГИ"
+
+#: static/templates/tournament_content_partial.html:12
+msgid "GURUH BOSQICHI"
+msgstr "ГРУППОВОЙ ЭТАП"
+
+#: static/templates/tournament_content_partial.html:13
+msgid "PLAYOFF SETKASI"
+msgstr "СЕТКА ПЛЕЙ-ОФФ"
+
+#: static/templates/tournament_content_partial.html:19
+msgid "O'YINLAR"
+msgstr "МАТЧИ"
+
+#: static/templates/tournament_content_partial.html:30
+#: static/templates/tournament_content_partial.html:58
+msgid "FILTERLASH"
+msgstr "ФИЛЬТР"
+
+#: static/templates/tournament_content_partial.html:40
+#: static/templates/tournament_content_partial.html:292
+#: static/templates/tournament_content_partial.html:371
+msgid "O'yinchi"
+msgstr "Игрок"
+
+#: static/templates/tournament_content_partial.html:42
+msgid "Barcha o'yinchilar"
+msgstr "Все игроки"
+
+#: static/templates/tournament_content_partial.html:49
+msgid "Holati"
+msgstr "Статус"
+
+#: static/templates/tournament_content_partial.html:51
+msgid "Barcha o'yinlar"
+msgstr "Все матчи"
+
+#: static/templates/tournament_content_partial.html:52
+msgid "Tugagan o'yinlar"
+msgstr "Завершенные матчи"
+
+#: static/templates/tournament_content_partial.html:53
+msgid "Kutilayotgan o'yinlar"
+msgstr "Ожидаемые матчи"
+
+#: static/templates/tournament_content_partial.html:61
+msgid "TOZALASH"
+msgstr "СБРОСИТЬ"
+
+#: static/templates/tournament_content_partial.html:293
+#: static/templates/tournament_content_partial.html:372
+msgid "O'yn"
+msgstr "Игр"
+
+#: static/templates/tournament_content_partial.html:294
+#: static/templates/tournament_content_partial.html:373
+msgid "G`"
+msgstr "B"
+
+#: static/templates/tournament_content_partial.html:295
+#: static/templates/tournament_content_partial.html:374
+msgid "D"
+msgstr "Н"
+
+#: static/templates/tournament_content_partial.html:296
+#: static/templates/tournament_content_partial.html:375
+msgid "M"
+msgstr "П"
+
+#: static/templates/tournament_content_partial.html:297
+#: static/templates/tournament_content_partial.html:376
+msgid "+:-"
+msgstr "+:-"
+
+#: static/templates/tournament_content_partial.html:298
+#: static/templates/tournament_content_partial.html:377
+msgid "±"
+msgstr "±"
+
+#: static/templates/tournament_content_partial.html:299
+#: static/templates/tournament_content_partial.html:378
+msgid "OCH"
+msgstr "ОЧК"
+
+#: static/templates/tournament_content_partial.html:343
+msgid "Hali o'yinlar bo'lmagan"
+msgstr "Матчей пока не было"
+
+#: static/templates/tournament_content_partial.html:358
+msgid "GURUH"
+msgstr "ГРУППА"
+
+#: static/templates/tournament_content_partial.html:360
+msgid "ta jamoa"
+msgstr "команд"
+
+#: static/templates/tournament_content_partial.html:361
+msgid "ta saralanadi"
+msgstr "проходят"
+
+#: static/templates/tournament_content_partial.html:423
+msgid "Guruhlar jadvali uchun ma'lumot yo'q"
+msgstr "Нет данных для таблицы групп"
+
+#: static/templates/tournament_content_partial.html:424
+msgid "O'yinlar tugagandan so'ng statistika ko'rinadi"
+msgstr "Статистика появится после завершения матчей"
+
+#: static/templates/tournament_content_partial.html:456
+#: static/templates/tournament_content_partial.html:469
+#: static/templates/tournament_content_partial.html:496
+#: static/templates/tournament_content_partial.html:509
+#: static/templates/tournament_content_partial.html:560
+#: static/templates/tournament_content_partial.html:590
+msgid "TBD"
+msgstr "Будет определено"
+
+#: static/templates/tournament_content_partial.html:531
+msgid "O'YINLAR RO'YXATI"
+msgstr "СПИСОК МАТЧЕЙ"
+
+#: static/templates/tournament_content_partial.html:532
+msgid "ta o'yin"
+msgstr "матчей"
+
+#: static/templates/tournament_content_partial.html:539
+msgid "Guruh bosqichi"
+msgstr "Групповой этап"
+
+#: static/templates/tournament_content_partial.html:543
+msgid "davra"
+msgstr "тур"
+
+#: static/templates/tournament_content_partial.html:548
+msgid "Guruh"
+msgstr "Группа"
+
+#: static/templates/tournament_content_partial.html:601
+msgid "Bu turnir uchun hali o'yinlar yo'q"
+msgstr "Для этого турнира пока нет матчей"
+
+#: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
+msgid "Messages"
+msgstr "Сообщения"
+
+#: venv/lib/python3.12/site-packages/django/contrib/sitemaps/apps.py:8
+msgid "Site Maps"
+msgstr "Карты сайта"
+
+#: venv/lib/python3.12/site-packages/django/contrib/staticfiles/apps.py:9
+msgid "Static Files"
+msgstr "Статические файлы"
+
+#: venv/lib/python3.12/site-packages/django/contrib/syndication/apps.py:7
+msgid "Syndication"
+msgstr "Синдикация"
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:30
+msgid "…"
+msgstr "…"
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:32
+msgid "That page number is not an integer"
+msgstr "Этот номер страницы не является целым числом"
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:33
+msgid "That page number is less than 1"
+msgstr "Этот номер страницы меньше 1"
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:34
+msgid "That page contains no results"
+msgstr "Эта страница не содержит результатов"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:22
+msgid "Enter a valid value."
+msgstr "Введите корректное значение."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:70
+msgid "Enter a valid domain name."
+msgstr "Введите корректное доменное имя."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:155
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:768
+msgid "Enter a valid URL."
+msgstr "Введите корректный URL."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:216
+msgid "Enter a valid integer."
+msgstr "Введите корректное целое число."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:227
+msgid "Enter a valid email address."
+msgstr "Введите корректный адрес электронной почты."
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: venv/lib/python3.12/site-packages/django/core/validators.py:310
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr "Введите корректный «slug», состоящий из букв, цифр, символов подчеркивания или дефисов."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:318
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr "Введите корректный «slug», состоящий из букв Юникода, цифр, символов подчеркивания или дефисов."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:330
+#: venv/lib/python3.12/site-packages/django/core/validators.py:339
+#: venv/lib/python3.12/site-packages/django/core/validators.py:353
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2215
+#, python-format
+msgid "Enter a valid %(protocol)s address."
+msgstr "Введите корректный %(protocol)s адрес."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:332
+msgid "IPv4"
+msgstr "IPv4"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:341
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:30
+msgid "IPv6"
+msgstr "IPv6"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:355
+msgid "IPv4 or IPv6"
+msgstr "IPv4 или IPv6"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:396
+msgid "Enter only digits separated by commas."
+msgstr "Вводите только цифры, разделенные запятыми."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:402
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr "Убедитесь, что это значение равно %(limit_value)s (текущее %(show_value)s)."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:437
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr "Убедитесь, что это значение меньше или равно %(limit_value)s."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:446
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr "Убедитесь, что это значение больше или равно %(limit_value)s."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:455
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr "Убедитесь, что это значение кратно размеру шага %(limit_value)s."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:462
+#, python-format
+msgid ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgstr "Убедитесь, что это значение кратно размеру шага %(limit_value)s, начиная с %(offset)s, например: %(offset)s, %(valid_value1)s, %(valid_value2)s и так далее."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:494
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] "Убедитесь, что это значение содержит не менее %(limit_value)d символа (сейчас %(show_value)d)."
+msgstr[1] "Убедитесь, что это значение содержит не менее %(limit_value)d символов (сейчас %(show_value)d)."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:512
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] "Убедитесь, что это значение содержит не более %(limit_value)d символа (сейчас %(show_value)d)."
+msgstr[1] "Убедитесь, что это значение содержит не более %(limit_value)d символов (сейчас %(show_value)d)."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:535
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:359
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:398
+msgid "Enter a number."
+msgstr "Введите число."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:537
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] "Убедитесь, что всего не более %(max)s цифры."
+msgstr[1] "Убедитесь, что всего не более %(max)s цифр."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:542
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] "Убедитесь, что не более %(max)s знака после запятой."
+msgstr[1] "Убедитесь, что не более %(max)s знаков после запятой."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:547
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] "Убедитесь, что до десятичной точки не более %(max)s цифры."
+msgstr[1] "Убедитесь, что до десятичной точки не более %(max)s цифр."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:618
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr "Расширение файла «%(extension)s» не разрешено. Разрешенные расширения: %(allowed_extensions)s."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:680
+msgid "Null characters are not allowed."
+msgstr "Нулевые символы не допускаются."
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1571
+#: venv/lib/python3.12/site-packages/django/forms/models.py:908
+msgid "and"
+msgstr "и"
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1573
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr "%(model_name)s с таким %(field_labels)s уже существует."
+
+#: venv/lib/python3.12/site-packages/django/db/models/constraints.py:22
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr "Ограничение «%(name)s» нарушено."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:134
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr "Значение %(value)r не является допустимым выбором."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:135
+msgid "This field cannot be null."
+msgstr "Это поле не может быть null."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:136
+msgid "This field cannot be blank."
+msgstr "Это поле не может быть пустым."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:137
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr "%(model_name)s с таким %(field_label)s уже существует."
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:141
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr "%(field_label)s должен быть уникальным для %(date_field_label)s %(lookup_type)s."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:180
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr "Поле типа: %(field_type)s"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1156
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr "Значение «%(value)s» должно быть либо True, либо False."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1157
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr "Значение «%(value)s» должно быть либо True, False, либо None."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1159
+msgid "Boolean (Either True or False)"
+msgstr "Логическое (True или False)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1209
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr "Строка (до %(max_length)s символов)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1211
+msgid "String (unlimited)"
+msgstr "Строка (без ограничений)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1320
+msgid "Comma-separated integers"
+msgstr "Целые числа, разделенные запятыми"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1421
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr "Значение «%(value)s» имеет неверный формат даты. Оно должно быть в формате ГГГГ-ММ-ДД."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1425
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1560
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr "Значение «%(value)s» имеет правильный формат (ГГГГ-ММ-ДД), но это недопустимая дата."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1429
+msgid "Date (without time)"
+msgstr "Дата (без времени)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1556
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
+"HH:MM[:ss[.uuuuuu]][TZ] format."
+msgstr "Значение «%(value)s» имеет неверный формат. Оно должно быть в формате ГГГГ-ММ-ДД ЧЧ:ММ[:сс[.сссссс]][ЧП]."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1564
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr "Значение «%(value)s» имеет правильный формат (ГГГГ-ММ-ДД ЧЧ:ММ[:сс[.сссссс]][ЧП]), но это недопустимая дата/время."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1569
+msgid "Date (with time)"
+msgstr "Дата (со временем)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1696
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr "Значение «%(value)s» должно быть десятичным числом."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1698
+msgid "Decimal number"
+msgstr "Десятичное число"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1859
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] "
+"[[HH:]MM:]ss[.uuuuuu] format."
+msgstr "Значение «%(value)s» имеет неверный формат. Оно должно быть в формате [ДД] [[ЧЧ:]ММ:]сс[.сссссс]."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1863
+msgid "Duration"
+msgstr "Длительность"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1915
+msgid "Email address"
+msgstr "Адрес электронной почты"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1940
+msgid "File path"
+msgstr "Путь к файлу"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2018
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr "Значение «%(value)s» должно быть числом с плавающей точкой."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2020
+msgid "Floating point number"
+msgstr "Число с плавающей точкой"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2060
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr "Значение «%(value)s» должно быть целым числом."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2062
+msgid "Integer"
+msgstr "Целое число"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2158
+msgid "Big (8 byte) integer"
+msgstr "Большое целое (8 байт)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2175
+msgid "Small integer"
+msgstr "Малое целое"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2183
+msgid "IPv4 address"
+msgstr "IPv4 адрес"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2214
+msgid "IP address"
+msgstr "IP-адрес"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2305
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2306
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr "Значение «%(value)s» должно быть либо None, True или False."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2308
+msgid "Boolean (Either True, False or None)"
+msgstr "Логическое (True, False или None)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2359
+msgid "Positive big integer"
+msgstr "Положительное большое целое"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2374
+msgid "Positive integer"
+msgstr "Положительное целое"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2389
+msgid "Positive small integer"
+msgstr "Положительное малое целое"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2405
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr "Slug (до %(max_length)s символов)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2441
+msgid "Text"
+msgstr "Текст"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2521
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr "Значение «%(value)s» имеет неверный формат. Оно должно быть в формате ЧЧ:ММ[:сс[.сссссс]]."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2525
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr "Значение «%(value)s» имеет правильный формат (ЧЧ:ММ[:сс[.сссссс]]), но это недопустимое время."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2529
+msgid "Time"
+msgstr "Время"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2637
+msgid "URL"
+msgstr "URL"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2661
+msgid "Raw binary data"
+msgstr "Необработанные двоичные данные"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2726
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr "«%(value)s» не является допустимым UUID."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2728
+msgid "Universally unique identifier"
+msgstr "Универсальный уникальный идентификатор"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:244
+msgid "File"
+msgstr "Файл"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:420
+msgid "Image"
+msgstr "Изображение"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:24
+msgid "A JSON object"
+msgstr "JSON-объект"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:26
+msgid "Value must be valid JSON."
+msgstr "Значение должно быть корректным JSON."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:932
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r does not exist."
+msgstr "Экземпляр %(model)s с полем %(field)s %(value)r не существует."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:934
+msgid "Foreign Key (type determined by related field)"
+msgstr "Внешний ключ (тип определяется связанным полем)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1228
+msgid "One-to-one relationship"
+msgstr "Связь один-к-одному"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1285
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr "Связь %(from)s-%(to)s"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1287
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr "Связи %(from)s-%(to)s"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1335
+msgid "Many-to-many relationship"
+msgstr "Связь многие-ко-многим"
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: venv/lib/python3.12/site-packages/django/forms/boundfield.py:185
+msgid ":?.!"
+msgstr ":?.!"
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:95
+msgid "This field is required."
+msgstr "Это поле обязательно для заполнения."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:308
+msgid "Enter a whole number."
+msgstr "Введите целое число."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:479
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1260
+msgid "Enter a valid date."
+msgstr "Введите корректную дату."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:502
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1261
+msgid "Enter a valid time."
+msgstr "Введите корректное время."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:529
+msgid "Enter a valid date/time."
+msgstr "Введите корректную дату/время."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:563
+msgid "Enter a valid duration."
+msgstr "Введите корректную длительность."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:564
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr "Количество дней должно быть между {min_days} и {max_days}."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:633
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr "Файл не был отправлен. Проверьте тип кодировки формы."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:634
+msgid "No file was submitted."
+msgstr "Файл не был отправлен."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:635
+msgid "The submitted file is empty."
+msgstr "Отправленный файл пуст."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:637
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] "Убедитесь, что имя файла содержит не более %(max)d символа (сейчас %(length)d)."
+msgstr[1] "Убедитесь, что имя файла содержит не более %(max)d символов (сейчас %(length)d)."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:642
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr "Пожалуйста, либо отправьте файл, либо отметьте флажок очистки, но не оба действия одновременно."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:710
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Загрузите корректное изображение. Загруженный файл либо не является изображением, либо поврежден."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:882
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:968
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1592
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr "Выберите корректный вариант. %(value)s не является одним из доступных вариантов."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:970
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1089
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1590
+msgid "Enter a list of values."
+msgstr "Введите список значений."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1090
+msgid "Enter a complete value."
+msgstr "Введите полное значение."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1329
+msgid "Enter a valid UUID."
+msgstr "Введите корректный UUID."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1359
+msgid "Enter a valid JSON."
+msgstr "Введите корректный JSON."
+
+#. Translators: This is the default suffix added to form field labels
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:94
+msgid ":"
+msgstr ":"
+
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:230
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr "(Скрытое поле %(name)s) %(error)s"
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:61
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr "Данные ManagementForm отсутствуют или были изменены. Отсутствуют поля: %(field_names)s. Если проблема не исчезает, вам может потребоваться отправить отчет об ошибке."
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:65
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] "Пожалуйста, отправьте не более %(num)d формы."
+msgstr[1] "Пожалуйста, отправьте не более %(num)d форм."
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:70
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] "Пожалуйста, отправьте как минимум %(num)d форму."
+msgstr[1] "Пожалуйста, отправьте как минимум %(num)d форм."
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:484
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:491
+msgid "Order"
+msgstr "Порядок"
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
+msgid "Delete"
+msgstr "Удалить"
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:901
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr "Пожалуйста, исправьте повторяющиеся данные для %(field)s."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:906
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr "Пожалуйста, исправьте повторяющиеся данные для %(field)s, это поле должно быть уникальным."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:913
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr "Пожалуйста, исправьте повторяющиеся данные для %(field_name)s, которые должны быть уникальными для %(lookup)s в %(date_field)s."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:922
+msgid "Please correct the duplicate values below."
+msgstr "Пожалуйста, исправьте повторяющиеся значения ниже."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1359
+msgid "The inline value did not match the parent instance."
+msgstr "Встроенное значение не соответствует родительскому экземпляру."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1450
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr "Выберите корректный вариант. Этот вариант не является доступным."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1594
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr "«%(pk)s» не является допустимым значением."
+
+#: venv/lib/python3.12/site-packages/django/forms/utils.py:227
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr "%(datetime)s не может быть интерпретирован в часовом поясе %(current_timezone)s; значение может быть неоднозначным или не существовать."
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:461
+msgid "Clear"
+msgstr "Очистить"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:462
+msgid "Currently"
+msgstr "Текущий файл"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:463
+msgid "Change"
+msgstr "Изменить"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:800
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:801
+msgid "Yes"
+msgstr "Да"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:802
+msgid "No"
+msgstr "Нет"
+
+#. Translators: Please do not add spaces around commas.
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:873
+msgid "yes,no,maybe"
+msgstr "да,нет,возможно"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:903
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:920
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] "%(size)d байт"
+msgstr[1] "%(size)d байта"
+msgstr[2] "%(size)d байт"
+msgstr[3] "%(size)d байта"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:922
+#, python-format
+msgid "%s KB"
+msgstr "%s КБ"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:924
+#, python-format
+msgid "%s MB"
+msgstr "%s МБ"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:926
+#, python-format
+msgid "%s GB"
+msgstr "%s ГБ"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:928
+#, python-format
+msgid "%s TB"
+msgstr "%s ТБ"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:930
+#, python-format
+msgid "%s PB"
+msgstr "%s ПБ"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:74
+msgid "p.m."
+msgstr "п.п."
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:75
+msgid "a.m."
+msgstr "д.п."
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:80
+msgid "PM"
+msgstr "ПП"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:81
+msgid "AM"
+msgstr "ДП"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:153
+msgid "midnight"
+msgstr "полночь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:155
+msgid "noon"
+msgstr "полдень"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:7
+msgid "Monday"
+msgstr "Понедельник"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:8
+msgid "Tuesday"
+msgstr "Вторник"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:9
+msgid "Wednesday"
+msgstr "Среда"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:10
+msgid "Thursday"
+msgstr "Четверг"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:11
+msgid "Friday"
+msgstr "Пятница"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:12
+msgid "Saturday"
+msgstr "Суббота"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:13
+msgid "Sunday"
+msgstr "Воскресенье"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:16
+msgid "Mon"
+msgstr "Пн"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:17
+msgid "Tue"
+msgstr "Вт"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:18
+msgid "Wed"
+msgstr "Ср"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:19
+msgid "Thu"
+msgstr "Чт"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:20
+msgid "Fri"
+msgstr "Пт"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:21
+msgid "Sat"
+msgstr "Сб"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:22
+msgid "Sun"
+msgstr "Вс"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:25
+msgid "January"
+msgstr "Январь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:26
+msgid "February"
+msgstr "Февраль"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:27
+msgid "March"
+msgstr "Март"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:28
+msgid "April"
+msgstr "Апрель"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:29
+msgid "May"
+msgstr "Май"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:30
+msgid "June"
+msgstr "Июнь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:31
+msgid "July"
+msgstr "Июль"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:32
+msgid "August"
+msgstr "Август"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:33
+msgid "September"
+msgstr "Сентябрь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:34
+msgid "October"
+msgstr "Октябрь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:35
+msgid "November"
+msgstr "Ноябрь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:36
+msgid "December"
+msgstr "Декабрь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:39
+msgid "jan"
+msgstr "янв"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:40
+msgid "feb"
+msgstr "фев"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:41
+msgid "mar"
+msgstr "мар"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:42
+msgid "apr"
+msgstr "апр"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:43
+msgid "may"
+msgstr "май"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:44
+msgid "jun"
+msgstr "июн"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:45
+msgid "jul"
+msgstr "июл"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:46
+msgid "aug"
+msgstr "авг"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:47
+msgid "sep"
+msgstr "сен"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:48
+msgid "oct"
+msgstr "окт"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:49
+msgid "nov"
+msgstr "ноя"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:50
+msgid "dec"
+msgstr "дек"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr "Янв."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr "Фев."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr "Март"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr "Апр."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr "Май"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr "Июнь"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr "Июль"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr "Авг."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr "Сент."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr "Окт."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr "Ноя."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr "Дек."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:67
+msgctxt "alt. month"
+msgid "January"
+msgstr "Января"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:68
+msgctxt "alt. month"
+msgid "February"
+msgstr "Февраля"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:69
+msgctxt "alt. month"
+msgid "March"
+msgstr "Марта"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:70
+msgctxt "alt. month"
+msgid "April"
+msgstr "Апреля"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:71
+msgctxt "alt. month"
+msgid "May"
+msgstr "Мая"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:72
+msgctxt "alt. month"
+msgid "June"
+msgstr "Июня"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:73
+msgctxt "alt. month"
+msgid "July"
+msgstr "Июля"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:74
+msgctxt "alt. month"
+msgid "August"
+msgstr "Августа"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:75
+msgctxt "alt. month"
+msgid "September"
+msgstr "Сентября"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:76
+msgctxt "alt. month"
+msgid "October"
+msgstr "Октября"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:77
+msgctxt "alt. month"
+msgid "November"
+msgstr "Ноября"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:78
+msgctxt "alt. month"
+msgid "December"
+msgstr "Декабря"
+
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:8
+msgid "This is not a valid IPv6 address."
+msgstr "Это недействительный IPv6-адрес."
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:75
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr "%(truncated_text)s…"
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:286
+msgid "or"
+msgstr "или"
+
+#. Translators: This string is used as a separator between list elements
+#: venv/lib/python3.12/site-packages/django/utils/text.py:305
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:135
+msgid ", "
+msgstr ", "
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] "%(num)d год"
+msgstr[1] "%(num)d года"
+msgstr[2] "%(num)d лет"
+msgstr[3] "%(num)d года"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
+#, python-format
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] "%(num)d месяц"
+msgstr[1] "%(num)d месяца"
+msgstr[2] "%(num)d месяцев"
+msgstr[3] "%(num)d месяца"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] "%(num)d неделя"
+msgstr[1] "%(num)d недели"
+msgstr[2] "%(num)d недель"
+msgstr[3] "%(num)d недели"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(num)d день"
+msgstr[1] "%(num)d дня"
+msgstr[2] "%(num)d дней"
+msgstr[3] "%(num)d дня"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] "%(num)d час"
+msgstr[1] "%(num)d часа"
+msgstr[2] "%(num)d часов"
+msgstr[3] "%(num)d часа"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] "%(num)d минута"
+msgstr[1] "%(num)d минуты"
+msgstr[2] "%(num)d минут"
+msgstr[3] "%(num)d минуты"
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:29
+msgid "Forbidden"
+msgstr "Доступ запрещен"
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:30
+msgid "CSRF verification failed. Request aborted."
+msgstr "Проверка CSRF не удалась. Запрос прерван."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:34
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr "Вы видите это сообщение, потому что этот HTTPS-сайт требует, чтобы ваш веб-браузер отправил «Referer header», но он не был отправлен. Этот заголовок требуется по соображениям безопасности, чтобы гарантировать, что ваш браузер не был захвачен третьими лицами."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:40
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr "Если вы настроили свой браузер на отключение заголовков «Referer», пожалуйста, включите их снова, хотя бы для этого сайта, для HTTPS-соединений или для запросов «same-origin»."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:45
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr "Если вы используете тег <meta name=\"referrer\" content=\"no-referrer\"> или включаете заголовок «Referrer-Policy: no-referrer», пожалуйста, удалите их. Защита CSRF требует заголовка «Referer» для строгой проверки реферера. Если вас беспокоит конфиденциальность, используйте альтернативы, такие как <a rel=\"noreferrer\" …> для ссылок на сторонние сайты."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:54
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr "Вы видите это сообщение, потому что этот сайт требует файл cookie CSRF при отправке форм. Этот файл cookie необходим по соображениям безопасности, чтобы гарантировать, что ваш браузер не был захвачен третьими лицами."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:60
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr "Если вы настроили свой браузер на отключение файлов cookie, пожалуйста, включите их снова, хотя бы для этого сайта или для запросов «same-origin»."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:66
+msgid "More information is available with DEBUG=True."
+msgstr "Дополнительная информация доступна при DEBUG=True."
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:44
+msgid "No year specified"
+msgstr "Год не указан"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:64
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:115
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:214
+msgid "Date out of range"
+msgstr "Дата вне диапазона"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:94
+msgid "No month specified"
+msgstr "Месяц не указан"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:147
+msgid "No day specified"
+msgstr "День не указан"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:194
+msgid "No week specified"
+msgstr "Неделя не указана"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:349
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:380
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr "Нет доступных %(verbose_name_plural)s"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:652
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because "
+"%(class_name)s.allow_future is False."
+msgstr "Будущие %(verbose_name_plural)s недоступны, так как %(class_name)s.allow_future имеет значение False."
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:692
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr "Неверная строка даты «%(datestr)s» для формата «%(format)s»"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr "%(verbose_name)s не найден по данному запросу"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr "Страница не является «last» и не может быть преобразована в целое число."
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr "Неверная страница (%(page_number)s): %(message)s"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:169
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr "Пустой список, а «%(class_name)s.allow_empty» имеет значение False."
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:49
+msgid "Directory indexes are not allowed here."
+msgstr "Индексы каталогов здесь не разрешены."
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:51
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr "«%(path)s» не существует"
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:68
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:8
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:11
+#, python-format
+msgid "Index of %(directory)s"
+msgstr "Индекс каталога %(directory)s"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:7
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:204
+msgid "The install worked successfully! Congratulations!"
+msgstr "Установка прошла успешно! Поздравляем!"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr "Посмотреть <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" target=\"_blank\" rel=\"noopener\">примечания к релизу</a> для Django %(version)s"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:208
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr "Вы видите эту страницу, потому что в вашем файле настроек указано <a href=\"https://docs.djangoproject.com/en/%(version)s/ref/settings/#debug\" target=\"_blank\" rel=\"noopener\">DEBUG=True</a> и вы не настроили ни одного URL-адреса."
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:217
+msgid "Django Documentation"
+msgstr "Документация Django"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:218
+msgid "Topics, references, &amp; how-to’s"
+msgstr "Темы, справочники и руководства"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:226
+msgid "Tutorial: A Polling App"
+msgstr "Учебное пособие: Приложение для опросов"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:227
+msgid "Get started with Django"
+msgstr "Начать работу с Django"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:235
+msgid "Django Community"
+msgstr "Сообщество Django"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
+msgid "Connect, get help, or contribute"
+msgstr "Общайтесь, получайте помощь или вносите вклад"
+
+
+msgid "Top o'yinlar qo'shilmagan"
+msgstr "Топовые игры не добавлены"
+

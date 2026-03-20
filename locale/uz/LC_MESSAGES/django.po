@@ -1,0 +1,1866 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: championship/views.py:2593 championship/views.py:2598
+#: championship/views.py:2600
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-20 03:59+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: uz\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: championship/views.py:2494
+msgid "Uzbekistan Football e-League — REGLAMENT"
+msgstr "Uzbekistan Football e-League — REGLAMENT"
+
+#: championship/views.py:2497
+msgid "1. UMUMIY MA’LUMOT"
+msgstr "1. UMUMIY MA'LUMOT"
+
+#: championship/views.py:2499
+msgid ""
+"1.1. UFEL (Uzbekistan Football e-League) — eFootball o'yinida turnirlar "
+"tashkil qiluvchi liga hisoblanadi."
+msgstr "1.1. UFEL (Uzbekistan Football e-League) — eFootball o'yinida turnirlar tashkil qiluvchi liga hisoblanadi."
+
+#: championship/views.py:2500
+msgid ""
+"1.2. Turnirlar eFootball oʻyini asosida va ushbu reglamentga muvofiq tashkil "
+"etiladi."
+msgstr "1.2. Turnirlar eFootball oʻyini asosida va ushbu reglamentga muvofiq tashkil etiladi."
+
+#: championship/views.py:2501
+msgid "1.3. Ushbu reglament barcha ishtirokchilar uchun majburiy hisoblanadi."
+msgstr "1.3. Ushbu reglament barcha ishtirokchilar uchun majburiy hisoblanadi."
+
+#: championship/views.py:2502
+msgid ""
+"1.4. Liga maqsadi — eFootballni O'zbekistonda yangi darajada rivojlantirish "
+"va kuchli raqobat muhitini taʼminlash."
+msgstr "1.4. Liga maqsadi — eFootballni O'zbekistonda yangi darajada rivojlantirish va kuchli raqobat muhitini taʼminlash."
+
+#: championship/views.py:2506
+msgid "2. ISHTIROKCHILAR"
+msgstr "2. ISHTIROKCHILAR"
+
+#: championship/views.py:2508
+msgid "2.1. Ligada roʻyxatdan oʻtgan barcha ishtirokchilar qatnashishi mumkin."
+msgstr "2.1. Ligada roʻyxatdan oʻtgan barcha ishtirokchilar qatnashishi mumkin."
+
+#: championship/views.py:2509
+msgid ""
+"2.2. Adminlar ishtirokchilardan turnir uchun kerakli bo'lgan malumotlarni "
+"sorashi mumkun."
+msgstr "2.2. Adminlar ishtirokchilardan turnir uchun kerakli bo'lgan ma'lumotlarni so'rashi mumkin."
+
+#: championship/views.py:2510
+msgid ""
+"2.3. Bir ishtirokchi turnirlarda faqat bitta akkaunt orqali qatnashishi "
+"mumkin."
+msgstr "2.3. Bir ishtirokchi turnirlarda faqat bitta akkaunt orqali qatnashishi mumkin."
+
+#: championship/views.py:2514
+msgid "3. TEXNIK TALABLAR"
+msgstr "3. TEXNIK TALABLAR"
+
+#: championship/views.py:2516
+msgid "3.1. Platformalar: PlayStation 4/5, Kompyuter (PC), Xbox."
+msgstr "3.1. Platformalar: PlayStation 4/5, Kompyuter (PC), Xbox."
+
+#: championship/views.py:2517
+msgid ""
+"3.2. Barqaror o‘yin uchun internet ulanishi LAN (simli) tarmoq tavsiya "
+"etiladi."
+msgstr "3.2. Barqaror o‘yin uchun internet ulanishi LAN (simli) tarmoq tavsiya etiladi."
+
+#: championship/views.py:2518
+msgid ""
+"3.3. Ishtirokchining internet tezligi pas yoki ulanishi belgilangan texnik "
+"talablarga mos kelmagan hollarda, turnirdan chetlatiladi."
+msgstr "3.3. Ishtirokchining internet tezligi past yoki ulanishi belgilangan texnik talablarga mos kelmagan hollarda, turnirdan chetlatiladi."
+
+#: championship/views.py:2519
+msgid ""
+"3.4. Match Sozlamalari turnir turiga qarab alohida reglament yoki eʼlonda "
+"belgilanadi."
+msgstr "3.4. Match sozlamalari turnir turiga qarab alohida reglament yoki eʼlonda belgilanadi."
+
+#: championship/views.py:2520
+msgid ""
+"3.5. O'yin davomida internet uzilishi yoki texnik nosozliklar yuzaga kelsa, "
+"hakamlar qarori bilan qayta o'ynash yoki hisobni saqlab qolish masalasi "
+"ko'rib chiqiladi."
+msgstr "3.5. O'yin davomida internet uzilishi yoki texnik nosozliklar yuzaga kelsa, hakamlar qarori bilan qayta o'ynash yoki hisobni saqlab qolish masalasi ko'rib chiqiladi."
+
+#: championship/views.py:2524
+msgid "4. O‘YINNI BOSHLASH TARTIBI"
+msgstr "4. O‘YINNI BOSHLASH TARTIBI"
+
+#: championship/views.py:2526
+msgid ""
+"4.1. O‘yinni boshlash uchun ishtirokchilar o‘zaro kelishgan holda qulay "
+"vaqtni belgilaydi va bir-biri bilan bog‘lanadi."
+msgstr "4.1. O‘yinni boshlash uchun ishtirokchilar o‘zaro kelishgan holda qulay vaqtni belgilaydi va bir-biri bilan bog‘lanadi."
+
+#: championship/views.py:2527
+msgid ""
+"4.2. Agar raqib xabarlarga javob bermasa yoki kelishilgan vaqtda aloqaga "
+"chiqmasa, UFEL adminlariga murojaat qilinadi."
+msgstr "4.2. Agar raqib xabarlarga javob bermasa yoki kelishilgan vaqtda aloqaga chiqmasa, UFEL adminlariga murojaat qilinadi."
+
+#: championship/views.py:2528
+msgid ""
+"4.3. Adminlar holatni ko‘rib chiqib, texnik g‘alaba, yoki boshqa yakuniy "
+"qaror qabul qiladi."
+msgstr "4.3. Adminlar holatni ko‘rib chiqib, texnik g‘alaba yoki boshqa yakuniy qaror qabul qiladi."
+
+#: championship/views.py:2529
+msgid "4.4. Kelishilgan o‘yinlar qat’iyan taqiqlanadi."
+msgstr "4.4. Kelishilgan o‘yinlar qat’iyan taqiqlanadi."
+
+#: championship/views.py:2533
+msgid "5. LIGA JADVALINI HISOBLASH TARTIBI"
+msgstr "5. LIGA JADVALINI HISOBLASH TARTIBI"
+
+#: championship/views.py:2535
+msgid ""
+"5.1. Liga bosqichida ishtirokchilarning turnir jadvalidagi o‘rinlari, "
+"to‘plangan ochkolar soni asosida aniqlanadi."
+msgstr "5.1. Liga bosqichida ishtirokchilarning turnir jadvalidagi o‘rinlari, to‘plangan ochkolar soni asosida aniqlanadi."
+
+#: championship/views.py:2536
+msgid ""
+"5.2. Agar ishtirokchilarning ochkolari teng bo‘lsa, ustunlik ko‘proq gol "
+"urgan ishtirokchiga beriladi."
+msgstr "5.2. Agar ishtirokchilarning ochkolari teng bo‘lsa, ustunlik ko‘proq gol urgan ishtirokchiga beriladi."
+
+#: championship/views.py:2537
+msgid ""
+"5.3. Agar ochkolar va urilgan gollar soni ham teng bo‘lsa, ustunlik kamroq "
+"gol o‘tkazib yuborgan ishtirokchiga beriladi."
+msgstr "5.3. Agar ochkolar va urilgan gollar soni ham teng bo‘lsa, ustunlik kamroq gol o‘tkazib yuborgan ishtirokchiga beriladi."
+
+#: championship/views.py:2538
+msgid ""
+"5.4. Agar yuqoridagi barcha ko‘rsatkichlar teng bo‘lib qolsa, "
+"ishtirokchilarning o‘zaro o‘yin natijasi hisobga olinadi."
+msgstr "5.4. Agar yuqoridagi barcha ko‘rsatkichlar teng bo‘lib qolsa, ishtirokchilarning o‘zaro o‘yin natijasi hisobga olinadi."
+
+#: championship/views.py:2539
+msgid ""
+"5.5. Maxsus formatdagi turnirlarda (JCH, CHL va boshqa) turnirlarda jadvalni "
+"hisoblash tartibi ushbu turnir reglamentida alohida belgilanadi."
+msgstr "5.5. Maxsus formatdagi turnirlarda (JCH, CHL va boshqa) turnirlarda jadvalni hisoblash tartibi ushbu turnir reglamentida alohida belgilanadi."
+
+#: championship/views.py:2543
+msgid "6. INTIZOM"
+msgstr "6. INTIZOM"
+
+#: championship/views.py:2545
+msgid ""
+"6.1. Turnir davomida barcha ishtirokchilar o‘zaro hurmat va sport ruhiga "
+"amal qilishlari tavsiya etiladi."
+msgstr "6.1. Turnir davomida barcha ishtirokchilar o‘zaro hurmat va sport ruhiga amal qilishlari tavsiya etiladi."
+
+#: championship/views.py:2546
+msgid ""
+"6.2. Guruhda Haqorat, tahdid yoki boshqa nojo‘ya xatti harakatlar "
+"ogohlantirish yoki Ban ga sabab bo‘ladi."
+msgstr "6.2. Guruhda haqorat, tahdid yoki boshqa nojo‘ya xatti harakatlar ogohlantirish yoki bangacha sabab bo‘ladi."
+
+#: championship/views.py:2550
+msgid "7. YAKUNIY QOIDALAR"
+msgstr "7. YAKUNIY QOIDALAR"
+
+#: championship/views.py:2552
+msgid ""
+"7.1. Ishtirokchi turnirda qatnashish orqali ushbu reglamentni to‘liq qabul "
+"qilgan hisoblanadi."
+msgstr "7.1. Ishtirokchi turnirda qatnashish orqali ushbu reglamentni to‘liq qabul qilgan hisoblanadi."
+
+#: championship/views.py:2553
+msgid "7.2. UFEL adminlari bahsli vaziyatlarda yakuniy qaror qabul qiladi."
+msgstr "7.2. UFEL adminlari bahsli vaziyatlarda yakuniy qaror qabul qiladi."
+
+#: championship/views.py:2554
+msgid ""
+"7.3. Adminlar reglamentga o‘zgartirish va qo‘shimchalar kiritish huquqini "
+"o‘zida saqlab qoladi."
+msgstr "7.3. Adminlar reglamentga o‘zgartirish va qo‘shimchalar kiritish huquqini o‘zida saqlab qoladi."
+
+#: championship/views.py:2560 static/templates/reglament.html:272
+msgid "REYTING TIZIMI"
+msgstr "REYTING TIZIMI"
+
+#: championship/views.py:2561
+msgid ""
+"Reyting Natijalari Bir Mavsum So'ngigacha Yeg'ilib Boradi. Reyting Quyidagi "
+"Qoidalar Asosida Hisoblanadi."
+msgstr "Reyting natijalari bir mavsum so'ngigacha yeg'ilib boradi. Reyting quyidagi qoidalar asosida hisoblanadi."
+
+#: championship/views.py:2564
+msgid "O'YIN UCHUN REYTING"
+msgstr "O'YIN UCHUN REYTING"
+
+#: championship/views.py:2566
+msgid "G'alaba (90 daqiqa ichida) +40 Reyting"
+msgstr "G'alaba (90 daqiqa ichida) +40 reyting"
+
+#: championship/views.py:2567
+msgid "Durrang +20 Reyting"
+msgstr "Durrang +20 reyting"
+
+#: championship/views.py:2568
+msgid "Mag'lubiyat 0 Reyting"
+msgstr "Mag'lubiyat 0 reyting"
+
+#: championship/views.py:2569
+msgid "Qo'shimcha vaqt yoki Penaltilarda G'alaba +20 Reyting"
+msgstr "Qo'shimcha vaqt yoki penaltilarda g'alaba +20 reyting"
+
+#: championship/views.py:2573
+msgid "TEXNIK MAG'LUBIYAT"
+msgstr "TEXNIK MAG'LUBIYAT"
+
+#: championship/views.py:2575
+msgid "TP – Orqali Mag'lubiyat –20 Reyting"
+msgstr "TP orqali mag'lubiyat –20 reyting"
+
+#: championship/views.py:2576
+msgid "TP – Orqali G'alaba +40 Reyting"
+msgstr "TP orqali g'alaba +40 reyting"
+
+#: championship/views.py:2580
+msgid "CHEMPIONLIK UCHUN"
+msgstr "CHEMPIONLIK UCHUN"
+
+#: championship/views.py:2582
+msgid "Chempionlik Uchun Qo'shimcha +100 Reyting"
+msgstr "Chempionlik uchun qo'shimcha +100 reyting"
+
+#: championship/views.py:2583
+msgid "2-O'rin uchun +50 Reyting"
+msgstr "2-o'rin uchun +50 reyting"
+
+#: championship/views.py:2584
+msgid "3-O'rin uchun +50 Reyting"
+msgstr "3-o'rin uchun +50 reyting"
+
+#: championship/views.py:2585
+msgid "Turnir Top Urari +50 Reyting"
+msgstr "Turnir top urari +50 reyting"
+
+#: championship/views.py:2589
+msgid "GOLLAR VIDEOSI UCHUN REYTING"
+msgstr "GOLLAR VIDEOSI UCHUN REYTING"
+
+#: championship/views.py:2591
+msgid ""
+"Gol Reytingi Barcha Turnir Formatlarida Amal Qiladi (liga, kubok va boshqa)."
+msgstr "Gol reytingi barcha turnir formatlarida amal qiladi (liga, kubok va boshqa)."
+
+#: championship/views.py:2592
+msgid "Gol Videosi Majburiy Hisoblanadi."
+msgstr "Gol videosi majburiy hisoblanadi."
+
+#: championship/views.py:2594
+msgid "Turnir Eng Chiroyli Goli (eng kop reaksiya top3)"
+msgstr "Turnir eng chiroyli goli (eng ko'p reaksiya top3)"
+
+#: championship/views.py:2595
+msgid "1-O'rin +100 Reyting"
+msgstr "1-o'rin +100 reyting"
+
+#: championship/views.py:2596
+msgid "2-O'rin +50 Reyting"
+msgstr "2-o'rin +50 reyting"
+
+#: championship/views.py:2597
+msgid "3-O'rin +50 Reyting"
+msgstr "3-o'rin +50 reyting"
+
+#: championship/views.py:2599
+msgid "Har Bir Gol Turidan 1ta Turnirga 1ta Limit"
+msgstr "Har bir gol turidan 1 ta turnirga 1 ta limit"
+
+#: championship/views.py:2601
+msgid "Qaychi Zarbasida Gol +150 REYTING"
+msgstr "Qaychi zarbasida gol +150 reyting"
+
+#: championship/views.py:2602
+msgid "Scorpion Gol +150 REYTING"
+msgstr "Scorpion gol +150 reyting"
+
+#: championship/views.py:2603
+msgid "Rabona Gol yoki Asist +100 REYTING"
+msgstr "Rabona gol yoki asist +100 reyting"
+
+#: championship/views.py:2604
+msgid "Burchak Zarbasidan Gol (угловой tog'ridan tog'ri gol) +100 REYTING"
+msgstr "Burchak zarbasidan gol (to'g'ridan to'g'ri gol) +100 reyting"
+
+#: championship/views.py:2605
+msgid "Uzoq Masofadan Gol (20+ metr va undan uzoq) +100 REYTING"
+msgstr "Uzoq masofadan gol (20+ metr va undan uzoq) +100 reyting"
+
+#: championship/views.py:2606
+msgid ""
+"Darvozabondan Gol yoki Asist (penalti yoki jarima zarbasi hisobga olinmaydi) "
+"+100 REYTING"
+msgstr "Darvozabondan gol yoki asist (penalti yoki jarima zarbasi hisobga olinmaydi) +100 reyting"
+
+#: championship/views.py:2607
+msgid "Jarima Zarbasidan Gol +50 REYTING"
+msgstr "Jarima zarbasidan gol +50 reyting"
+
+#: championship/views.py:2608
+msgid "Blitz Curler Gol +30 REYTING"
+msgstr "Blitz Curler gol +30 reyting"
+
+#: championship/views.py:2609
+msgid "Poker (bir o'yinchi 4ta yoki undan kop gol) +50 REYTING"
+msgstr "Poker (bir o'yinchi 4 ta yoki undan ko'p gol) +50 reyting"
+
+#: championship/views.py:2610
+msgid "85+ Hal Qiluvchi Gol (85-daqiqadan so'ng g'alaba goli) +50 REYTING"
+msgstr "85+ hal qiluvchi gol (85-daqiqadan so'ng g'alaba goli) +50 reyting"
+
+#: championship/views.py:2611
+msgid "Comeback G'alaba (kamida 2gol ortda qolib kambek) +50 REYTING"
+msgstr "Comeback g'alaba (kamida 2 gol ortda qolib kambek) +50 reyting"
+
+#: championship/views.py:2615
+msgid ""
+"Gollar ufel_uz Instagram Sahifasida Ham Joylanadi. Bir Ishtirokchi Bitta "
+"Turnir Davomida Turli xil Gollar Orqali Umumiy Reyting To‘plashi Mumkin. "
+"Reytingni Soxta Oshirish Urinishlari Aniqlansa, Natija Bekor Qilinadi!"
+msgstr "Gollar ufel_uz Instagram sahifasida ham joylanadi. Bir ishtirokchi bitta turnir davomida turli xil gollar orqali umumiy reyting to‘plashi mumkin. Reytingni soxta oshirish urinishlari aniqlansa, natija bekor qilinadi!"
+
+#: static/templates/index.html:34 static/templates/index.html:56
+msgid "HOME"
+msgstr "ASOSIY"
+
+#: static/templates/index.html:35 static/templates/index.html:57
+#: static/templates/index.html:83
+msgid "TOURNAMENTS"
+msgstr "TURNIRLAR"
+
+#: static/templates/index.html:36 static/templates/index.html:58
+msgid "UFEL CHAMPIONS"
+msgstr "UFEL CHEMPIONLARI"
+
+#: static/templates/index.html:37 static/templates/index.html:59
+#: static/templates/index.html:93 static/templates/index.html:317
+msgid "RATINGS"
+msgstr "REYTINGLAR"
+
+#: static/templates/index.html:38 static/templates/index.html:60
+#: static/templates/reglament.html:271
+msgid "REGLAMENT"
+msgstr "REGLAMENT"
+
+#: static/templates/index.html:41 static/templates/index.html:63
+msgid "ADMIN PANEL"
+msgstr "ADMIN PANELI"
+
+#: static/templates/index.html:43 static/templates/index.html:65
+msgid "LOGOUT"
+msgstr "CHIQISH"
+
+#: static/templates/index.html:45 static/templates/index.html:67
+msgid "LOGIN"
+msgstr "KIRISH"
+
+#: static/templates/index.html:75
+msgid "Uzbekistan Football e-League"
+msgstr "O'zbekiston Football e-League"
+
+#: static/templates/index.html:76
+msgid "OFFICIAL UFEL"
+msgstr "RASMIY UFEL"
+
+#: static/templates/index.html:76
+msgid "PLATFORM"
+msgstr "PLATFORMA"
+
+#: static/templates/index.html:78
+msgid "The Only professional eFootball"
+msgstr "O'zbekistondagi yagona professional"
+
+#: static/templates/index.html:78
+msgid "League in Uzbekistan"
+msgstr "eFootball ligasi"
+
+#: static/templates/index.html:84
+msgid "TURNIR JADVALI"
+msgstr "TURNIR JADVALI"
+
+#: static/templates/index.html:88
+msgid "CHAMPIONS"
+msgstr "CHEMPIONLAR"
+
+#: static/templates/index.html:89
+msgid "UFEL CHEMPIONLARI"
+msgstr "UFEL CHEMPIONLARI"
+
+#: static/templates/index.html:94
+msgid "O'YINCHILAR YILLIK REYTINGI"
+msgstr "O'YINCHILAR YILLIK REYTINGI"
+
+#: static/templates/index.html:97
+msgid "JOIN GROUP"
+msgstr "GURUHGA QO'SHILISH"
+
+#: static/templates/index.html:103 static/templates/index.html:226
+#: static/templates/index.html:291 static/templates/index.html:308
+#: static/templates/index.html:657 static/templates/index.html:1111
+#: static/templates/index.html:1247 static/templates/reglament.html:318
+#: static/templates/reglament.html:343
+msgid "Yuklanmoqda..."
+msgstr "Yuklanmoqda..."
+
+#: static/templates/index.html:111
+msgid "TOP 5 RATINGS"
+msgstr "TOP 5 REYTING"
+
+#: static/templates/index.html:177
+msgid "BALL"
+msgstr "OCHKO"
+
+#: static/templates/index.html:182
+msgid "Hali rating ma'lumotlari mavjud emas"
+msgstr "Hali reyting ma'lumotlari mavjud emas"
+
+#: static/templates/index.html:200
+msgid "© 2026 UFeL | All Rights Reserved"
+msgstr "© 2026 UFeL | Barcha huquqlar himoyalangan"
+
+#: static/templates/index.html:235 static/templates/index.html:266
+#: static/templates/tournament_content_partial.html:532
+msgid "Jami:"
+msgstr "Jami:"
+
+#: static/templates/index.html:235 static/templates/index.html:266
+msgid "ta champion"
+msgstr "ta chempion"
+
+#: static/templates/index.html:274
+msgid "Hali chempionlar mavjud emas"
+msgstr "Hali chempionlar mavjud emas"
+
+#: static/templates/index.html:326
+msgid "O'YINCHI"
+msgstr "O'YINCHI"
+
+#: static/templates/index.html:327
+msgid "NAT"
+msgstr "NAT"
+
+#: static/templates/index.html:328
+msgid "O'YIN"
+msgstr "O'YIN"
+
+#: static/templates/index.html:329
+msgid "REYTING"
+msgstr "REYTING"
+
+#: static/templates/index.html:417
+msgid "Hozircha reyting ma'lumotlari mavjud emas"
+msgstr "Hozircha reyting ma'lumotlari mavjud emas"
+
+#: static/templates/index.html:1132 static/templates/index.html:1283
+#: static/templates/index.html:1294
+msgid "Yopish"
+msgstr "Yopish"
+
+#: static/templates/reglament.html:9
+msgid "Reglament"
+msgstr "Reglament"
+
+#: static/templates/reglament.html:337 static/templates/reglament.html:388
+msgid "Xatolik yuz berdi"
+msgstr "Xatolik yuz berdi"
+
+#: static/templates/tournament_content_partial.html:11
+msgid "LIGA JADVALI"
+msgstr "LIGA JADVALI"
+
+#: static/templates/tournament_content_partial.html:12
+msgid "GURUH BOSQICHI"
+msgstr "GURUH BOSQICHI"
+
+#: static/templates/tournament_content_partial.html:13
+msgid "PLAYOFF SETKASI"
+msgstr "PLAYOFF SETKASI"
+
+#: static/templates/tournament_content_partial.html:19
+msgid "O'YINLAR"
+msgstr "O'YINLAR"
+
+#: static/templates/tournament_content_partial.html:30
+#: static/templates/tournament_content_partial.html:58
+msgid "FILTERLASH"
+msgstr "FILTERLASH"
+
+#: static/templates/tournament_content_partial.html:40
+#: static/templates/tournament_content_partial.html:292
+#: static/templates/tournament_content_partial.html:371
+msgid "O'yinchi"
+msgstr "O'yinchi"
+
+#: static/templates/tournament_content_partial.html:42
+msgid "Barcha o'yinchilar"
+msgstr "Barcha o'yinchilar"
+
+#: static/templates/tournament_content_partial.html:49
+msgid "Holati"
+msgstr "Holati"
+
+#: static/templates/tournament_content_partial.html:51
+msgid "Barcha o'yinlar"
+msgstr "Barcha o'yinlar"
+
+#: static/templates/tournament_content_partial.html:52
+msgid "Tugagan o'yinlar"
+msgstr "Tugagan o'yinlar"
+
+#: static/templates/tournament_content_partial.html:53
+msgid "Kutilayotgan o'yinlar"
+msgstr "Kutilayotgan o'yinlar"
+
+#: static/templates/tournament_content_partial.html:61
+msgid "TOZALASH"
+msgstr "TOZALASH"
+
+#: static/templates/tournament_content_partial.html:293
+#: static/templates/tournament_content_partial.html:372
+msgid "O'yn"
+msgstr "O'yn"
+
+#: static/templates/tournament_content_partial.html:294
+#: static/templates/tournament_content_partial.html:373
+msgid "G`"
+msgstr "G`"
+
+#: static/templates/tournament_content_partial.html:295
+#: static/templates/tournament_content_partial.html:374
+msgid "D"
+msgstr "D"
+
+#: static/templates/tournament_content_partial.html:296
+#: static/templates/tournament_content_partial.html:375
+msgid "M"
+msgstr "M"
+
+#: static/templates/tournament_content_partial.html:297
+#: static/templates/tournament_content_partial.html:376
+msgid "+:-"
+msgstr "+:-"
+
+#: static/templates/tournament_content_partial.html:298
+#: static/templates/tournament_content_partial.html:377
+msgid "±"
+msgstr "±"
+
+#: static/templates/tournament_content_partial.html:299
+#: static/templates/tournament_content_partial.html:378
+msgid "OCH"
+msgstr "OCH"
+
+#: static/templates/tournament_content_partial.html:343
+msgid "Hali o'yinlar bo'lmagan"
+msgstr "Hali o'yinlar bo'lmagan"
+
+#: static/templates/tournament_content_partial.html:358
+msgid "GURUH"
+msgstr "GURUH"
+
+#: static/templates/tournament_content_partial.html:360
+msgid "ta jamoa"
+msgstr "ta jamoa"
+
+#: static/templates/tournament_content_partial.html:361
+msgid "ta saralanadi"
+msgstr "ta saralanadi"
+
+#: static/templates/tournament_content_partial.html:423
+msgid "Guruhlar jadvali uchun ma'lumot yo'q"
+msgstr "Guruhlar jadvali uchun ma'lumot yo'q"
+
+#: static/templates/tournament_content_partial.html:424
+msgid "O'yinlar tugagandan so'ng statistika ko'rinadi"
+msgstr "O'yinlar tugagandan so'ng statistika ko'rinadi"
+
+#: static/templates/tournament_content_partial.html:456
+#: static/templates/tournament_content_partial.html:469
+#: static/templates/tournament_content_partial.html:496
+#: static/templates/tournament_content_partial.html:509
+#: static/templates/tournament_content_partial.html:560
+#: static/templates/tournament_content_partial.html:590
+msgid "TBD"
+msgstr "ANIQLANMOQDA"
+
+#: static/templates/tournament_content_partial.html:531
+msgid "O'YINLAR RO'YXATI"
+msgstr "O'YINLAR RO'YXATI"
+
+#: static/templates/tournament_content_partial.html:532
+msgid "ta o'yin"
+msgstr "ta o'yin"
+
+#: static/templates/tournament_content_partial.html:539
+msgid "Guruh bosqichi"
+msgstr "Guruh bosqichi"
+
+#: static/templates/tournament_content_partial.html:543
+msgid "davra"
+msgstr "davra"
+
+#: static/templates/tournament_content_partial.html:548
+msgid "Guruh"
+msgstr "Guruh"
+
+#: static/templates/tournament_content_partial.html:601
+msgid "Bu turnir uchun hali o'yinlar yo'q"
+msgstr "Bu turnir uchun hali o'yinlar yo'q"
+
+#: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
+msgid "Messages"
+msgstr "Xabarlar"
+
+#: venv/lib/python3.12/site-packages/django/contrib/sitemaps/apps.py:8
+msgid "Site Maps"
+msgstr "Sayt xaritalari"
+
+#: venv/lib/python3.12/site-packages/django/contrib/staticfiles/apps.py:9
+msgid "Static Files"
+msgstr "Statik fayllar"
+
+#: venv/lib/python3.12/site-packages/django/contrib/syndication/apps.py:7
+msgid "Syndication"
+msgstr "Sindikatsiya"
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:30
+msgid "…"
+msgstr "…"
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:32
+msgid "That page number is not an integer"
+msgstr "Bu sahifa raqami butun son emas"
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:33
+msgid "That page number is less than 1"
+msgstr "Bu sahifa raqami 1 dan kichik"
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:34
+msgid "That page contains no results"
+msgstr "Bu sahifada natijalar mavjud emas"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:22
+msgid "Enter a valid value."
+msgstr "To'g'ri qiymat kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:70
+msgid "Enter a valid domain name."
+msgstr "To'g'ri domen nomini kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:155
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:768
+msgid "Enter a valid URL."
+msgstr "To'g'ri URL kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:216
+msgid "Enter a valid integer."
+msgstr "To'g'ri butun son kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:227
+msgid "Enter a valid email address."
+msgstr "To'g'ri email manzilini kiriting."
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: venv/lib/python3.12/site-packages/django/core/validators.py:310
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr "Harf, raqam, pastki chiziq yoki defislardan iborat to'g'ri “slug” kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:318
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr "Unicode harflari, raqamlar, pastki chiziq yoki defislardan iborat to'g'ri “slug” kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:330
+#: venv/lib/python3.12/site-packages/django/core/validators.py:339
+#: venv/lib/python3.12/site-packages/django/core/validators.py:353
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2215
+#, python-format
+msgid "Enter a valid %(protocol)s address."
+msgstr "To'g'ri %(protocol)s manzilini kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:332
+msgid "IPv4"
+msgstr "IPv4"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:341
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:30
+msgid "IPv6"
+msgstr "IPv6"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:355
+msgid "IPv4 or IPv6"
+msgstr "IPv4 yoki IPv6"
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:396
+msgid "Enter only digits separated by commas."
+msgstr "Faqat vergul bilan ajratilgan raqamlarni kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:402
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr "Bu qiymat %(limit_value)s bo'lishiga ishonch hosil qiling (hozir %(show_value)s)."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:437
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr "Bu qiymat %(limit_value)s dan kichik yoki teng bo'lishiga ishonch hosil qiling."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:446
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr "Bu qiymat %(limit_value)s dan katta yoki teng bo'lishiga ishonch hosil qiling."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:455
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr "Bu qiymat %(limit_value)s qadam hajmiga karrali bo'lishiga ishonch hosil qiling."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:462
+#, python-format
+msgid ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgstr "Bu qiymat %(offset)s dan boshlab, %(limit_value)s qadam hajmiga karrali bo'lishiga ishonch hosil qiling, masalan: %(offset)s, %(valid_value1)s, %(valid_value2)s va hokazo."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:494
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] "Bu qiymat kamida %(limit_value)d ta belgidan iborat bo'lishiga ishonch hosil qiling (hozir %(show_value)d ta)."
+msgstr[1] "Bu qiymat kamida %(limit_value)d ta belgidan iborat bo'lishiga ishonch hosil qiling (hozir %(show_value)d ta)."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:512
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] "Bu qiymat ko'pi bilan %(limit_value)d ta belgidan iborat bo'lishiga ishonch hosil qiling (hozir %(show_value)d ta)."
+msgstr[1] "Bu qiymat ko'pi bilan %(limit_value)d ta belgidan iborat bo'lishiga ishonch hosil qiling (hozir %(show_value)d ta)."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:535
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:359
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:398
+msgid "Enter a number."
+msgstr "Raqam kiriting."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:537
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] "Jami %(max)s ta raqamdan ko'p bo'lmasligiga ishonch hosil qiling."
+msgstr[1] "Jami %(max)s ta raqamdan ko'p bo'lmasligiga ishonch hosil qiling."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:542
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] "Kasrdan keyin %(max)s ta belgidan ko'p bo'lmasligiga ishonch hosil qiling."
+msgstr[1] "Kasrdan keyin %(max)s ta belgidan ko'p bo'lmasligiga ishonch hosil qiling."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:547
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] "Kasrdan oldin %(max)s ta raqamdan ko'p bo'lmasligiga ishonch hosil qiling."
+msgstr[1] "Kasrdan oldin %(max)s ta raqamdan ko'p bo'lmasligiga ishonch hosil qiling."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:618
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr "“%(extension)s” fayl kengaytmasiga ruxsat berilmagan. Ruxsat etilgan kengaytmalar: %(allowed_extensions)s."
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:680
+msgid "Null characters are not allowed."
+msgstr "Null belgilariga ruxsat berilmaydi."
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1571
+#: venv/lib/python3.12/site-packages/django/forms/models.py:908
+msgid "and"
+msgstr "va"
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1573
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr "Bu %(field_labels)s ga ega %(model_name)s allaqachon mavjud."
+
+#: venv/lib/python3.12/site-packages/django/db/models/constraints.py:22
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr "“%(name)s” cheklovi buzilgan."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:134
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr "%(value)r qiymati to'g'ri tanlov emas."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:135
+msgid "This field cannot be null."
+msgstr "Bu maydon null bo'lishi mumkin emas."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:136
+msgid "This field cannot be blank."
+msgstr "Bu maydon bo'sh bo'lishi mumkin emas."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:137
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr "Bu %(field_label)s ga ega %(model_name)s allaqachon mavjud."
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:141
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr "%(field_label)s %(date_field_label)s %(lookup_type)s uchun noyob bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:180
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr "Maydon turi: %(field_type)s"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1156
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr "“%(value)s” qiymati True yoki False bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1157
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr "“%(value)s” qiymati True, False yoki None bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1159
+msgid "Boolean (Either True or False)"
+msgstr "Mantiqiy (True yoki False)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1209
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr "Matn ( %(max_length)s gacha)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1211
+msgid "String (unlimited)"
+msgstr "Matn (cheklanmagan)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1320
+msgid "Comma-separated integers"
+msgstr "Vergul bilan ajratilgan butun sonlar"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1421
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr "“%(value)s” qiymati noto'g'ri sana formatiga ega. U YYYY-MM-DD formatida bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1425
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1560
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr "“%(value)s” qiymati to'g'ri formatda (YYYY-MM-DD) lekin bu noto'g'ri sana."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1429
+msgid "Date (without time)"
+msgstr "Sana (vaqtsiz)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1556
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
+"HH:MM[:ss[.uuuuuu]][TZ] format."
+msgstr "“%(value)s” qiymati noto'g'ri formatga ega. U YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] formatida bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1564
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr "“%(value)s” qiymati to'g'ri formatda (YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) lekin bu noto'g'ri sana/vaqt."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1569
+msgid "Date (with time)"
+msgstr "Sana (vaqt bilan)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1696
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr "“%(value)s” qiymati o'nlik son bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1698
+msgid "Decimal number"
+msgstr "O'nlik son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1859
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] "
+"[[HH:]MM:]ss[.uuuuuu] format."
+msgstr "“%(value)s” qiymati noto'g'ri formatga ega. U [DD] [[HH:]MM:]ss[.uuuuuu] formatida bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1863
+msgid "Duration"
+msgstr "Davomiylik"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1915
+msgid "Email address"
+msgstr "Elektron pochta manzili"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1940
+msgid "File path"
+msgstr "Fayl yo'li"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2018
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr "“%(value)s” qiymati float bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2020
+msgid "Floating point number"
+msgstr "Suzuvchi nuqtali son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2060
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr "“%(value)s” qiymati butun son bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2062
+msgid "Integer"
+msgstr "Butun son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2158
+msgid "Big (8 byte) integer"
+msgstr "Katta (8 bayt) butun son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2175
+msgid "Small integer"
+msgstr "Kichik butun son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2183
+msgid "IPv4 address"
+msgstr "IPv4 manzili"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2214
+msgid "IP address"
+msgstr "IP manzil"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2305
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2306
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr "“%(value)s” qiymati None, True yoki False bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2308
+msgid "Boolean (Either True, False or None)"
+msgstr "Mantiqiy (True, False yoki None)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2359
+msgid "Positive big integer"
+msgstr "Musbat katta butun son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2374
+msgid "Positive integer"
+msgstr "Musbat butun son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2389
+msgid "Positive small integer"
+msgstr "Musbat kichik butun son"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2405
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr "Slug (%(max_length)s gacha)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2441
+msgid "Text"
+msgstr "Matn"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2521
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr "“%(value)s” qiymati noto'g'ri formatga ega. U HH:MM[:ss[.uuuuuu]] formatida bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2525
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr "“%(value)s” qiymati to'g'ri formatda (HH:MM[:ss[.uuuuuu]]) lekin bu noto'g'ri vaqt."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2529
+msgid "Time"
+msgstr "Vaqt"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2637
+msgid "URL"
+msgstr "URL"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2661
+msgid "Raw binary data"
+msgstr "Xom ikkilik ma'lumotlar"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2726
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr "“%(value)s” to'g'ri UUID emas."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2728
+msgid "Universally unique identifier"
+msgstr "Umumjahon noyob identifikator"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:244
+msgid "File"
+msgstr "Fayl"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:420
+msgid "Image"
+msgstr "Rasm"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:24
+msgid "A JSON object"
+msgstr "JSON obyekti"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:26
+msgid "Value must be valid JSON."
+msgstr "Qiymat to'g'ri JSON bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:932
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r does not exist."
+msgstr "%(field)s %(value)r ga ega %(model)s namunasi mavjud emas."
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:934
+msgid "Foreign Key (type determined by related field)"
+msgstr "Tashqi kalit (turi bog'liq maydon bilan aniqlanadi)"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1228
+msgid "One-to-one relationship"
+msgstr "Bir-birga bog'liqlik"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1285
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr "%(from)s-%(to)s bog'liqligi"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1287
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr "%(from)s-%(to)s bog'liqliklari"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1335
+msgid "Many-to-many relationship"
+msgstr "Ko'pdan-ko'pga bog'liqlik"
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: venv/lib/python3.12/site-packages/django/forms/boundfield.py:185
+msgid ":?.!"
+msgstr ":?.!"
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:95
+msgid "This field is required."
+msgstr "Bu maydon to'ldirilishi shart."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:308
+msgid "Enter a whole number."
+msgstr "Butun son kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:479
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1260
+msgid "Enter a valid date."
+msgstr "To'g'ri sana kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:502
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1261
+msgid "Enter a valid time."
+msgstr "To'g'ri vaqt kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:529
+msgid "Enter a valid date/time."
+msgstr "To'g'ri sana/vaqt kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:563
+msgid "Enter a valid duration."
+msgstr "To'g'ri davomiylik kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:564
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr "Kunlar soni {min_days} va {max_days} orasida bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:633
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr "Hech qanday fayl yuborilmadi. Formadagi kodlash turini tekshiring."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:634
+msgid "No file was submitted."
+msgstr "Hech qanday fayl yuborilmadi."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:635
+msgid "The submitted file is empty."
+msgstr "Yuborilgan fayl bo'sh."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:637
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] "Fayl nomi ko'pi bilan %(max)d ta belgidan iborat bo'lishiga ishonch hosil qiling (hozir %(length)d ta)."
+msgstr[1] "Fayl nomi ko'pi bilan %(max)d ta belgidan iborat bo'lishiga ishonch hosil qiling (hozir %(length)d ta)."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:642
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr "Iltimos, yoki fayl yuboring yoki tozalash katagiga belgi qo'ying, ikkalasini birdan emas."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:710
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "To'g'ri rasm yuklang. Siz yuklagan fayl rasm emas yoki buzilgan rasm."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:882
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:968
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1592
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr "To'g'ri tanlovni tanlang. %(value)s mavjud tanlovlardan biri emas."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:970
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1089
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1590
+msgid "Enter a list of values."
+msgstr "Qiymatlar ro'yxatini kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1090
+msgid "Enter a complete value."
+msgstr "To'liq qiymat kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1329
+msgid "Enter a valid UUID."
+msgstr "To'g'ri UUID kiriting."
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1359
+msgid "Enter a valid JSON."
+msgstr "To'g'ri JSON kiriting."
+
+#. Translators: This is the default suffix added to form field labels
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:94
+msgid ":"
+msgstr ":"
+
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:230
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr "(Yashirin maydon %(name)s) %(error)s"
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:61
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr "ManagementForm ma'lumotlari yo'q yoki o'zgartirilgan. Yo'qotilgan maydonlar: %(field_names)s. Agar muammo davom etsa, xato haqida hisobot yuborishingiz kerak bo'lishi mumkin."
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:65
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] "Iltimos, ko'pi bilan %(num)d ta shakl yuboring."
+msgstr[1] "Iltimos, ko'pi bilan %(num)d ta shakl yuboring."
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:70
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] "Iltimos, kamida %(num)d ta shakl yuboring."
+msgstr[1] "Iltimos, kamida %(num)d ta shakl yuboring."
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:484
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:491
+msgid "Order"
+msgstr "Tartib"
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
+msgid "Delete"
+msgstr "O'chirish"
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:901
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr "Iltimos, %(field)s uchun takrorlangan ma'lumotlarni to'g'rilang."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:906
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr "Iltimos, %(field)s uchun takrorlangan ma'lumotlarni to'g'rilang, bu noyob bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:913
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr "Iltimos, %(field_name)s uchun takrorlangan ma'lumotlarni to'g'rilang, bu %(date_field)s dagi %(lookup)s uchun noyob bo'lishi kerak."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:922
+msgid "Please correct the duplicate values below."
+msgstr "Iltimos, quyidagi takrorlangan qiymatlarni to'g'rilang."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1359
+msgid "The inline value did not match the parent instance."
+msgstr "Ichki qiymat asosiy namunaga mos kelmadi."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1450
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr "To'g'ri tanlovni tanlang. Bu tanlov mavjud tanlovlardan biri emas."
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1594
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr "“%(pk)s” to'g'ri qiymat emas."
+
+#: venv/lib/python3.12/site-packages/django/forms/utils.py:227
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr "%(datetime)s %(current_timezone)s vaqt mintaqasida talqin qilinmadi; u noaniq yoki mavjud bo'lmasligi mumkin."
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:461
+msgid "Clear"
+msgstr "Tozalash"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:462
+msgid "Currently"
+msgstr "Hozirgi"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:463
+msgid "Change"
+msgstr "O'zgartirish"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:800
+msgid "Unknown"
+msgstr "Noma'lum"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:801
+msgid "Yes"
+msgstr "Ha"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:802
+msgid "No"
+msgstr "Yo'q"
+
+#. Translators: Please do not add spaces around commas.
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:873
+msgid "yes,no,maybe"
+msgstr "ha,yo'q,bo'lishi mumkin"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:903
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:920
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] "%(size)d bayt"
+msgstr[1] "%(size)d bayt"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:922
+#, python-format
+msgid "%s KB"
+msgstr "%s KB"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:924
+#, python-format
+msgid "%s MB"
+msgstr "%s MB"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:926
+#, python-format
+msgid "%s GB"
+msgstr "%s GB"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:928
+#, python-format
+msgid "%s TB"
+msgstr "%s TB"
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:930
+#, python-format
+msgid "%s PB"
+msgstr "%s PB"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:74
+msgid "p.m."
+msgstr "p.m."
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:75
+msgid "a.m."
+msgstr "a.m."
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:80
+msgid "PM"
+msgstr "PM"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:81
+msgid "AM"
+msgstr "AM"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:153
+msgid "midnight"
+msgstr "yarim tun"
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:155
+msgid "noon"
+msgstr "peshin"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:7
+msgid "Monday"
+msgstr "Dushanba"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:8
+msgid "Tuesday"
+msgstr "Seshanba"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:9
+msgid "Wednesday"
+msgstr "Chorshanba"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:10
+msgid "Thursday"
+msgstr "Payshanba"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:11
+msgid "Friday"
+msgstr "Juma"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:12
+msgid "Saturday"
+msgstr "Shanba"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:13
+msgid "Sunday"
+msgstr "Yakshanba"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:16
+msgid "Mon"
+msgstr "Du"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:17
+msgid "Tue"
+msgstr "Se"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:18
+msgid "Wed"
+msgstr "Ch"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:19
+msgid "Thu"
+msgstr "Pa"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:20
+msgid "Fri"
+msgstr "Ju"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:21
+msgid "Sat"
+msgstr "Sh"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:22
+msgid "Sun"
+msgstr "Ya"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:25
+msgid "January"
+msgstr "Yanvar"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:26
+msgid "February"
+msgstr "Fevral"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:27
+msgid "March"
+msgstr "Mart"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:28
+msgid "April"
+msgstr "Aprel"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:29
+msgid "May"
+msgstr "May"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:30
+msgid "June"
+msgstr "Iyun"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:31
+msgid "July"
+msgstr "Iyul"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:32
+msgid "August"
+msgstr "Avgust"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:33
+msgid "September"
+msgstr "Sentabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:34
+msgid "October"
+msgstr "Oktabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:35
+msgid "November"
+msgstr "Noyabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:36
+msgid "December"
+msgstr "Dekabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:39
+msgid "jan"
+msgstr "yan"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:40
+msgid "feb"
+msgstr "fev"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:41
+msgid "mar"
+msgstr "mar"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:42
+msgid "apr"
+msgstr "apr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:43
+msgid "may"
+msgstr "may"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:44
+msgid "jun"
+msgstr "iyn"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:45
+msgid "jul"
+msgstr "iyl"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:46
+msgid "aug"
+msgstr "avg"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:47
+msgid "sep"
+msgstr "sen"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:48
+msgid "oct"
+msgstr "okt"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:49
+msgid "nov"
+msgstr "noy"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:50
+msgid "dec"
+msgstr "dek"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr "Yan."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr "Fev."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr "Mar"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr "Apr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr "May"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr "Iyn"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr "Iyl"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr "Avg."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr "Sen."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr "Okt."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr "Noy."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr "Dek."
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:67
+msgctxt "alt. month"
+msgid "January"
+msgstr "Yanvar"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:68
+msgctxt "alt. month"
+msgid "February"
+msgstr "Fevral"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:69
+msgctxt "alt. month"
+msgid "March"
+msgstr "Mart"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:70
+msgctxt "alt. month"
+msgid "April"
+msgstr "Aprel"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:71
+msgctxt "alt. month"
+msgid "May"
+msgstr "May"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:72
+msgctxt "alt. month"
+msgid "June"
+msgstr "Iyun"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:73
+msgctxt "alt. month"
+msgid "July"
+msgstr "Iyul"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:74
+msgctxt "alt. month"
+msgid "August"
+msgstr "Avgust"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:75
+msgctxt "alt. month"
+msgid "September"
+msgstr "Sentabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:76
+msgctxt "alt. month"
+msgid "October"
+msgstr "Oktabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:77
+msgctxt "alt. month"
+msgid "November"
+msgstr "Noyabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:78
+msgctxt "alt. month"
+msgid "December"
+msgstr "Dekabr"
+
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:8
+msgid "This is not a valid IPv6 address."
+msgstr "Bu to'g'ri IPv6 manzili emas."
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:75
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr "%(truncated_text)s…"
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:286
+msgid "or"
+msgstr "yoki"
+
+#. Translators: This string is used as a separator between list elements
+#: venv/lib/python3.12/site-packages/django/utils/text.py:305
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:135
+msgid ", "
+msgstr ", "
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] "%(num)d yil"
+msgstr[1] "%(num)d yil"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
+#, python-format
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] "%(num)d oy"
+msgstr[1] "%(num)d oy"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] "%(num)d hafta"
+msgstr[1] "%(num)d hafta"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(num)d kun"
+msgstr[1] "%(num)d kun"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] "%(num)d soat"
+msgstr[1] "%(num)d soat"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] "%(num)d daqiqa"
+msgstr[1] "%(num)d daqiqa"
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:29
+msgid "Forbidden"
+msgstr "Taqiqlangan"
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:30
+msgid "CSRF verification failed. Request aborted."
+msgstr "CSRF tekshiruvi muvaffaqiyatsiz tugadi. So'rov bekor qilindi."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:34
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr "Siz bu xabarni ko'ryapsiz, chunki bu HTTPS sayti veb-brauzeringiz tomonidan “Referer header” yuborilishini talab qiladi, lekin u yuborilmadi. Bu sarlavha xavfsizlik nuqtai nazaridan, brauzeringiz uchinchi tomonlar tomonidan o'g'irlanmaganligini ta'minlash uchun talab qilinadi."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:40
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr "Agar brauzeringizni “Referer” sarlavhalarini o'chirish uchun sozlagan bo'lsangiz, ularni qayta yoqing, hech bo'lmaganda ushbu sayt uchun yoki HTTPS ulanishlari uchun yoki “same-origin” so'rovlari uchun."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:45
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr "Agar siz <meta name=\"referrer\" content=\"no-referrer\"> tegidan foydalanayotgan bo'lsangiz yoki “Referrer-Policy: no-referrer” sarlavhasini qo'shayotgan bo'lsangiz, ularni olib tashlang. CSRF himoyasi qat'iy referer tekshiruvini amalga oshirish uchun “Referer” sarlavhasini talab qiladi. Agar maxfiylik haqida qayg'urayotgan bo'lsangiz, uchinchi tomon saytlariga havolalar uchun <a rel=\"noreferrer\" …> kabi alternativlardan foydalaning."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:54
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr "Siz bu xabarni ko'ryapsiz, chunki bu sayt shakllarni yuborishda CSRF cookie-faylini talab qiladi. Bu cookie-fayl xavfsizlik nuqtai nazaridan, brauzeringiz uchinchi tomonlar tomonidan o'g'irlanmaganligini ta'minlash uchun talab qilinadi."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:60
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr "Agar brauzeringizni cookie-fayllarni o'chirish uchun sozlagan bo'lsangiz, ularni qayta yoqing, hech bo'lmaganda ushbu sayt uchun yoki “same-origin” so'rovlari uchun."
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:66
+msgid "More information is available with DEBUG=True."
+msgstr "Qo'shimcha ma'lumot DEBUG=True bilan mavjud."
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:44
+msgid "No year specified"
+msgstr "Yil ko'rsatilmagan"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:64
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:115
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:214
+msgid "Date out of range"
+msgstr "Sana diapazondan tashqarida"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:94
+msgid "No month specified"
+msgstr "Oy ko'rsatilmagan"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:147
+msgid "No day specified"
+msgstr "Kun ko'rsatilmagan"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:194
+msgid "No week specified"
+msgstr "Hafta ko'rsatilmagan"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:349
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:380
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr "%(verbose_name_plural)s mavjud emas"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:652
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because "
+"%(class_name)s.allow_future is False."
+msgstr "Kelajakdagi %(verbose_name_plural)s mavjud emas, chunki %(class_name)s.allow_future False."
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:692
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr "“%(format)s” formati uchun noto'g'ri sana qatori “%(datestr)s”"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr "So'rovga mos keladigan %(verbose_name)s topilmadi"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr "Sahifa “last” emas va butun songa aylantirib bo'lmaydi."
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr "Noto'g'ri sahifa (%(page_number)s): %(message)s"
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:169
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr "Bo'sh ro'yxat va “%(class_name)s.allow_empty” False."
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:49
+msgid "Directory indexes are not allowed here."
+msgstr "Bu yerda katalog indekslariga ruxsat berilmaydi."
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:51
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr "“%(path)s” mavjud emas"
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:68
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:8
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:11
+#, python-format
+msgid "Index of %(directory)s"
+msgstr "%(directory)s indeksi"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:7
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:204
+msgid "The install worked successfully! Congratulations!"
+msgstr "O'rnatish muvaffaqiyatli yakunlandi! Tabriklaymiz!"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr "Django %(version)s uchun <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" target=\"_blank\" rel=\"noopener\">versiya qaydlari</a> ni ko'ring"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:208
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr "Siz ushbu sahifani ko'rayapsiz, chunki sozlamalar faylingizda <a href=\"https://docs.djangoproject.com/en/%(version)s/ref/settings/#debug\" target=\"_blank\" rel=\"noopener\">DEBUG=True</a> mavjud va siz hech qanday URL sozlamagansiz."
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:217
+msgid "Django Documentation"
+msgstr "Django hujjatlari"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:218
+msgid "Topics, references, &amp; how-to’s"
+msgstr "Mavzular, ma'lumotnomalar va qo'llanmalar"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:226
+msgid "Tutorial: A Polling App"
+msgstr "Qo'llanma: So'rov ilovasi"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:227
+msgid "Get started with Django"
+msgstr "Django bilan ishlashni boshlang"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:235
+msgid "Django Community"
+msgstr "Django jamiyati"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
+msgid "Connect, get help, or contribute"
+msgstr "Bog'laning, yordam oling yoki hissa qo'shing"
+
+#: championship/views.py:2616
+msgid "Top o'yinlar qo'shilmagan"
+msgstr "Top o'yinlar qo'shilmagan"

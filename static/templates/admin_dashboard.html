@@ -1145,167 +1145,203 @@ repeat(auto-fit,minmax(240px,1fr));
     </div>
 
     <!-- CHAMPIONS SECTION -->
-<div id="champions" class="admin-section">
-    <div class="card">
-        <h2 class="section-subtitle" style="color:#22d3ee; margin-bottom:20px;">
-            🏆 CHAMPION QO'SHISH
-        </h2>
+    <div id="champions" class="admin-section">
+        <div class="card">
+            <h2 class="section-subtitle" style="color:#22d3ee; margin-bottom:20px;">
+                🏆 CHAMPION QO'SHISH
+            </h2>
 
-        <form method="POST" enctype="multipart/form-data" action="{% url 'add_champion_hall' %}">
-            {% csrf_token %}
-            <input type="hidden" name="source_tab" value="champions">
+            <form method="POST" enctype="multipart/form-data" action="{% url 'add_champion_hall' %}">
+                {% csrf_token %}
+                <input type="hidden" name="source_tab" value="champions">
 
-            <div class="form-grid">
-                <div class="field">
-                    <label>👑 Chempion user</label>
-                    <select name="user_id" required>
-                        <option value="">-- Chempionni tanlang --</option>
-                        {% for user in users %}
-                            {% if user.type_settings.in_champions %}
-                            <option value="{{ user.id }}">
-                                {{ user.first_name }} {{ user.last_name }} 
-                                {% if user.username %}(@{{ user.username }}){% endif %}
-                            </option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>🏆 Turnir nomi</label>
-                    <input type="text" name="tournament_name" placeholder="Masalan: UFEL Winter Cup 2025" required>
-                </div>
-
-                <!-- To'liq sana (end year o'rniga) -->
-                <div class="field">
-                    <label>📆 Turnir sanasi</label>
-                    <input type="date" name="tournament_date" value="{% now 'Y-m-d' %}" required>
-                    <small style="color: #94a3b8; font-size: 10px;">Masalan: December 15, 2023 ko'rinishida chiqadi</small>
-                </div>
-
-                <div class="field">
-                    <label>O'rin</label>
-                    <select name="position" required>
-                        <option value="">-- O'rinni tanlang --</option>
-                        <option value="1">1-o'rin (Chempion)</option>
-                        <option value="2">2-o'rin (Ikkinchi o'rin)</option>
-                        <option value="3">3-o'rin (Uchinchi o'rin)</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>🖼️ Turnir rasmi (ixtiyoriy)</label>
-                    <input type="file" name="tournament_image" accept="image/*">
-                    <small style="color: #94a3b8; font-size: 10px;">Rasm o'lchami: 300x200 px tavsiya etiladi</small>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn" style="margin-top: 20px;">
-                ➕ CHAMPION QO'SHISH
-            </button>
-        </form>
-    </div>
-
-    <!-- Champions List -->
-    <div class="card">
-        <h2 class="section-subtitle" style="margin-bottom:20px;">
-            📋 CHAMPIONS LIST (Jami: {{ total_champions }} ta champion)
-        </h2>
-
-        <div class="tournament-list">
-            {% for user_data in user_champions %}
-            <div class="user-champions-container" style="margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; overflow: hidden;">
-                <!-- User Header -->
-                <div style="background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(34,211,238,0.2)); padding: 15px; display: flex; align-items: center; gap: 15px;">
-                    <div class="user-avatar" style="width: 60px; height: 60px; flex-shrink: 0;">
-                        {% if user_data.user.avatar %}
-                            <img src="{{ user_data.user.avatar.url }}" alt="avatar" style="width:100%; height:100%; border-radius: 50%; object-fit:cover; border: 2px solid #22d3ee;">
-                        {% else %}
-                            <div style="width:100%; height:100%; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; border: 2px solid #22d3ee;">
-                                {{ user_data.user.first_name|first|upper|default:user_data.user.username|first|upper }}
-                            </div>
-                        {% endif %}
+                <div class="form-grid">
+                    <div class="field">
+                        <label>👑 Chempion user</label>
+                        <select name="user_id" required>
+                            <option value="">-- Chempionni tanlang --</option>
+                            {% for user in users %}
+                                {% if user.type_settings.in_champions %}
+                                <option value="{{ user.id }}">
+                                    {{ user.first_name }} {{ user.last_name }} 
+                                    {% if user.username %}(@{{ user.username }}){% endif %}
+                                </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div>
-                        <h3 style="margin: 0; color: #fff; font-size: 20px;">
-                            {% if user_data.user.first_name and user_data.user.last_name %}
-                                {{ user_data.user.first_name }} {{ user_data.user.last_name }}
-                            {% elif user_data.user.first_name %}
-                                {{ user_data.user.first_name }}
-                            {% elif user_data.user.last_name %}
-                                {{ user_data.user.last_name }}
-                            {% elif user_data.user.username %}
-                                {{ user_data.user.username }}
-                            {% else %}
-                                Foydalanuvchi #{{ user_data.user.id }}
-                            {% endif %}
-                        </h3>
-                        <p style="margin: 5px 0 0 0; color: #94a3b8; font-size: 14px;">
-                            @{{ user_data.user.username|default:"username" }} • 
-                            Jami: {{ user_data.champions|length }} ta champion
-                        </p>
+
+                    <div class="field">
+                        <label>🏆 Turnir nomi</label>
+                        <input type="text" name="tournament_name" placeholder="Masalan: UFEL Winter Cup 2025" required>
+                    </div>
+
+                    <!-- To'liq sana (end year o'rniga) -->
+                    <div class="field">
+                        <label>📆 Turnir sanasi</label>
+                        <input type="date" name="tournament_date" value="{% now 'Y-m-d' %}" required>
+                        <small style="color: #94a3b8; font-size: 10px;">Masalan: December 15, 2023 ko'rinishida chiqadi</small>
+                    </div>
+
+                    <div class="field">
+                        <label>O'rin</label>
+                        <select name="position" required>
+                            <option value="">-- O'rinni tanlang --</option>
+                            <option value="1">1-o'rin (Chempion)</option>
+                            <option value="2">2-o'rin (Ikkinchi o'rin)</option>
+                            <option value="3">3-o'rin (Uchinchi o'rin)</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>🖼️ Turnir rasmi (ixtiyoriy)</label>
+                        <input type="file" name="tournament_image" accept="image/*">
+                        <small style="color: #94a3b8; font-size: 10px;">Rasm o'lchami: 300x200 px tavsiya etiladi</small>
                     </div>
                 </div>
 
-                <!-- User's Champions List -->
-                <div style="padding: 15px;">
-                    {% for champ in user_data.champions %}
-                    <div class="list-item" style="margin-bottom: 10px; cursor: default; background: rgba(255,255,255,0.03);">
-                        <!-- Avatar (champion uchun turnir rasmi) -->
-                        <div class="user-avatar" style="width: 50px; height: 50px; flex-shrink: 0;">
-                            {% if champ.tournament_image %}
-                                <img src="{{ champ.tournament_image.url }}" alt="tournament" style="width:100%; height:100%; border-radius: 50%; object-fit:cover;">
+                <button type="submit" class="submit-btn" style="margin-top: 20px;">
+                    ➕ CHAMPION QO'SHISH
+                </button>
+            </form>
+        </div>
+
+        <!-- Champions List -->
+        <div class="card">
+            <h2 class="section-subtitle" style="margin-bottom:20px;">
+                📋 CHAMPIONS LIST (Jami: {{ total_champions }} ta champion)
+            </h2>
+
+            <div class="tournament-list">
+                {% for user_data in user_champions %}
+                <div class="user-champions-container" style="margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; overflow: hidden;">
+                    <!-- User Header -->
+                    <div style="background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(34,211,238,0.2)); padding: 15px; display: flex; align-items: center; gap: 15px;">
+                        <div class="user-avatar" style="width: 60px; height: 60px; flex-shrink: 0;">
+                            {% if user_data.user.avatar %}
+                                <img src="{{ user_data.user.avatar.url }}" alt="avatar" style="width:100%; height:100%; border-radius: 50%; object-fit:cover; border: 2px solid #22d3ee;">
                             {% else %}
-                                <div style="width:100%; height:100%; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: white; font-weight: bold; font-size: 20px;">
-                                        🏆
-                                    </span>
+                                <div style="width:100%; height:100%; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; border: 2px solid #22d3ee;">
+                                    {{ user_data.user.first_name|first|upper|default:user_data.user.username|first|upper }}
                                 </div>
                             {% endif %}
                         </div>
-
-                        <!-- Champion Info -->
-                        <div class="champ-info">
-                            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                                <span style="color: #FFC400; font-weight: bold; font-size: 16px;">
-                                    {% if champ.position == 1 %}{% elif champ.position == 2 %}{% else %}{% endif %}
-                                    {{ champ.get_position_display }}
-                                </span>
-                                <span style="color: #22d3ee; font-weight: 500;">🏆 {{ champ.tournament_name }}</span>
-                                <span style="color: #94a3b8;">{{ champ.tournament_date|date:"F d, Y" }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="champ-actions" style="display: flex; gap: 10px;">
-                            <a href="{% url 'champion_hall_edit' champ.id %}" 
-                               style="color: #22d3ee; text-decoration: none; font-size: 13px; padding: 5px 12px; border-radius: 6px; background: rgba(34, 211, 238, 0.1);">
-                                ✏️ Tahrirlash
-                            </a>
-                            
-                            <a href="{% url 'champion_hall_delete' champ.id %}" 
-                               style="color: #ef4444; text-decoration: none; font-size: 13px; padding: 5px 12px; border-radius: 6px; background: rgba(239, 68, 68, 0.1);"
-                               onclick="return confirm('Rostdan ham bu championni o\'chirmoqchimisiz?\n{{ champ.tournament_name }} ({{ champ.tournament_date|date:"Y" }})');">
-                                🗑️ O'chirish
-                            </a>
+                        <div>
+                            <h3 style="margin: 0; color: #fff; font-size: 20px;">
+                                {% if user_data.user.first_name and user_data.user.last_name %}
+                                    {{ user_data.user.first_name }} {{ user_data.user.last_name }}
+                                {% elif user_data.user.first_name %}
+                                    {{ user_data.user.first_name }}
+                                {% elif user_data.user.last_name %}
+                                    {{ user_data.user.last_name }}
+                                {% elif user_data.user.username %}
+                                    {{ user_data.user.username }}
+                                {% else %}
+                                    Foydalanuvchi #{{ user_data.user.id }}
+                                {% endif %}
+                            </h3>
+                            <p style="margin: 5px 0 0 0; color: #94a3b8; font-size: 14px;">
+                                @{{ user_data.user.username|default:"username" }} • 
+                                Jami: {{ user_data.champions|length }} ta champion
+                            </p>
                         </div>
                     </div>
-                    {% endfor %}
+
+                    <!-- User's Champions List -->
+                    <div style="padding: 15px;">
+                        {% for champ in user_data.champions %}
+                        <div class="list-item" style="margin-bottom: 10px; cursor: default; background: rgba(255,255,255,0.03);">
+                            <!-- Avatar (champion uchun turnir rasmi) -->
+                            <div class="user-avatar" style="width: 50px; height: 50px; flex-shrink: 0;">
+                                {% if champ.tournament_image %}
+                                    <img src="{{ champ.tournament_image.url }}" alt="tournament" style="width:100%; height:100%; border-radius: 50%; object-fit:cover;">
+                                {% else %}
+                                    <div style="width:100%; height:100%; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: bold; font-size: 20px;">
+                                            🏆
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Champion Info -->
+                            <div class="champ-info">
+                                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                    <span style="color: #FFC400; font-weight: bold; font-size: 16px;">
+                                        {% if champ.position == 1 %}{% elif champ.position == 2 %}{% else %}{% endif %}
+                                        {{ champ.get_position_display }}
+                                    </span>
+                                    <span style="color: #22d3ee; font-weight: 500;">🏆 {{ champ.tournament_name }}</span>
+                                    <span style="color: #94a3b8;">{{ champ.tournament_date|date:"F d, Y" }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="champ-actions" style="display: flex; gap: 10px;">
+                                <a href="{% url 'champion_hall_edit' champ.id %}" 
+                                style="color: #22d3ee; text-decoration: none; font-size: 13px; padding: 5px 12px; border-radius: 6px; background: rgba(34, 211, 238, 0.1);">
+                                    ✏️ Tahrirlash
+                                </a>
+                                
+                                <a href="{% url 'champion_hall_delete' champ.id %}" 
+                                style="color: #ef4444; text-decoration: none; font-size: 13px; padding: 5px 12px; border-radius: 6px; background: rgba(239, 68, 68, 0.1);"
+                                onclick="return confirm('Rostdan ham bu championni o\'chirmoqchimisiz?\n{{ champ.tournament_name }} ({{ champ.tournament_date|date:"Y" }})');">
+                                    🗑️ O'chirish
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
+                {% empty %}
+                <div style="text-align: center; padding: 60px 20px; color: #64748b;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">🏆</div>
+                    <p style="font-size: 16px;">Hali championlar ro'yxatga olinmagan</p>
+                    <p style="font-size: 14px; margin-top: 5px;">Yuqoridagi forma orqali yangi champion qo'shing</p>
+                </div>
+                {% endfor %}
             </div>
-            {% empty %}
-            <div style="text-align: center; padding: 60px 20px; color: #64748b;">
-                <div style="font-size: 48px; margin-bottom: 15px;">🏆</div>
-                <p style="font-size: 16px;">Hali championlar ro'yxatga olinmagan</p>
-                <p style="font-size: 14px; margin-top: 5px;">Yuqoridagi forma orqali yangi champion qo'shing</p>
-            </div>
-            {% endfor %}
         </div>
     </div>
-</div>
-
 
 <script>
+    // ==================== TAB FUNKSIYALARI ====================
+    function showTab(tabId) {
+        // Barcha sectionlarni yashirish
+        document.querySelectorAll('.admin-section').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        // Barcha tab btnlardan active klassni olib tashlash
+        document.querySelectorAll('.tab-btn').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        // Tanlangan sectionni ko'rsatish
+        document.getElementById(tabId).classList.add('active');
+        
+        // Tab btn active qilish
+        const tabs = document.querySelectorAll('.tab-btn');
+        for(let i = 0; i < tabs.length; i++) {
+            if(tabs[i].innerText.toLowerCase().includes(tabId.slice(0, -1))) {
+                tabs[i].classList.add('active');
+                break;
+            }
+        }
+        
+        // URL hash ni yangilash
+        const hashMap = {
+            'users': '#users-tab',
+            'tournaments': '#tournaments-tab', 
+            'ratings': '#ratings-tab',
+            'champions': '#champions-tab'
+        };
+        if (hashMap[tabId]) {
+            history.replaceState(null, null, hashMap[tabId]);
+        }
+    }
+
+    // ==================== USER SELECTION ====================
     function toggleUser(el) {
         const checkbox = el.querySelector('input[type="checkbox"]');
         checkbox.checked = !checkbox.checked;
@@ -1319,36 +1355,111 @@ repeat(auto-fit,minmax(240px,1fr));
     }
 
     function validateSelection() {
-        const teamsCount = parseInt(document.getElementById('dashboard_teams_count').value) || 0;
+        const teamsCount = parseInt(document.getElementById('dashboard_teams_count')?.value) || 0;
         const checkedCount = document.querySelectorAll('input[name="users"]:checked').length;
         const createBtn = document.getElementById('createBtn');
         const counterDisplay = document.getElementById('selection-counter');
 
-        counterDisplay.innerText = `${checkedCount} / ${teamsCount}`;
+        if (counterDisplay) {
+            counterDisplay.innerText = `${checkedCount} / ${teamsCount}`;
+        }
 
-        if (checkedCount === teamsCount && teamsCount > 0) {
-            createBtn.disabled = false;
-            createBtn.classList.remove('disabled');
-            counterDisplay.style.color = "#10b981";
-        } else {
-            createBtn.disabled = true;
-            createBtn.classList.add('disabled');
-            counterDisplay.style.color = "#ef4444";
+        if (createBtn) {
+            if (checkedCount === teamsCount && teamsCount > 0) {
+                createBtn.disabled = false;
+                createBtn.classList.remove('disabled');
+                if (counterDisplay) counterDisplay.style.color = "#10b981";
+            } else {
+                createBtn.disabled = true;
+                createBtn.classList.add('disabled');
+                if (counterDisplay) counterDisplay.style.color = "#ef4444";
+            }
         }
     }
 
-    function toggleCollapse(header) {
-        const card = header.closest('.collapsible');
-        card.classList.toggle('active');
+    // ==================== SEARCH FUNKSIYASI ====================
+    function initUserSearch() {
+        const searchInput = document.getElementById('userSearchInput');
+        const userItems = document.querySelectorAll('.user-select-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+
+                userItems.forEach(item => {
+                    const name = item.querySelector('.user-select-name')?.textContent.toLowerCase() || '';
+                    const tag = item.querySelector('.user-select-tag')?.textContent.toLowerCase() || '';
+
+                    if (name.includes(searchTerm) || tag.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
     }
 
-    // Ratinglarni saqlash funksiyasi
+    // ==================== COLLAPSE FUNKSIYASI ====================
+    function toggleCollapse(header) {
+        const card = header.closest('.collapsible');
+        if (card) {
+            card.classList.toggle('active');
+        }
+    }
+
+    // ==================== GROUP SETTINGS ====================
+    function initGroupSettings() {
+        const typeSelect = document.querySelector('select[name="type"]');
+        if (typeSelect) {
+            typeSelect.addEventListener('change', function() {
+                const groupSettings = document.getElementById('group-settings');
+                if (this.value === 'GROUP') {
+                    groupSettings.style.display = 'block';
+                    updateTeamsPerGroup();
+                } else {
+                    groupSettings.style.display = 'none';
+                }
+            });
+        }
+
+        const teamsCount = document.getElementById('dashboard_teams_count');
+        const groupCount = document.getElementById('group_count');
+        
+        if (teamsCount) {
+            teamsCount.addEventListener('input', updateTeamsPerGroup);
+        }
+        if (groupCount) {
+            groupCount.addEventListener('input', updateTeamsPerGroup);
+        }
+    }
+
+    function updateTeamsPerGroup() {
+        const teamsCount = parseInt(document.getElementById('dashboard_teams_count')?.value) || 8;
+        const groupCount = parseInt(document.getElementById('group_count')?.value) || 4;
+        
+        const teamsPerGroup = Math.ceil(teamsCount / groupCount);
+        const preview = document.getElementById('teams_per_group_preview');
+        if (preview) {
+            preview.value = teamsPerGroup + ' (oxirgi guruhda kamroq bo`lishi mumkin)';
+        }
+        
+        const advanceCount = document.getElementById('group_advance_count');
+        if (advanceCount) {
+            if (parseInt(advanceCount.value) > teamsPerGroup) {
+                advanceCount.value = teamsPerGroup;
+            }
+            advanceCount.max = teamsPerGroup;
+        }
+    }
+
+    // ==================== RATING FUNKSIYALARI ====================
     function saveAllRatings() {
         const userInputs = document.querySelectorAll('.rating-input');
+        if (userInputs.length === 0) return;
+        
         const userData = {};
         const userList = [];
-        const gamesList = [];
-        const pointsList = [];
         
         userInputs.forEach(input => {
             const userId = input.dataset.userId;
@@ -1362,10 +1473,8 @@ repeat(auto-fit,minmax(240px,1fr));
             
             if (field === 'games') {
                 userData[userId].games = value;
-                gamesList.push(value);
             } else if (field === 'points') {
                 userData[userId].points = value;
-                pointsList.push(value);
             }
         });
         
@@ -1373,18 +1482,10 @@ repeat(auto-fit,minmax(240px,1fr));
         const formData = new FormData();
         formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
         
-        userList.forEach((userId, index) => {
+        userList.forEach((userId) => {
             formData.append('user_ids', userId);
-            if (userData[userId].games !== undefined) {
-                formData.append('games_played', userData[userId].games);
-            } else {
-                formData.append('games_played', '');
-            }
-            if (userData[userId].points !== undefined) {
-                formData.append('points', userData[userId].points);
-            } else {
-                formData.append('points', '');
-            }
+            formData.append('games_played', userData[userId]?.games || '');
+            formData.append('points', userData[userId]?.points || '');
         });
         
         // So'rov yuborish
@@ -1397,284 +1498,153 @@ repeat(auto-fit,minmax(240px,1fr));
         })
         .then(response => response.json())
         .then(data => {
-            const messageDiv = document.getElementById('ratingSaveMessage');
-            messageDiv.style.display = 'block';
-            
+            showRatingMessage(data.success, data.message || data.error);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showRatingMessage(false, 'So\'rovda xatolik yuz berdi');
+        });
+    }
+
+    function showRatingMessage(success, message) {
+        const messageDiv = document.getElementById('ratingSaveMessage');
+        if (!messageDiv) return;
+        
+        messageDiv.style.display = 'block';
+        
+        if (success) {
+            messageDiv.style.background = 'rgba(16, 185, 129, 0.1)';
+            messageDiv.style.color = '#10b981';
+            messageDiv.innerHTML = '✅ ' + message;
+        } else {
+            messageDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+            messageDiv.style.color = '#ef4444';
+            messageDiv.innerHTML = '❌ Xatolik: ' + message;
+        }
+        
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 3000);
+    }
+
+    function deleteRating(userId, userName) {
+        if (!confirm(`Rostdan ham ${userName} ni reytingdan o'chirmoqchimisiz?`)) {
+            return;
+        }
+        
+        fetch(`/admin/ratings/delete/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
             if (data.success) {
-                messageDiv.style.background = 'rgba(16, 185, 129, 0.1)';
-                messageDiv.style.color = '#10b981';
-                messageDiv.innerHTML = '✅ ' + data.message;
-                
-                setTimeout(() => {
-                    messageDiv.style.display = 'none';
-                }, 3000);
+                // Rowni o'chirish
+                const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                if (row) {
+                    row.remove();
+                }
+                showRatingMessage(true, data.message);
             } else {
-                messageDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-                messageDiv.style.color = '#ef4444';
-                messageDiv.innerHTML = '❌ Xatolik: ' + data.error;
+                alert('Xatolik: ' + data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            const messageDiv = document.getElementById('ratingSaveMessage');
-            messageDiv.style.display = 'block';
-            messageDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-            messageDiv.style.color = '#ef4444';
-            messageDiv.innerHTML = '❌ So\'rovda xatolik yuz berdi';
+            alert('So\'rovda xatolik yuz berdi');
         });
     }
 
-// Users section checkboxlarini boshqarish funksiyasi
-function updateUsersCheckboxes() {
-    const userType = document.getElementById('userTypeSelectUsers').value;
-    const tournamentCheckbox = document.getElementById('in_tournament_users');
-    const ratingCheckbox = document.getElementById('in_rating_users');
-    const championCheckbox = document.getElementById('in_champions_users');
-    
-    if (userType === 'ALL') {
-        tournamentCheckbox.checked = true;
-        ratingCheckbox.checked = true;
-        championCheckbox.checked = true;
+    // ==================== CHECKBOX FUNKSIYALARI ====================
+    function updateUsersCheckboxes() {
+        const userType = document.getElementById('userTypeSelectUsers');
+        if (!userType) return;
+        
+        const tournamentCheckbox = document.getElementById('in_tournament_users');
+        const ratingCheckbox = document.getElementById('in_rating_users');
+        const championCheckbox = document.getElementById('in_champions_users');
+        
+        if (!tournamentCheckbox || !ratingCheckbox || !championCheckbox) return;
+        
+        const type = userType.value;
+        
+        // Reset
         tournamentCheckbox.disabled = false;
         ratingCheckbox.disabled = false;
         championCheckbox.disabled = false;
-    } else if (userType === 'TOURNAMENT') {
-        tournamentCheckbox.checked = true;
-        ratingCheckbox.checked = false;
-        championCheckbox.checked = false;
-        tournamentCheckbox.disabled = false;
-        ratingCheckbox.disabled = true;
-        championCheckbox.disabled = true;
-    } else if (userType === 'RATING') {
-        tournamentCheckbox.checked = false;
-        ratingCheckbox.checked = true;
-        championCheckbox.checked = false;
-        tournamentCheckbox.disabled = true;
-        ratingCheckbox.disabled = false;
-        championCheckbox.disabled = true;
-    } else if (userType === 'CHAMPION') {
-        tournamentCheckbox.checked = false;
-        ratingCheckbox.checked = false;
-        championCheckbox.checked = true;
-        tournamentCheckbox.disabled = true;
-        ratingCheckbox.disabled = true;
-        championCheckbox.disabled = false;
-    }
-}
-
-// DOMContentLoaded eventiga qo'shish
-document.addEventListener('DOMContentLoaded', function() {
-    // Tournament section checkboxlarini sozlash
-    updateTournamentCheckboxes();
-    
-    // Users section checkboxlarini sozlash
-    if (document.getElementById('userTypeSelectUsers')) {
-        updateUsersCheckboxes();
-    }
-    
-    // Rating section checkboxlarini sozlash
-    updateRatingCheckboxes();
-    
-    const hash = window.location.hash;
-
-    if (hash === '#users-tab') {
-        showTab('users');
-    } 
-    else if (hash === '#ratings-tab') {
-        showTab('ratings');
-    } 
-    else if (hash === '#tournaments-tab') {
-        showTab('tournaments');
-    } 
-    else {
-        showTab('tournaments');
-    }
-    
-    // Search funksiyasi
-    const searchInput = document.getElementById('userSearchInput');
-    const userItems = document.querySelectorAll('.user-select-item');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-
-            userItems.forEach(item => {
-                const name = item.querySelector('.user-select-name').textContent.toLowerCase();
-                const tag = item.querySelector('.user-select-tag') ? 
-                            item.querySelector('.user-select-tag').textContent.toLowerCase() : '';
-
-                if (name.includes(searchTerm) || tag.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    }
-});
-
-    function showTab(tabId){
-        document.querySelectorAll('.admin-section').forEach(el => {
-            el.classList.remove('active');
-        });
-
-        document.querySelectorAll('.tab-btn').forEach(el => {
-            el.classList.remove('active');
-        });
-
-        document.getElementById(tabId).classList.add('active');
         
-        // Tab btn active qilish
-        const tabs = document.querySelectorAll('.tab-btn');
-        for(let i = 0; i < tabs.length; i++) {
-            if(tabs[i].innerText.toLowerCase().includes(tabId.slice(0, -1))) {
-                tabs[i].classList.add('active');
-                break;
-            }
-        }
-        
-        // URL hash ni yangilash
-        if (tabId === 'users') {
-            history.replaceState(null, null, '#users-tab');
-        } else if (tabId === 'tournaments') {
-            history.replaceState(null, null, '#tournaments-tab');
-        } else if (tabId === 'ratings') {
-            history.replaceState(null, null, '#ratings-tab');
-        } else if (tabId === 'champions') {
-            history.replaceState(null, null, '#champions-tab');
+        if (type === 'ALL') {
+            tournamentCheckbox.checked = true;
+            ratingCheckbox.checked = true;
+            championCheckbox.checked = true;
+        } else if (type === 'TOURNAMENT') {
+            tournamentCheckbox.checked = true;
+            ratingCheckbox.checked = false;
+            championCheckbox.checked = false;
+            ratingCheckbox.disabled = true;
+            championCheckbox.disabled = true;
+        } else if (type === 'RATING') {
+            tournamentCheckbox.checked = false;
+            ratingCheckbox.checked = true;
+            championCheckbox.checked = false;
+            tournamentCheckbox.disabled = true;
+            championCheckbox.disabled = true;
+        } else if (type === 'CHAMPION') {
+            tournamentCheckbox.checked = false;
+            ratingCheckbox.checked = false;
+            championCheckbox.checked = true;
+            tournamentCheckbox.disabled = true;
+            ratingCheckbox.disabled = true;
         }
     }
 
-    document.querySelector('select[name="type"]').addEventListener('change', function() {
-        const groupSettings = document.getElementById('group-settings');
-        if (this.value === 'GROUP') {
-            groupSettings.style.display = 'block';
-            updateTeamsPerGroup();
-        } else {
-            groupSettings.style.display = 'none';
-        }
-    });
-
-    document.getElementById('dashboard_teams_count').addEventListener('input', updateTeamsPerGroup);
-    document.getElementById('group_count').addEventListener('input', updateTeamsPerGroup);
-
-    function updateTeamsPerGroup() {
-        const teamsCount = parseInt(document.getElementById('dashboard_teams_count').value) || 8;
-        const groupCount = parseInt(document.getElementById('group_count').value) || 4;
-        
-        const teamsPerGroup = Math.ceil(teamsCount / groupCount);
-        document.getElementById('teams_per_group_preview').value = teamsPerGroup + ' (oxirgi guruhda kamroq bo`lishi mumkin)';
-        
-        const advanceCount = document.getElementById('group_advance_count');
-        if (parseInt(advanceCount.value) > teamsPerGroup) {
-            advanceCount.value = teamsPerGroup;
-        }
-        advanceCount.max = teamsPerGroup;
+    function updateTournamentCheckboxes() {
+        // Tournament section checkboxlari uchun
+        console.log('Tournament checkboxes updated');
     }
 
-    // Sahifa yuklanganda tekshirish
+    function updateRatingCheckboxes() {
+        // Rating section checkboxlari uchun
+        console.log('Rating checkboxes updated');
+    }
+
+    // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', function() {
+        // Tablarni sozlash
         const hash = window.location.hash;
+        const hashMap = {
+            '#users-tab': 'users',
+            '#ratings-tab': 'ratings',
+            '#tournaments-tab': 'tournaments',
+            '#champions-tab': 'champions'
+        };
         
-        // Agar hash bo'lsa, shu tabni ochish
-        if (hash === '#users-tab') {
-            showTab('users');
-        } 
-        else if (hash === '#ratings-tab') {
-            showTab('ratings');
-        } 
-        else if (hash === '#tournaments-tab') {
-            showTab('tournaments');
-        } 
-        else if (hash === '#champions-tab') {
-            showTab('champions');
-        } 
-        else {
-            showTab('tournaments');
-        }
+        const tabToShow = hashMap[hash] || 'tournaments';
+        showTab(tabToShow);
         
-        // Tournament section checkboxlarini sozlash
+        // Checkboxlarni sozlash
         updateTournamentCheckboxes();
-        
-        // Users section checkboxlarini sozlash
-        if (document.getElementById('userTypeSelectUsers')) {
-            updateUsersCheckboxes();
-        }
-        
-        // Rating section checkboxlarini sozlash
+        updateUsersCheckboxes();
         updateRatingCheckboxes();
         
-        // Search funksiyasi
-        const searchInput = document.getElementById('userSearchInput');
-        const userItems = document.querySelectorAll('.user-select-item');
-
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-
-                userItems.forEach(item => {
-                    const name = item.querySelector('.user-select-name').textContent.toLowerCase();
-                    const tag = item.querySelector('.user-select-tag') ? 
-                                item.querySelector('.user-select-tag').textContent.toLowerCase() : '';
-
-                    if (name.includes(searchTerm) || tag.includes(searchTerm)) {
-                        item.style.display = 'flex';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        }
+        // Qidiruvni sozlash
+        initUserSearch();
         
-        // Group settings ni tekshirish
-        if (document.querySelector('select[name="type"]') && 
-            document.querySelector('select[name="type"]').value === 'GROUP') {
+        // Group settingsni sozlash
+        initGroupSettings();
+        
+        // Group settingsni tekshirish
+        if (document.querySelector('select[name="type"]')?.value === 'GROUP') {
             document.getElementById('group-settings').style.display = 'block';
             updateTeamsPerGroup();
         }
+        
+        // Validatsiyani ishga tushirish
+        validateSelection();
     });
-
-// JavaScript qo'shimcha (AJAX bilan o'chirish)
-function deleteRating(userId, userName) {
-    if (!confirm(`Rostdan ham ${userName} ni reytingdan o'chirmoqchimisiz?`)) {
-        return;
-    }
-    
-    fetch(`/admin/ratings/delete/${userId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Rowni o'chirish
-            const row = document.querySelector(`tr[data-user-id="${userId}"]`);
-            if (row) {
-                row.remove();
-            }
-            
-            // Xabar ko'rsatish
-            const messageDiv = document.getElementById('ratingSaveMessage');
-            messageDiv.style.display = 'block';
-            messageDiv.style.background = 'rgba(16, 185, 129, 0.1)';
-            messageDiv.style.color = '#10b981';
-            messageDiv.innerHTML = '✅ ' + data.message;
-            
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 3000);
-        } else {
-            alert('Xatolik: ' + data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('So\'rovda xatolik yuz berdi');
-    });
-}
 </script>
 </body>
 </html>

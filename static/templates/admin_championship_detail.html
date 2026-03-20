@@ -239,6 +239,7 @@
                             <th style="text-align: center;">W</th>
                             <th style="text-align: center;">D</th>
                             <th style="text-align: center;">L</th>
+                            <th style="text-align: center;">+:-</th>
                             <th style="text-align: center;">GD</th>
                             <th style="text-align: center;" class="highlight">PTS</th>
                         </tr>
@@ -247,15 +248,7 @@
                         {% for entry in table %}
                         <tr class="{% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
                             <td class="rank-num" style="text-align: center; font-weight: bold;">
-                                {% if forloop.counter == 1 %}
-                                    <span class="medal">🥇</span>
-                                {% elif forloop.counter == 2 %}
-                                    <span class="medal">🥈</span>
-                                {% elif forloop.counter == 3 %}
-                                    <span class="medal">🥉</span>
-                                {% else %}
                                     {{ forloop.counter }}
-                                {% endif %}
                             </td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 12px;">
@@ -288,6 +281,7 @@
                             <td style="text-align: center; color: #10b981; font-weight: 600;">{{ entry.w }}</td>
                             <td style="text-align: center; color: #94a3b8;">{{ entry.d }}</td>
                             <td style="text-align: center; color: #ef4444;">{{ entry.l }}</td>
+                            <td style="text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% endif %}">{{ entry.gf }}:{{ entry.ga }}</td>
                             <td style="text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% endif %}">{{ entry.gd }}</td>
                             <td style="text-align: center;" class="highlight">
                                 <span style="background: rgba(34, 211, 238, 0.1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(34, 211, 238, 0.2);">
@@ -443,7 +437,8 @@
                                         <th style="padding: 12px; text-align: center; color: #ef4444;">M</th>
                                         <th style="padding: 12px; text-align: center; color: #94a3b8;">UG</th>
                                         <th style="padding: 12px; text-align: center; color: #94a3b8;">O'G</th>
-                                        <th style="padding: 12px; text-align: center; color: #22d3ee;">±</th>
+                                        <th style="padding: 12px; text-align: center; color: #22d3ee;">+:-</th>
+                                        <th style="text-align: center;">GD</th>
                                         <th style="padding: 12px; text-align: center; color: #22d3ee; font-weight: 700;">OCH</th>
                                         <th style="padding: 12px; text-align: center; color: #94a3b8;">Forma</th>
                                     </tr>
@@ -453,15 +448,7 @@
                                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {% if forloop.counter <= championship.group_advance_count %}linear-gradient(90deg, rgba(16,185,129,0.1), transparent){% endif %};">
                                             <!-- Rank -->
                                             <td style="padding: 15px 12px; text-align: center; font-weight: 700; width: 50px;">
-                                                {% if forloop.counter == 1 %}
-                                                    <span style="color: #ffd700;">🥇</span>
-                                                {% elif forloop.counter == 2 %}
-                                                    <span style="color: #c0c0c0;">🥈</span>
-                                                {% elif forloop.counter == 3 %}
-                                                    <span style="color: #cd7f32;">🥉</span>
-                                                {% else %}
                                                     {{ forloop.counter }}
-                                                {% endif %}
                                             </td>
 
                                             <!-- Player -->
@@ -506,8 +493,9 @@
                                                 {% elif entry.gd < 0 %}#ef4444
                                                 {% else %}#94a3b8
                                                 {% endif %};">
-                                                {{ entry.gd }}
+                                                {{ entry.gf }}:{{ entry.ga }}
                                             </td>
+                                            <td style="text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% endif %}">{{ entry.gd }}</td>
                                             <td style="padding: 15px 12px; text-align: center;">
                                                 <span style="background: rgba(34,211,238,0.1); padding: 4px 12px; border-radius: 20px; font-weight: 700; color: #22d3ee;">{{ entry.pts }}</span>
                                             </td>
@@ -768,6 +756,24 @@
                         </div>
 
                         <div style="display: flex; align-items: center; gap: 10px; width: 180px; justify-content: flex-end;">
+                            {% if match.is_finished and match.home_user and match.away_user %}
+                                <button type="button" 
+                                        class="undo-btn" 
+                                        data-match-id="{{ match.id }}"
+                                        style="background: #f59e0b; border: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; color: white; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 5px;"
+                                        onclick="undoMatchScore({{ match.id }})"
+                                        title="Natijani qaytarish (0:0 va tugamagan holatga)">
+
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" 
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <polyline points="1 20 1 14 7 14"></polyline>
+                                        <path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10"></path>
+                                        <path d="M20.49 15a9 9 0 0 1-14.13 3.36L1 14"></path>
+                                    </svg>
+
+                                </button>
+                                {% endif %}
                             <button type="button" 
                                     class="bookmark-btn" 
                                     data-match-id="{{ match.id }}"
@@ -1823,6 +1829,95 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Qaytarish tugmasi uchun funksiya
+function undoMatchScore(matchId) {
+    if (!confirm('Bu o\'yin natijasini qaytarishni xohlaysizmi? Hisob 0:0 ga va "KUTILMOQDA" holatiga qaytariladi.')) {
+        return;
+    }
+    
+    const matchForm = document.getElementById(`match-${matchId}`);
+    if (!matchForm) return;
+    
+    const homeScoreInput = matchForm.querySelector('input[name="home_score"]');
+    const awayScoreInput = matchForm.querySelector('input[name="away_score"]');
+    
+    // Inputlarni 0 ga qaytarish
+    homeScoreInput.value = 0;
+    awayScoreInput.value = 0;
+    
+    // AJAX so'rov yuborish
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+    formData.append('home_score', 0);
+    formData.append('away_score', 0);
+    formData.append('is_finished', 'false'); // Yangi: tugamagan qilish
+    
+    fetch(`/app/undo-match/${matchId}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Match UI ni yangilash
+            updateMatchUI(matchId, {
+                home_score: 0,
+                away_score: 0,
+                is_finished: false,
+                winner_id: null
+            });
+            
+            // Turnir jadvalini yangilash
+            if (data.table_data) {
+                updateTableUI(data.table_data);
+            }
+            
+            // Guruh jadvalini yangilash
+            if (data.group_table_data) {
+                updateGroupUI(data.group_table_data);
+            }
+            
+            // Bracketni yangilash
+            if (data.bracket_data) {
+                updateBracketUI(data.bracket_data);
+            }
+            
+            // Qaytarish tugmasini yashirish yoki o'chirish
+            const undoBtn = matchForm.querySelector('.undo-btn');
+            if (undoBtn) {
+                undoBtn.style.display = 'none';
+            }
+            
+            showNotification('Natija muvaffaqiyatli qaytarildi! (0:0, KUTILMOQDA)', 'success');
+        } else {
+            showNotification(data.message || 'Xatolik yuz berdi', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Server bilan bog\'lanishda xatolik!', 'error');
+    });
+}
+
+// CSRF token olish funksiyasi (agar mavjud bo'lmasa)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 </body>
 </html>

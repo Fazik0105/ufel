@@ -527,8 +527,6 @@
                             <th style="text-align: center;">G</th>
                             <th style="text-align: center;">D</th>
                             <th style="text-align: center;">M</th>
-                            <th style="text-align: center;">UG</th>
-                            <th style="text-align: center;">O'G</th>
                             <th style="text-align: center;">±</th>
                             <th style="text-align: center;">OCH</th>
                         </tr>
@@ -537,11 +535,7 @@
                         {% for entry in table %}
                         <tr class="{% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
                             <td style="text-align: center; font-weight: 700;">
-                                {% if forloop.counter == 1 %}🥇
-                                {% elif forloop.counter == 2 %}🥈
-                                {% elif forloop.counter == 3 %}🥉
-                                {% else %}{{ forloop.counter }}
-                                {% endif %}
+                                {{ forloop.counter }}
                             </td>
                             <td>
                                 <div class="player-info">
@@ -564,8 +558,6 @@
                             <td style="text-align: center; color: #10b981;">{{ entry.w }}</td>
                             <td style="text-align: center; color: #94a3b8;">{{ entry.d }}</td>
                             <td style="text-align: center; color: #ef4444;">{{ entry.l }}</td>
-                            <td style="text-align: center;">{{ entry.gf }}</td>
-                            <td style="text-align: center;">{{ entry.ga }}</td>
                             <td style="text-align: center; {% if entry.gd > 0 %}color: #22d3ee;{% elif entry.gd < 0 %}color: #ef4444;{% endif %}">
                                 {{ entry.gd }}
                             </td>
@@ -679,8 +671,6 @@
                                             <th style="padding: 12px; text-align: center; color: #10b981;">G</th>
                                             <th style="padding: 12px; text-align: center; color: #94a3b8;">D</th>
                                             <th style="padding: 12px; text-align: center; color: #ef4444;">M</th>
-                                            <th style="padding: 12px; text-align: center;">UG</th>
-                                            <th style="padding: 12px; text-align: center;">O'G</th>
                                             <th style="padding: 12px; text-align: center; color: #22d3ee;">±</th>
                                             <th style="padding: 12px; text-align: center; color: #22d3ee;">OCH</th>
                                         </tr>
@@ -689,11 +679,7 @@
                                         {% for entry in group.standings %}
                                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {% if forloop.counter <= group_stats.advance_count %}rgba(16,185,129,0.1){% endif %};">
                                             <td style="padding: 15px 12px; text-align: center; font-weight: 700;">
-                                                {% if forloop.counter == 1 %}🥇
-                                                {% elif forloop.counter == 2 %}🥈
-                                                {% elif forloop.counter == 3 %}🥉
-                                                {% else %}{{ forloop.counter }}
-                                                {% endif %}
+                                                {{ forloop.counter }}
                                             </td>
                                             
                                             <td style="padding: 15px 12px;">
@@ -709,9 +695,9 @@
                                                         <div style="font-weight: 600;">{{ entry.user.get_full_name|default:entry.user.username }}</div>
                                                         <div style="font-size: 11px; color: #64748b;">@{{ entry.user.username }}</div>
                                                     </div>
-                                                    {% if forloop.counter <= group_stats.advance_count %}
+                                                    <!-- {% if forloop.counter <= group_stats.advance_count %}
                                                     <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px;">NEXT</span>
-                                                    {% endif %}
+                                                    {% endif %} -->
                                                 </div>
                                             </td>
                                             
@@ -719,8 +705,6 @@
                                             <td style="padding: 15px 12px; text-align: center; color: #10b981;">{{ entry.w }}</td>
                                             <td style="padding: 15px 12px; text-align: center;">{{ entry.d }}</td>
                                             <td style="padding: 15px 12px; text-align: center; color: #ef4444;">{{ entry.l }}</td>
-                                            <td style="padding: 15px 12px; text-align: center;">{{ entry.gf }}</td>
-                                            <td style="padding: 15px 12px; text-align: center;">{{ entry.ga }}</td>
                                             <td style="padding: 15px 12px; text-align: center; font-weight: 600; color: {% if entry.gd > 0 %}#22d3ee{% elif entry.gd < 0 %}#ef4444{% else %}#94a3b8{% endif %};">
                                                 {{ entry.gd }}
                                             </td>

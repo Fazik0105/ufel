@@ -1,3 +1,5 @@
+from django.utils.translation import activate
+from django.conf import settings
 from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
@@ -10,12 +12,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 import uuid
 from django.contrib.auth.hashers import make_password
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 import json
 from django.utils import timezone
 from datetime import datetime
+from django.utils.translation import gettext as _
+from django.utils import translation
 
 # INDEX PAGE
 def index(request):
@@ -1476,9 +1480,149 @@ def tournament_public_view(request, pk):
     if championship.type == 'PLAYOFF' and all_matches.exists():
         rounds_dict = {}
         
-        for match in all_matches:
+        for match in all_matches.order_by('round_order', 'bracket_position'):
             round_name = match.round_name or f"Round {match.round_order}"
             
+            if round_name not in rounds_dict:
+                rounds_dict[round_name] = {
+                    'name': round_name,
+                    'order': match.round_order or 0,
+                    'matches': []
+                }
+            
+            # G'olibni aniqlash
+            winner = None
+            if match.is_finished:
+                if match.home_score > match.away_score:
+                    winner = match.home_user
+                elif match.away_score > match.home_score:
+                    winner = match.away_user
+            
+            match_data = {
+                'id': match.id,
+                'home_user': match.home_user,
+                'away_user': match.away_user,
+                'home_score': match.home_score,
+                'away_score': match.away_score,
+                'is_finished': match.is_finished,
+                'winner': winner,
+                'bracket_position': match.bracket_position or 0,
+                'round_order': match.round_order or 0,
+            }
+            rounds_dict[round_name]['matches'].append(match_data)
+        
+        # Raundlarni order bo'yicha tartiblash
+        bracket_data = sorted(rounds_dict.values(), key=lambda x: x['order'])
+        
+        # Har bir raunddagi matchlarni bracket_position bo'yicha tartiblash
+        for round_data in bracket_data:
+            round_data['matches'].sort(key=lambda x: x['bracket_position'])
+    
+    player_filter = request.GET.get('player', '')
+    status_filter = request.GET.get('status', 'all')
+    
+    all_matches = Match.objects.filter(
+        championship=championship
+    ).select_related('home_user', 'away_user').order_by('round_order', 'bracket_position', 'id')
+    
+    filtered_matches = all_matches
+    if player_filter:
+        filtered_matches = filtered_matches.filter(
+            Q(home_user_id=player_filter) | Q(away_user_id=player_filter)
+        )
+    
+    if status_filter == 'finished':
+        filtered_matches = filtered_matches.filter(is_finished=True)
+    elif status_filter == 'pending':
+        filtered_matches = filtered_matches.filter(is_finished=False)
+    
+    # Turnir ishtirokchilarini olish
+    participants = ChampionshipParticipant.objects.filter(
+        championship=championship
+    ).select_related('user')
+    
+    group_stats = {
+        'total_groups': len(group_data) if championship.type == 'GROUP' else 0,
+        'advance_count': championship.group_advance_count if championship.type == 'GROUP' else 0,
+        'total_teams': sum(len(g['standings']) for g in group_data) if championship.type == 'GROUP' else 0
+    }
+    
+    context = {
+        'championship': championship,
+        'matches': filtered_matches,
+        'matches_count': filtered_matches.count(),
+        'total_matches': all_matches.count(),
+        'matches_exist': all_matches.exists(),
+        'table': table_data,
+        'group_data': group_data,
+        'group_stats': group_stats,
+        'bracket_data': bracket_data,
+        'participants': participants,
+        'participants_count': participants.count(),
+        'participants': participants,
+        'status_filter': status_filter,
+        'is_public_view': True,
+        'finished_matches_count': all_matches.filter(is_finished=True).count(),
+        'pending_matches_count': all_matches.filter(is_finished=False).count(),
+        'is_admin': request.user.is_authenticated and request.user.role == 'ADMIN',
+    }
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        return JsonResponse({
+            'success': True,
+            'group_data': group_data,
+            'matches_count': filtered_matches.count(),
+        })
+    
+    return render(request, 'tournament_public_view.html', context)
+
+def tournament_detail_partial(request, pk):
+    championship = get_object_or_404(Championship, pk=pk)
+    
+    player_filter = request.GET.get('player', '')
+    status_filter = request.GET.get('status', 'all')
+    
+    all_matches = Match.objects.filter(
+        championship=championship
+    ).select_related('home_user', 'away_user').order_by('round_order', 'bracket_position', 'id')
+    
+    filtered_matches = all_matches
+    if player_filter:
+        try:
+            player_id = int(player_filter)
+            filtered_matches = filtered_matches.filter(
+                Q(home_user_id=player_id) | Q(away_user_id=player_id)
+            )
+        except ValueError:
+            # Agar player_filter butun son bo‘lmasa, filtrni qo‘llamaymiz
+            pass
+    
+    if status_filter == 'finished':
+        filtered_matches = filtered_matches.filter(is_finished=True)
+    elif status_filter == 'pending':
+        filtered_matches = filtered_matches.filter(is_finished=False)
+    
+    # Turnir ishtirokchilarini olish
+    participants = ChampionshipParticipant.objects.filter(
+        championship=championship
+    ).select_related('user')
+    
+    table_data = []
+    if championship.type == 'LEAGUE' and all_matches.exists():
+        table_data = get_standings(championship.id)
+    
+    group_data = []
+    if championship.type == 'GROUP' and all_matches.exists():
+        from championship.services import get_group_standings
+        group_data = get_group_standings(championship.id)
+    
+    # BRACKET DATA
+    bracket_data = []
+    if championship.type == 'PLAYOFF' and all_matches.exists():
+        rounds_dict = {}
+        for match in all_matches:
+            round_name = match.round_name or f"Round {match.round_order}"
             if round_name not in rounds_dict:
                 rounds_dict[round_name] = {
                     'name': round_name,
@@ -1511,131 +1655,6 @@ def tournament_public_view(request, pk):
         for round_data in bracket_data:
             round_data['matches'].sort(key=lambda x: x['bracket_position'])
     
-    search_query = request.GET.get('search', '')
-    status_filter = request.GET.get('status', 'all')
-    
-    filtered_matches = all_matches
-    
-    if search_query:
-        filtered_matches = filtered_matches.filter(
-            Q(home_user__username__icontains=search_query) |
-            Q(home_user__first_name__icontains=search_query) |
-            Q(home_user__last_name__icontains=search_query) |
-            Q(away_user__username__icontains=search_query) |
-            Q(away_user__first_name__icontains=search_query) |
-            Q(away_user__last_name__icontains=search_query)
-        )
-    
-    if status_filter == 'finished':
-        filtered_matches = filtered_matches.filter(is_finished=True)
-    elif status_filter == 'pending':
-        filtered_matches = filtered_matches.filter(is_finished=False)
-    
-    participants = ChampionshipParticipant.objects.filter(
-        championship=championship
-    ).select_related('user').order_by('user__username')
-    
-    group_stats = {
-        'total_groups': len(group_data) if championship.type == 'GROUP' else 0,
-        'advance_count': championship.group_advance_count if championship.type == 'GROUP' else 0,
-        'total_teams': sum(len(g['standings']) for g in group_data) if championship.type == 'GROUP' else 0
-    }
-    
-    context = {
-        'championship': championship,
-        'matches': filtered_matches,
-        'matches_count': filtered_matches.count(),
-        'total_matches': all_matches.count(),
-        'matches_exist': all_matches.exists(),
-        'table': table_data,
-        'group_data': group_data,
-        'group_stats': group_stats,
-        'bracket_data': bracket_data,
-        'participants': participants,
-        'participants_count': participants.count(),
-        'search_query': search_query,
-        'status_filter': status_filter,
-        'is_public_view': True,
-        'finished_matches_count': all_matches.filter(is_finished=True).count(),
-        'pending_matches_count': all_matches.filter(is_finished=False).count(),
-        'is_admin': request.user.is_authenticated and request.user.role == 'ADMIN',
-    }
-    
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.http import JsonResponse
-        return JsonResponse({
-            'success': True,
-            'group_data': group_data,
-            'matches_count': filtered_matches.count(),
-        })
-    
-    return render(request, 'tournament_public_view.html', context)
-
-def tournament_detail_partial(request, pk):
-    championship = get_object_or_404(Championship, pk=pk)
-    
-    search_query = request.GET.get('search', '')
-    status_filter = request.GET.get('status', 'all')
-    
-    all_matches = Match.objects.filter(
-        championship=championship
-    ).select_related('home_user', 'away_user').order_by('round_order', 'id')
-    
-    filtered_matches = all_matches
-    if search_query:
-        filtered_matches = filtered_matches.filter(
-            Q(home_user__username__icontains=search_query) |
-            Q(home_user__first_name__icontains=search_query) |
-            Q(away_user__username__icontains=search_query) |
-            Q(away_user__first_name__icontains=search_query)
-        )
-    
-    if status_filter == 'finished':
-        filtered_matches = filtered_matches.filter(is_finished=True)
-    elif status_filter == 'pending':
-        filtered_matches = filtered_matches.filter(is_finished=False)
-    
-    table_data = []
-    if championship.type == 'LEAGUE' and all_matches.exists():
-        table_data = get_standings(championship.id)
-    
-    group_data = []
-    if championship.type == 'GROUP' and all_matches.exists():
-        from championship.services import get_group_standings
-        group_data = get_group_standings(championship.id)
-    
-    bracket_data = []
-    if championship.type == 'PLAYOFF' and all_matches.exists():
-        rounds_dict = {}
-        for match in all_matches:
-            round_name = match.round_name
-            if round_name not in rounds_dict:
-                rounds_dict[round_name] = {
-                    'name': round_name,
-                    'order': match.round_order,
-                    'matches': []
-                }
-            
-            winner = None
-            if match.is_finished:
-                if match.home_score > match.away_score:
-                    winner = match.home_user
-                elif match.away_score > match.home_score:
-                    winner = match.away_user
-            
-            match_data = {
-                'id': match.id,
-                'home_user': match.home_user,
-                'away_user': match.away_user,
-                'home_score': match.home_score,
-                'away_score': match.away_score,
-                'is_finished': match.is_finished,
-                'winner': winner,
-            }
-            rounds_dict[round_name]['matches'].append(match_data)
-        
-        bracket_data = sorted(rounds_dict.values(), key=lambda x: x['order'])
-    
     html = render_to_string('tournament_content_partial.html', {
         'championship': championship,
         'table': table_data,
@@ -1643,8 +1662,9 @@ def tournament_detail_partial(request, pk):
         'bracket_data': bracket_data,
         'matches': filtered_matches,
         'matches_count': filtered_matches.count(),
-        'search_query': search_query,
+        'participants': participants,
         'status_filter': status_filter,
+        'player': player_filter,
         'is_public_view': True,
     }, request=request)
     
@@ -2162,3 +2182,479 @@ def champion_detail_data(request, pk):
         return JsonResponse(data)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@admin_only
+@require_POST
+def undo_match(request, match_id):
+    """O'yin natijasini qaytarish - matchni 0:0 va tugamagan holatga qaytarish"""
+    try:
+        match = get_object_or_404(Match, id=match_id)
+        
+        # Eski natijalarni saqlash (log uchun)
+        old_home_score = match.home_score
+        old_away_score = match.away_score
+        old_is_finished = match.is_finished
+        
+        # O'yinni tugamagan qilish va hisobni 0:0 qaytarish
+        match.home_score = 0
+        match.away_score = 0
+        match.is_finished = False
+        match.save()
+        
+        # Agar Playoff bo'lsa, keyingi matchlarni tozalash
+        if match.championship.type == 'PLAYOFF' and match.next_match:
+            next_match = match.next_match
+            if match.next_match_position == 0:
+                next_match.home_user = None
+            else:
+                next_match.away_user = None
+            next_match.is_finished = False
+            next_match.save()
+        
+        # Agar bu Final bo'lsa va championship FINISHED bo'lsa, uni STARTED ga qaytarish
+        if match.round_name == "Final" and match.championship.status == 'FINISHED':
+            match.championship.status = 'STARTED'
+            match.championship.save()
+        
+        response_data = {
+            'status': 'success',
+            'message': f'O\'yin natijasi qaytarildi: {old_home_score}:{old_away_score} -> 0:0',
+            'match_id': match.id,
+            'home_score': match.home_score,
+            'away_score': match.away_score,
+            'is_finished': match.is_finished,
+        }
+        
+        # Turnir jadvalini yangilash (agar LEAGUE bo'lsa)
+        if match.championship.type == 'LEAGUE':
+            from championship.services import get_standings
+            updated_table = get_standings(match.championship.id)
+            
+            serializable_table = []
+            for entry in updated_table:
+                serializable_entry = {
+                    'user': {
+                        'id': entry['user'].id,
+                        'username': entry['user'].username,
+                        'first_name': entry['user'].first_name,
+                        'last_name': entry['user'].last_name,
+                        'avatar_url': entry['user'].avatar.url if entry['user'].avatar else None
+                    },
+                    'pld': entry['pld'],
+                    'w': entry['w'],
+                    'd': entry['d'],
+                    'l': entry['l'],
+                    'gf': entry['gf'],
+                    'ga': entry['ga'],
+                    'gd': entry['gd'],
+                    'pts': entry['pts']
+                }
+                serializable_table.append(serializable_entry)
+            
+            response_data['table_data'] = serializable_table
+        
+        # Guruh jadvalini yangilash (GROUP bo'lsa)
+        elif match.championship.type == 'GROUP':
+            from championship.services import get_group_standings
+            updated_group_table = get_group_standings(match.championship.id)
+            
+            serializable_group_table = []
+            for group in updated_group_table:
+                serializable_group = {
+                    'label': group['label'],
+                    'standings': []
+                }
+                for entry in group['standings']:
+                    serializable_entry = {
+                        'user': {
+                            'id': entry['user'].id,
+                            'username': entry['user'].username,
+                            'first_name': entry['user'].first_name,
+                            'last_name': entry['user'].last_name,
+                            'avatar_url': entry['user'].avatar.url if entry['user'].avatar else None
+                        },
+                        'pld': entry['pld'],
+                        'w': entry['w'],
+                        'd': entry['d'],
+                        'l': entry['l'],
+                        'gf': entry['gf'],
+                        'ga': entry['ga'],
+                        'gd': entry['gd'],
+                        'pts': entry['pts']
+                    }
+                    serializable_group['standings'].append(serializable_entry)
+                serializable_group_table.append(serializable_group)
+            
+            response_data['group_table_data'] = serializable_group_table
+        
+        # Bracketni yangilash (PLAYOFF bo'lsa)
+        elif match.championship.type == 'PLAYOFF':
+            from championship.services import get_bracket_data
+            updated_bracket = get_bracket_data(match.championship.id)
+            
+            serializable_bracket = []
+            for round_data in updated_bracket:
+                serializable_round = {
+                    'name': round_data['name'],
+                    'order': round_data['order'],
+                    'matches': []
+                }
+                
+                for match_data in round_data['matches']:
+                    home_user_data = None
+                    if match_data['home_user']:
+                        home_user_data = {
+                            'id': match_data['home_user'].id,
+                            'username': match_data['home_user'].username,
+                            'first_name': match_data['home_user'].first_name,
+                            'last_name': match_data['home_user'].last_name,
+                            'avatar_url': match_data['home_user'].avatar.url if match_data['home_user'].avatar else None
+                        }
+                    
+                    away_user_data = None
+                    if match_data['away_user']:
+                        away_user_data = {
+                            'id': match_data['away_user'].id,
+                            'username': match_data['away_user'].username,
+                            'first_name': match_data['away_user'].first_name,
+                            'last_name': match_data['away_user'].last_name,
+                            'avatar_url': match_data['away_user'].avatar.url if match_data['away_user'].avatar else None
+                        }
+                    
+                    serializable_match = {
+                        'id': match_data['id'],
+                        'home_score': match_data['home_score'],
+                        'away_score': match_data['away_score'],
+                        'is_finished': match_data['is_finished'],
+                        'bracket_position': match_data['bracket_position'],
+                        'round_order': match_data['round_order'],
+                        'home_user': home_user_data,
+                        'away_user': away_user_data,
+                        'winner_id': match_data['winner'].id if match_data['winner'] else None,
+                    }
+                    serializable_round['matches'].append(serializable_match)
+                
+                serializable_bracket.append(serializable_round)
+            
+            serializable_bracket.sort(key=lambda x: x['order'])
+            response_data['bracket_data'] = serializable_bracket
+        
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Xatolik: {str(e)}'
+        }, status=500)
+    
+
+def reglament_view(request):
+    """Reglament page view"""
+    return render(request, 'reglament.html')
+    
+def get_reglament_content(request):
+    """API endpoint to get reglament content in requested language"""
+    lang = request.GET.get('lang', 'uz')
+    
+    if lang == 'ru':
+        # Russian hardcoded content
+        content = {
+            'reglament': {
+                'title': 'Uzbekistan Football e-League — РЕГЛАМЕНТ',
+                'sections': [
+                    {
+                        'title': '1. ОБЩАЯ ИНФОРМАЦИЯ',
+                        'points': [
+                            '1.1. UFEL (Uzbekistan Football e-League) — лига, организующая турниры по игре eFootball.',
+                            '1.2. Турниры проводятся на основе игры eFootball и в соответствии с данным регламентом.',
+                            '1.3. Настоящий регламент является обязательным для всех участников.',
+                            '1.4. Цель лиги — развитие eFootball в Узбекистане на новом уровне и создание сильной конкурентной среды.'
+                        ]
+                    },
+                    {
+                        'title': '2. УЧАСТНИКИ',
+                        'points': [
+                            '2.1. В лиге могут участвовать все зарегистрированные участники.',
+                            '2.2. Администраторы имеют право запрашивать у участников необходимую информацию для участия в турнире.',
+                            '2.3. Один участник может участвовать в турнирах только с одного аккаунта.'
+                        ]
+                    },
+                    {
+                        'title': '3. ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ',
+                        'points': [
+                            '3.1. Платформы: PlayStation 4/5, компьютер (PC), Xbox.',
+                            '3.2. Для стабильной игры рекомендуется использовать проводное интернет-соединение (LAN).',
+                            '3.3. В случае низкой скорости интернета или несоответствия техническим требованиям участник может быть отстранён от турнира.',
+                            '3.4. Настройки матча (Match Settings) определяются в зависимости от формата турнира и указываются отдельно в регламенте или объявлении.',
+                            '3.5. В случае разрыва соединения или технических проблем во время матча судьи принимают решение о переигровке или сохранении текущего счёта.'
+                        ]
+                    },
+                    {
+                        'title': '4. ПОРЯДОК НАЧАЛА МАТЧА',
+                        'points': [
+                            '4.1. Для проведения матча участники договариваются между собой о удобном времени и связываются друг с другом.',
+                            '4.2. Если соперник не отвечает на сообщения или не выходит на связь в назначенное время, необходимо обратиться к администраторам UFEL.',
+                            '4.3. Администраторы рассматривают ситуацию и принимают окончательное решение (техническая победа или другое решение).',
+                            '4.4. Договорные матчи строго запрещены.'
+                        ]
+                    },
+                    {
+                        'title': '5. ПОРЯДОК РАСЧЁТА ТУРНИРНОЙ ТАБЛИЦЫ',
+                        'points': [
+                            '5.1. В лиге места участников в турнирной таблице определяются по количеству набранных очков.',
+                            '5.2. Если количество очков одинаковое, преимущество получает участник, забивший больше голов.',
+                            '5.3. Если равны и очки, и количество забитых голов, преимущество получает участник, пропустивший меньше голов.',
+                            '5.4. Если все вышеуказанные показатели равны, учитывается результат личной встречи между участниками.',
+                            '5.5. В турнирах со специальным форматом (например, ЧМ, ЛЧ и другие) порядок расчёта таблицы может быть установлен отдельным регламентом данного турнира.'
+                        ]
+                    },
+                    {
+                        'title': '6. ДИСЦИПЛИНА',
+                        'points': [
+                            '6.1. Во время турнира все участники должны соблюдать взаимное уважение и спортивный дух.',
+                            '6.2. Оскорбления, угрозы или другое неподобающее поведение в группе могут привести к предупреждению или бану.'
+                        ]
+                    },
+                    {
+                        'title': '7. ЗАКЛЮЧИТЕЛЬНЫЕ ПОЛОЖЕНИЯ',
+                        'points': [
+                            '7.1. Участник, принимая участие в турнире, автоматически соглашается с данным регламентом.',
+                            '7.2. Администраторы UFEL принимают окончательное решение в спорных ситуациях.',
+                            '7.3. Администраторы имеют право вносить изменения и дополнения в данный регламент.'
+                        ]
+                    }
+                ]
+            },
+            'rating': {
+                'title': 'РЕЙТИНГОВАЯ СИСТЕМА',
+                'description': 'Рейтинговые очки накапливаются в течение одного сезона. Рейтинг рассчитывается по следующим правилам.',
+                'sections': [
+                    {
+                        'title': 'РЕЙТИНГ ЗА МАТЧ',
+                        'points': [
+                            'Победа (в основное время, 90 минут) +40 рейтинга',
+                            'Ничья +20 рейтинга',
+                            'Поражение 0 рейтинга',
+                            'Победа в дополнительное время или по пенальти +20 рейтинга'
+                        ]
+                    },
+                    {
+                        'title': 'ТЕХНИЧЕСКОЕ ПОРАЖЕНИЕ',
+                        'points': [
+                            'Поражение через TP –20 рейтинга',
+                            'Победа через TP +40 рейтинга'
+                        ]
+                    },
+                    {
+                        'title': 'ЧЕМПИОНСКИЕ БОНУСЫ',
+                        'points': [
+                            'Чемпион турнира +100 рейтинга',
+                            '2-е место +50 рейтинга',
+                            '3-е место +50 рейтинга',
+                            'Лучший бомбардир турнира +50 рейтинга'
+                        ]
+                    },
+                    {
+                        'title': 'РЕЙТИНГ ЗА ГОЛЫ',
+                        'points': [
+                            'Рейтинг за голы действует во всех форматах турниров (лига, кубок и др.).',
+                            'Видео гола является обязательным.',
+                            '',
+                            'Самый красивый гол турнира (топ-3 по количеству реакций)',
+                            '1-е место +100 рейтинга',
+                            '2-е место +50 рейтинга',
+                            '3-е место +50 рейтинга',
+                            '',
+                            'Каждый тип гола может быть засчитан только 1 раз за один турнир',
+                            '',
+                            'Гол ударом через себя (ножницами) +150 рейтинга',
+                            'Scorpion гол +150 рейтинга',
+                            'Rabona (гол или ассист) +100 рейтинга',
+                            'Гол прямым ударом с углового +100 рейтинга',
+                            'Гол с дальней дистанции (20+ метров) +100 рейтинга',
+                            'Гол или ассист от вратаря (пенальти и штрафные не учитываются) +100 рейтинга',
+                            'Гол со штрафного удара +50 рейтинга',
+                            'Гол Blitz Curler +30 рейтинга',
+                            'Poker (1 игрок забивает 4 или более голов) +50 рейтинга',
+                            'Решающий гол после 85-й минуты +50 рейтинга',
+                            'Comeback победа (отставание минимум в 2 гола) +50 рейтинга'
+                        ]
+                    }
+                ],
+                'note': 'Видео голов также публикуются на Instagram странице ufel_uz. Один участник в течение одного турнира может набрать общий рейтинг за разные типы голов. Если будет обнаружена попытка искусственного увеличения рейтинга, результат будет аннулирован.'
+            }
+        }
+    else:
+        # Uzbek – use Django's gettext (will return original Uzbek strings for now)
+        translation.activate(lang)
+        content = {
+            'reglament': {
+                'title': _('Uzbekistan Football e-League — REGLAMENT'),
+                'sections': [
+                    {
+                        'title': _('1. UMUMIY MA’LUMOT'),
+                        'points': [
+                            _('1.1. UFEL (Uzbekistan Football e-League) — eFootball o\'yinida turnirlar tashkil qiluvchi liga hisoblanadi.'),
+                            _('1.2. Turnirlar eFootball oʻyini asosida va ushbu reglamentga muvofiq tashkil etiladi.'),
+                            _('1.3. Ushbu reglament barcha ishtirokchilar uchun majburiy hisoblanadi.'),
+                            _('1.4. Liga maqsadi — eFootballni O\'zbekistonda yangi darajada rivojlantirish va kuchli raqobat muhitini taʼminlash.')
+                        ]
+                    },
+                    {
+                        'title': _('2. ISHTIROKCHILAR'),
+                        'points': [
+                            _('2.1. Ligada roʻyxatdan oʻtgan barcha ishtirokchilar qatnashishi mumkin.'),
+                            _('2.2. Adminlar ishtirokchilardan turnir uchun kerakli bo\'lgan malumotlarni sorashi mumkun.'),
+                            _('2.3. Bir ishtirokchi turnirlarda faqat bitta akkaunt orqali qatnashishi mumkin.')
+                        ]
+                    },
+                    {
+                        'title': _('3. TEXNIK TALABLAR'),
+                        'points': [
+                            _('3.1. Platformalar: PlayStation 4/5, Kompyuter (PC), Xbox.'),
+                            _('3.2. Barqaror o‘yin uchun internet ulanishi LAN (simli) tarmoq tavsiya etiladi.'),
+                            _('3.3. Ishtirokchining internet tezligi pas yoki ulanishi belgilangan texnik talablarga mos kelmagan hollarda, turnirdan chetlatiladi.'),
+                            _('3.4. Match Sozlamalari turnir turiga qarab alohida reglament yoki eʼlonda belgilanadi.'),
+                            _('3.5. O\'yin davomida internet uzilishi yoki texnik nosozliklar yuzaga kelsa, hakamlar qarori bilan qayta o\'ynash yoki hisobni saqlab qolish masalasi ko\'rib chiqiladi.')
+                        ]
+                    },
+                    {
+                        'title': _('4. O‘YINNI BOSHLASH TARTIBI'),
+                        'points': [
+                            _('4.1. O‘yinni boshlash uchun ishtirokchilar o‘zaro kelishgan holda qulay vaqtni belgilaydi va bir-biri bilan bog‘lanadi.'),
+                            _('4.2. Agar raqib xabarlarga javob bermasa yoki kelishilgan vaqtda aloqaga chiqmasa, UFEL adminlariga murojaat qilinadi.'),
+                            _('4.3. Adminlar holatni ko‘rib chiqib, texnik g‘alaba, yoki boshqa yakuniy qaror qabul qiladi.'),
+                            _('4.4. Kelishilgan o‘yinlar qat’iyan taqiqlanadi.')
+                        ]
+                    },
+                    {
+                        'title': _('5. LIGA JADVALINI HISOBLASH TARTIBI'),
+                        'points': [
+                            _('5.1. Liga bosqichida ishtirokchilarning turnir jadvalidagi o‘rinlari, to‘plangan ochkolar soni asosida aniqlanadi.'),
+                            _('5.2. Agar ishtirokchilarning ochkolari teng bo‘lsa, ustunlik ko‘proq gol urgan ishtirokchiga beriladi.'),
+                            _('5.3. Agar ochkolar va urilgan gollar soni ham teng bo‘lsa, ustunlik kamroq gol o‘tkazib yuborgan ishtirokchiga beriladi.'),
+                            _('5.4. Agar yuqoridagi barcha ko‘rsatkichlar teng bo‘lib qolsa, ishtirokchilarning o‘zaro o‘yin natijasi hisobga olinadi.'),
+                            _('5.5. Maxsus formatdagi turnirlarda (JCH, CHL va boshqa) turnirlarda jadvalni hisoblash tartibi ushbu turnir reglamentida alohida belgilanadi.')
+                        ]
+                    },
+                    {
+                        'title': _('6. INTIZOM'),
+                        'points': [
+                            _('6.1. Turnir davomida barcha ishtirokchilar o‘zaro hurmat va sport ruhiga amal qilishlari tavsiya etiladi.'),
+                            _('6.2. Guruhda Haqorat, tahdid yoki boshqa nojo‘ya xatti harakatlar ogohlantirish yoki Ban ga sabab bo‘ladi.')
+                        ]
+                    },
+                    {
+                        'title': _('7. YAKUNIY QOIDALAR'),
+                        'points': [
+                            _('7.1. Ishtirokchi turnirda qatnashish orqali ushbu reglamentni to‘liq qabul qilgan hisoblanadi.'),
+                            _('7.2. UFEL adminlari bahsli vaziyatlarda yakuniy qaror qabul qiladi.'),
+                            _('7.3. Adminlar reglamentga o‘zgartirish va qo‘shimchalar kiritish huquqini o‘zida saqlab qoladi.')
+                        ]
+                    }
+                ]
+            },
+            'rating': {
+                'title': _('REYTING TIZIMI'),
+                'description': _('Reyting Natijalari Bir Mavsum So\'ngigacha Yeg\'ilib Boradi. Reyting Quyidagi Qoidalar Asosida Hisoblanadi.'),
+                'sections': [
+                    {
+                        'title': _('O\'YIN UCHUN REYTING'),
+                        'points': [
+                            _('G\'alaba (90 daqiqa ichida) +40 Reyting'),
+                            _('Durrang +20 Reyting'),
+                            _('Mag\'lubiyat 0 Reyting'),
+                            _('Qo\'shimcha vaqt yoki Penaltilarda G\'alaba +20 Reyting')
+                        ]
+                    },
+                    {
+                        'title': _('TEXNIK MAG\'LUBIYAT'),
+                        'points': [
+                            _('TP – Orqali Mag\'lubiyat –20 Reyting'),
+                            _('TP – Orqali G\'alaba +40 Reyting')
+                        ]
+                    },
+                    {
+                        'title': _('CHEMPIONLIK UCHUN'),
+                        'points': [
+                            _('Chempionlik Uchun Qo\'shimcha +100 Reyting'),
+                            _('2-O\'rin uchun +50 Reyting'),
+                            _('3-O\'rin uchun +50 Reyting'),
+                            _('Turnir Top Urari +50 Reyting')
+                        ]
+                    },
+                    {
+                        'title': _('GOLLAR VIDEOSI UCHUN REYTING'),
+                        'points': [
+                            _('Gol Reytingi Barcha Turnir Formatlarida Amal Qiladi (liga, kubok va boshqa).'),
+                            _('Gol Videosi Majburiy Hisoblanadi.'),
+                            _(''),
+                            _('Turnir Eng Chiroyli Goli (eng kop reaksiya top3)'),
+                            _('1-O\'rin +100 Reyting'),
+                            _('2-O\'rin +50 Reyting'),
+                            _('3-O\'rin +50 Reyting'),
+                            _(''),
+                            _('Har Bir Gol Turidan 1ta Turnirga 1ta Limit'),
+                            _(''),
+                            _('Qaychi Zarbasida Gol +150 REYTING'),
+                            _('Scorpion Gol +150 REYTING'),
+                            _('Rabona Gol yoki Asist +100 REYTING'),
+                            _('Burchak Zarbasidan Gol (угловой tog\'ridan tog\'ri gol) +100 REYTING'),
+                            _('Uzoq Masofadan Gol (20+ metr va undan uzoq) +100 REYTING'),
+                            _('Darvozabondan Gol yoki Asist (penalti yoki jarima zarbasi hisobga olinmaydi) +100 REYTING'),
+                            _('Jarima Zarbasidan Gol +50 REYTING'),
+                            _('Blitz Curler Gol +30 REYTING'),
+                            _('Poker (bir o\'yinchi 4ta yoki undan kop gol) +50 REYTING'),
+                            _('85+ Hal Qiluvchi Gol (85-daqiqadan so\'ng g\'alaba goli) +50 REYTING'),
+                            _('Comeback G\'alaba (kamida 2gol ortda qolib kambek) +50 REYTING')
+                        ]
+                    }
+                ],
+                'note': _('Gollar ufel_uz Instagram Sahifasida Ham Joylanadi. Bir Ishtirokchi Bitta Turnir Davomida Turli xil Gollar Orqali Umumiy Reyting To‘plashi Mumkin. Reytingni Soxta Oshirish Urinishlari Aniqlansa, Natija Bekor Qilinadi!')
+            }
+        }
+    
+    return JsonResponse(content)
+
+
+def set_language(request):
+    lang = request.GET.get('lang', 'uz')
+    next_url = request.GET.get('next')
+    
+    # Agar next bo'lmasa, referer yoki index ga o'tish
+    if not next_url:
+        next_url = request.META.get('HTTP_REFERER', reverse('index'))
+    
+    print(f"Setting language to: {lang}")
+    print(f"Next URL: {next_url}")
+    print(f"Available languages: {dict(settings.LANGUAGES)}")
+    
+    # Til mavjudligini tekshirish
+    if lang in dict(settings.LANGUAGES).keys():
+        # Translation ni faollashtirish
+        activate(lang)
+        
+        # Session ga saqlash
+        request.session['django_language'] = lang
+        request.session.modified = True  # MUHIM!
+        
+        # Cookie ga saqlash
+        response = HttpResponseRedirect(next_url)
+        response.set_cookie(
+            settings.LANGUAGE_COOKIE_NAME, 
+            lang,
+            max_age=365*24*60*60,  # 1 yil
+            httponly=False,
+            samesite='Lax',
+            path='/'
+        )
+        
+        print(f"Language set successfully: {lang}")
+        print(f"Session: {request.session.get('django_language')}")
+        
+        return response
+    
+    print(f"Language {lang} not available")
+    return HttpResponseRedirect(next_url)
