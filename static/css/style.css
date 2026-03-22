@@ -591,6 +591,62 @@ html, body {
     display: none; /* Chrome, Safari */
     }
 }
+
+@media (max-width: 768px) {
+     .home-title {
+        font-size: 30px;
+    }
+    .wrapper_card {
+        padding: 0;
+    }
+    .top-container {
+        width: 100%;
+        gap: 0px;
+        padding: 15px 5px;
+    }
+    .top-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid gold;
+        margin: 7px;
+    }
+    .name {
+        margin-top: 10px;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+    .rank{
+        top: 0;
+        left: 7px;
+        font-size: 10px;
+    }
+    .name {
+        margin-top: 5px;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+    .score {
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    }
+    .matches-row {
+    overflow-x: auto;   /* gorizontal scroll */
+    overflow-y: hidden;  
+    display: flex;
+    gap: 5px;    
+    scroll-behavior: smooth;
+
+    /* scrollbarni yashirish */
+    -ms-overflow-style: none;  /* IE va Edge */
+    scrollbar-width: none;     /* Firefox */
+    }
+
+    .matches-row::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+    }
+}
 /* shox mediya write end */
 
 /* top matches */
