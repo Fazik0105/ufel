@@ -109,17 +109,18 @@
             {% endif %}
 
             <!-- Name -->
-            <p class="name">
+           <p class="name">
                 {% if rating.user.first_name and rating.user.last_name %}
-                    {{ rating.user.first_name }} <br> {{ rating.user.last_name }}
+                    <span>{{ rating.user.first_name }}</span>
+                    <span>{{ rating.user.last_name }}</span>
                 {% elif rating.user.first_name %}
-                    {{ rating.user.first_name }}
+                    <span>{{ rating.user.first_name }}</span>
                 {% elif rating.user.last_name %}
-                    {{ rating.user.last_name }}
+                    <span>{{ rating.user.last_name }}</span>
                 {% elif rating.user.username %}
-                    {{ rating.user.username }}
+                    <span>{{ rating.user.username }}</span>
                 {% else %}
-                    User #{{ rating.user.id }}
+                    <span>User #{{ rating.user.id }}</span>
                 {% endif %}
             </p>
 
