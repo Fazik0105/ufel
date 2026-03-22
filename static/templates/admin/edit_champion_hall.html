@@ -393,48 +393,49 @@
         </div>
 
         <!-- Add New Champion for Same User -->
-        <div class="card">
-            <h2 class="title">➕ Yangi champion qo'shish ({{ target_user }})</h2>
+<div class="card">
+    <h2 class="title">➕ Yangi champion qo'shish ({{ target_user }})</h2>
 
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="add">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
 
-                <div class="form-grid">
-                    <div class="field full-width">
-                        <label>🏆 Turnir nomi</label>
-                        <input type="text" name="new_tournament_name" placeholder="Masalan: UFEL Winter Cup 2025" required>
-                    </div>
+        <div class="form-grid">
+            <div class="field full-width">
+                <label>🏆 Turnir nomi</label>
+                <input type="text" name="new_tournament_name" placeholder="Masalan: UFEL Winter Cup 2025" required>
+            </div>
 
-                    <div class="field full-width">
-                        <label>📆 Turnir sanasi</label>
-                        <input type="date" name="tournament_date" value="{{ champion.tournament_date|date:'Y-m-d' }}" required>
-                        <small style="color: #94a3b8; font-size: 10px;">December 15, 2023 formatida ko'rsatiladi</small>
-                    </div>
+            <div class="field full-width">
+                <label>📆 Turnir sanasi</label>
+                <input type="date" name="new_tournament_date" required>
+                <small style="color: #94a3b8; font-size: 10px;">December 15, 2023 formatida ko'rsatiladi</small>
+            </div>
 
-                    <div class="field">
-                        <label>O'rin</label>
-                        <select name="new_position" required>
-                            {% for value, label in positions %}
-                                <option value="{{ value }}">
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            <div class="field">
+                <label>O'rin</label>
+                <select name="new_position" required>
+                    {% for value, label in positions %}
+                        <option value="{{ value }}">
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-                    <div class="field full-width">
-                        <label>🖼️ Turnir rasmi (ixtiyoriy)</label>
-                        <input type="file" name="new_tournament_image" accept="image/*">
-                        <small style="color: #94a3b8; font-size: 10px;">Rasm o'lchami: 300x200 px tavsiya etiladi</small>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success">➕ Yangi champion qo'shish</button>
-                </div>
-            </form>
+            <div class="field full-width">
+                <label>🖼️ Turnir rasmi (ixtiyoriy)</label>
+                <input type="file" name="new_tournament_image" accept="image/*">
+                <small style="color: #94a3b8; font-size: 10px;">Rasm o'lchami: 300x200 px tavsiya etiladi</small>
+            </div>
         </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">➕ Yangi champion qo'shish</button>
+        </div>
+    </form>
+</div>
+
 
         <!-- Other Champions of This User -->
         {% if other_champions %}

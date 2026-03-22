@@ -738,10 +738,15 @@ def admin_dashboard(request):
             return response
 
         try:
-            # Username bo'sh qoldirilsa, null bo'ladi
+            # Agar username kiritilmagan bo'lsa, avtomatik username yaratish
             if not username:
-                username = None
-            
+                base_username = (first_name or last_name or 'user').lower().replace(' ', '')
+                username = base_username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+
             user = User.objects.create(
                 username=username,
                 first_name=first_name,
@@ -811,13 +816,13 @@ def admin_dashboard(request):
     
     # Har bir userning championlarini year va position bo'yicha sort qilish
     for user_data in user_champions.values():
-        user_data['champions'].sort(key=lambda x: (-x.year, x.position))
+        user_data['champions'].sort(key=lambda x: x.tournament_date, reverse=True)
 
     return render(request, 'admin_dashboard.html', {
         "users": users,
         "championships": championships,
         "ratings": ratings,
-        "user_champions": user_champions.values(),  # Guruhlangan championlar
+        "user_champions": user_champions.values(),
         "total_champions": champion_halls.count(),
     })
 
