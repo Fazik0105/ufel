@@ -19,7 +19,7 @@
 <body class="{% if user.is_authenticated and user.is_admin %}user-admin{% endif %}">
 
   <div class="background-stack">
-        <img src="{% static 'images/UFEL.png' %}" alt="UFEL background">
+        <img src="{% static 'images/bg-image.png' %}" alt="UFEL background">
     </div>
     
 <div class="panel">
@@ -73,14 +73,73 @@
 <section id="home" class="page active">
   <div class="home-hero">
     <p class="home-badge">{% trans "Uzbekistan Football e-League" %}</p>
-    <h1 class="home-title">{% trans "OFFICIAL UFEL" %}<br>{% trans "PLATFORM" %}</h1>
+    <h1 class="home-title">{% trans "OFFICIAL UFEL" %} {% trans "PLATFORM" %}</h1>
     <p class="home-text">
     {% trans "The Only professional eFootball" %}<br>{% trans "League in Uzbekistan" %}
     </p>
 
+    <!-- ============= TOP 5 RATINGS SECTION ============= -->
+<a href="#" class="top-btn" data-page="ratings">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;margin-top: 20px;">
+        <h3 style="color: #FFC400; font-family: 'Futura', serif; font-size: 24px; margin: 0;">{% trans "TOP 5 RATINGS" %}</h3>
+    </div>
+    <div class="top-container">
+
+        {% for rating in ratings|slice:":5" %}
+        <div class="top-card">
+
+            <!-- Rank -->
+            <span class="rank">#{{ forloop.counter }}</span>
+
+            <!-- Avatar -->
+            {% if rating.user.avatar %}
+                <img src="{{ rating.user.avatar.url }}" class="top-avatar">
+            {% else %}
+                <div class="top-avatar default-avatar">
+                    {% if rating.user.first_name %}
+                        {{ rating.user.first_name|first|upper }}
+                    {% elif rating.user.last_name %}
+                        {{ rating.user.last_name|first|upper }}
+                    {% elif rating.user.username %}
+                        {{ rating.user.username|first|upper }}
+                    {% else %}
+                        ?
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <!-- Name -->
+            <p class="name">
+                {% if rating.user.first_name and rating.user.last_name %}
+                    {{ rating.user.first_name }} <br> {{ rating.user.last_name }}
+                {% elif rating.user.first_name %}
+                    {{ rating.user.first_name }}
+                {% elif rating.user.last_name %}
+                    {{ rating.user.last_name }}
+                {% elif rating.user.username %}
+                    {{ rating.user.username }}
+                {% else %}
+                    User #{{ rating.user.id }}
+                {% endif %}
+            </p>
+
+            <!-- Score -->
+            <p class="score" style="font-size: 12px !important;">
+                {{ rating.points }} BALL
+            </p>
+
+        </div>
+        {% empty %}
+        <p style="color: #aaa;">Hali rating yo‘q</p>
+        {% endfor %}
+
+    </div>
+</a>
+
+
     <div class="home-buttons">
       <a href="#" class="home-btn" data-page="tournaments">
-            {% trans "TOURNAMENTS" %}
+            {% trans "TOURNAMENTS" %}<br>
     <span class="home-btn-sub">{% trans "TURNIR JADVALI" %}</span>
       </a>
       
@@ -88,116 +147,34 @@
         {% trans "CHAMPIONS" %}<br>
         <span class="home-btn-sub">{% trans "UFEL CHEMPIONLARI" %}</span>
     </a>
-    
-    <a href="#" class="home-btn" data-page="ratings">
-        {% trans "RATINGS" %}<br>
-        <span class="home-btn-sub">{% trans "O'YINCHILAR YILLIK REYTINGI" %}</span>
-    </a>
 
     <a href="https://t.me/ufel_uz" class="join-group">{% trans "JOIN GROUP" %}</a>
     </div>
     
-    <div class="bookmarks-section" style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(34,211,238,0.2);">
-        <div id="bookmarks-list" style="display: flex; flex-direction: column; gap: 12px; min-height: 100px;">
+     <div id="bookmarks-list" style="display: flex; flex-direction: column; gap: 12px;  min-height: 100px;">
             <div style="text-align: center; padding: 20px; color: #94a3b8;">
                 {% trans "Yuklanmoqda..." %}
             </div>
-        </div>
     </div>
 
-    <!-- ============= TOP 5 RATINGS SECTION ============= -->
-    <div class="home-ratings-section" style="margin-top: 40px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,196,0,0.2);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-            <h3 style="color: #FFC400; font-family: 'Futura', serif; font-size: 24px; margin: 0;">{% trans "TOP 5 RATINGS" %}</h3>
-        </div>
-        
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-            {% for rating in ratings|slice:":5" %}
-            <div style="display: flex; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease; position: relative; overflow: hidden;" 
-                 onmouseover="this.style.background='rgba(255,196,0,0.05)'; this.style.borderColor='rgba(255,196,0,0.3)'" 
-                 onmouseout="this.style.background='linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))'; this.style.borderColor='rgba(255,255,255,0.05)'">
-                
-                <!-- Position badge (1,2,3,4,5) -->
-                <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                    <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; 
-                        {% if forloop.counter == 1 %}background: linear-gradient(135deg, #FFD700, #FFA500); color: #0f172a; box-shadow: 0 0 20px rgba(255,215,0,0.3);{% endif %}
-                        {% if forloop.counter == 2 %}background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: #0f172a;{% endif %}
-                        {% if forloop.counter == 3 %}background: linear-gradient(135deg, #CD7F32, #B87333); color: #0f172a;{% endif %}
-                        {% if forloop.counter == 4 %}background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);{% endif %}
-                        {% if forloop.counter == 5 %}background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);{% endif %}
-                        border-radius: 12px; font-weight: 700; font-size: 16px;">
-                        {{ forloop.counter }}
-                    </span>
-                </div>
-                
-                <!-- Avatar -->
-                <div style="width: 50px; height: 50px; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); margin-right: 15px; border: 2px solid rgba(255,255,255,0.1);">
-                    {% if rating.user.avatar %}
-                        <img src="{{ rating.user.avatar.url }}" alt="{{ rating.user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
-                    {% else %}
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #7c3aed, #22d3ee); color: white; font-weight: 700; font-size: 20px; text-transform: uppercase;">
-                            {% if rating.user.first_name %}
-                                {{ rating.user.first_name|first|upper }}
-                            {% elif rating.user.last_name %}
-                                {{ rating.user.last_name|first|upper }}
-                            {% elif rating.user.username %}
-                                {{ rating.user.username|first|upper }}
-                            {% else %}
-                                ?
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <!-- Player Name (first_name, last_name yoki username) -->
-                <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: 700; font-size: 16px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        {% if rating.user.first_name and rating.user.last_name %}
-                            {{ rating.user.first_name }} {{ rating.user.last_name }}
-                        {% elif rating.user.first_name %}
-                            {{ rating.user.first_name }}
-                        {% elif rating.user.last_name %}
-                            {{ rating.user.last_name }}
-                        {% elif rating.user.username %}
-                            {{ rating.user.username }}
-                        {% else %}
-                            Foydalanuvchi #{{ rating.user.id }}
-                        {% endif %}
-                    </div>
-                    {% if rating.user.username and not rating.user.first_name %}
-                    <div style="font-size: 12px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        @{{ rating.user.username }}
-                    </div>
-                    {% endif %}
-                </div>
-                
-                <!-- Points -->
-                <div style="text-align: right;">
-                    <div style="font-weight: 800; font-size: 24px; color: #FFC400; line-height: 1;">{{ rating.points }}</div>
-                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">{% trans "BALL" %}</div>
-                </div>
-            </div>
-            {% empty %}
-            <div style="text-align: center; padding: 40px; color: #94a3b8;">
-                <p>{% trans "Hali rating ma'lumotlari mavjud emas" %}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
 
+
+<div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+    
     <div class="social-btns">
-      <a href="https://t.me/ufel_uz" class="telegram">
-        <img src="https://cdn.pixabay.com/photo/2021/12/27/10/50/telegram-6896827_1280.png" alt="Telegram">
-      </a>
-      <a href="https://www.instagram.com/ufel.uz?igsh=MW5oN2JmcW9pcHVqcQ==" class="instagram">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
-      </a>
-      <a href="http://www.youtube.com/@ufel_uz" class="youtube">
-        <img src="https://cdn-icons-png.freepik.com/512/2496/2496113.png" alt="YouTube">
-      </a>
+        <a href="https://t.me/ufel_uz" class="telegram" target="_blank">
+            <img src="https://cdn.pixabay.com/photo/2021/12/27/10/50/telegram-6896827_1280.png" alt="Telegram">
+        </a>
+        <a href="https://www.instagram.com/ufel.uz?igsh=MW5oN2JmcW9pcHVqcQ==" class="instagram" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+        </a>
+        <a href="http://www.youtube.com/@ufel_uz" class="youtube" target="_blank">
+            <img src="https://cdn-icons-png.freepik.com/512/2496/2496113.png" alt="YouTube">
+        </a>
     </div>
 
-    <h6 class="end-text" style="margin-top: 16px;">{% trans "© 2026 UFeL | All Rights Reserved" %}</h6>
+    <h6 class="end-text">{% trans "© 2026 UFeL | All Rights Reserved" %}</h6>
+
 
   </div>
 </section>
@@ -525,6 +502,7 @@ function getCookie(name) {
         ratingsPage: document.getElementById('ratings'),
         navLinks: document.querySelectorAll('.navbar a[data-page], .mobile-menu a[data-page]'),
         homeButtons: document.querySelectorAll('.home-btn[data-page]'),
+        topButtons: document.querySelectorAll('.top-btn[data-page]'),
         hamburger: document.getElementById('hamburger'),
         mobileMenu: document.getElementById('mobileMenu')
     };
@@ -647,93 +625,105 @@ function getCookie(name) {
     }
 
     // ==================== BOOKMARK FUNCTIONS ====================
-    async function loadUserBookmarks() {
-        if (!elements.bookmarksList) return;
-        
-        try {
-            elements.bookmarksList.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                    <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
-                    {% trans "Yuklanmoqda..." %}
-                </div>
-            `;
-            
-            const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const data = await response.json();
-            updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
-        } catch (error) {
-            console.error('Error loading bookmarks:', error);
-            elements.bookmarksList.innerHTML = `
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                    <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
-                    <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
-                        Qayta urinish
-                    </button>
-                </div>
-            `;
-        }
-    }
+async function loadUserBookmarks() {
+    if (!elements.bookmarksList) return;
     
-    function updateBookmarksList(bookmarks, isAuthenticated = false) {
-        if (!elements.bookmarksList || !bookmarks?.length) {
-            elements.bookmarksList.innerHTML = `
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                    <span style="color: #94a3b8;">{% trans "Top o'yinlar qo'shilmagan" %}</span>
-                </div>
-            `;
-            return;
-        }
-        
-        let html = `
-            <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px;">
-                <span style="font-size: 14px; font-weight: bold; color: #f8fafc; padding: 4px 12px; border-radius: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee33;">
-                    ⭐ TOP O'yinlar (${bookmarks.length}/3)
-                </span>
+    try {
+        elements.bookmarksList.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
+                {% trans "Yuklanmoqda..." %}
             </div>
         `;
         
-        bookmarks.forEach(bm => {
-            const homeName = bm.home_user?.name || 'TBD';
-            const awayName = bm.away_user?.name || 'TBD';
-            const homeInitial = homeName.charAt(0).toUpperCase();
-            const awayInitial = awayName.charAt(0).toUpperCase();
-            const isFinished = bm.is_finished || false;
+        const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+        updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
+    } catch (error) {
+        console.error('Error loading bookmarks:', error);
+        elements.bookmarksList.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
+                <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
+                    Qayta urinish
+                </button>
+            </div>
+        `;
+    }
+}
+
+function updateBookmarksList(bookmarks, isAuthenticated = false) {
+    if (!elements.bookmarksList || !bookmarks?.length) {
+        elements.bookmarksList.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                <span style="color: #ffffff;">{% trans "Top o'yinlar qo'shilmagan" %}</span>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="matches-container">
+            <h2 class="title">TOP O'yinlar</h2>
+            <div class="matches-row">
+    `;
+    
+    bookmarks.forEach(bm => {
+        // Siz so'ragan o'zgaruvchilar
+        const homeName = bm.home_user?.name || 'TBD';
+        const awayName = bm.away_user?.name || 'TBD';
+        const homeInitial = homeName.charAt(0).toUpperCase();
+        const awayInitial = awayName.charAt(0).toUpperCase();
+        const isFinished = bm.is_finished || false; 
+        
+        const infoText = `${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}`;
+        const score = bm.score || '0 : 0';
+        
+        // Asosiy CSS klassingiz (.m-avatar) o'lchamlarini buzmasligi uchun inline flex uslublari
+        const defaultAvatarStyle = "display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #7c3aed, #22d3ee); color: #fff; font-weight: bold; font-size: 20px; border-radius: 50%;";
+        
+        // Rasm bor bo'lsa rasmni, yo'q bo'lsa ismning birinchi harfini ko'rsatamiz
+        const homeAvatarHTML = bm.home_user?.avatar 
+            ? `<img src="${bm.home_user.avatar}" class="m-avatar" alt="${homeName}">`
+            : `<div class="m-avatar" style="${defaultAvatarStyle}">${homeInitial}</div>`;
             
-            html += `
-                <div class="bookmark-item" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'" 
-                     style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(145deg, #0f172a, #1e293b); border-radius: 12px; border: 1px solid #22d3ee33; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
-                     onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${bm.home_user?.avatar ? `<img src="${bm.home_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<span>${homeInitial}</span>`}
-                        </div>
-                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}</div>
-                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
-                                <span style="color: #f8fafc; font-size: 13px;">${homeName}</span>
-                                <span style="color: #22d3ee; font-weight: 700;">${bm.score || '0:0'}</span>
-                                <span style="color: #f8fafc; font-size: 13px;">${awayName}</span>
-                            </div>
-                        </div>
-                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #7c3aed, #22d3ee); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border: 2px solid ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${bm.away_user?.avatar ? `<img src="${bm.away_user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<span>${awayInitial}</span>`}
-                        </div>
+        const awayAvatarHTML = bm.away_user?.avatar 
+            ? `<img src="${bm.away_user.avatar}" class="m-avatar" alt="${awayName}">`
+            : `<div class="m-avatar" style="${defaultAvatarStyle}">${awayInitial}</div>`;
+
+        html += `
+            <div class="wrapper_card" style="cursor: pointer;" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'">
+                <div class="info-match">
+                    <p>${infoText}</p>
+                </div>
+                <div class="match-card">
+                    <div class="player">
+                        ${homeAvatarHTML}
+                        <p class="lastname">${homeName}</p>
                     </div>
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: ${isFinished ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${isFinished ? '#10b981' : '#f59e0b'};">
-                            ${isFinished ? '✅ TUGAGAN' : '⏳ KUTILMOQDA'}
-                        </span>
+
+                    <div class="score">${score}</div>
+
+                    <div class="player">
+                        ${awayAvatarHTML}
+                        <p class="lastname">${awayName}</p>
                     </div>
                 </div>
-            `;
-        });
-        
-        elements.bookmarksList.innerHTML = html;
-    }
+            </div>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    elements.bookmarksList.innerHTML = html;
+}
 
- // ==================== TOURNAMENT FUNCTIONS - TUZATILGAN ====================
+// ==================== TOURNAMENT FUNCTIONS - TUZATILGAN ====================
     function initScrollableTabs() {
         const container = document.querySelector('.tabs-container');
         if (!container) return;
@@ -1399,6 +1389,14 @@ function init() {
     
     // Home page buttons
     elements.homeButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageId = btn.dataset.page;
+            if (pageId) switchPage(pageId);
+        });
+    });
+
+     elements.topButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const pageId = btn.dataset.page;

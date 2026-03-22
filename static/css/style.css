@@ -31,22 +31,13 @@
 html, body {
     min-height: 100%;
     font-family: 'Inter', sans-serif;
-}
-
-body {
     position: relative;
     background: radial-gradient(circle at top, #1a1a2e, #000);
     color: var(--text-primary);
     z-index: 0;
 }
 
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: url("{% static 'css/images/bg-image.png' %}") center / cover no-repeat; 
-    z-index: -1;
-}
+
 
 /* ============= FONTS ============= */
 @font-face {
@@ -73,19 +64,22 @@ body::before {
 .background-stack {
     position: fixed;
     inset: 0;
-    z-index: -1;
+    z-index: -2;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     pointer-events: none;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.25), rgba(0,0,0,0.55));
 }
 
 .background-stack img {
-    width: 70%;
-    opacity: 0.15;
+    width: 100%;       
+    height: 100%;     
+    object-fit: cover;    
     filter: grayscale(20%);
     user-select: none;
+    pointer-events: none;
 }
 
 /* ============= PANEL / NAVIGATION ============= */
@@ -319,7 +313,7 @@ body::before {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #242424;
+    color: #ffffff;
     text-decoration: none;
     font-family: 'Futura', serif;
     font-weight: bold;
@@ -332,28 +326,49 @@ body::before {
 }
 
 .social-btns {
-    width: 37%;
-    margin: 32px auto 15px;
+    /* Konteyner o'rtada tursin */
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 16px; /* Tugmalar orasidagi masofa doim 16px */
+    margin: 32px auto 15px;
+    padding: 12px 20px; /* Ichki bo'shliq */
+    
+    /* Sizdagi dizayn effektlari */
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 196, 0, 0.2);
+    
+    /* Web va Mobile uchun moslashuvchanlik */
+    width: max-content; 
+    max-width: 90%; 
 }
 
 .social-btns a img {
     width: 35px;
     height: 35px;
     border-radius: 10px;
+    display: block; /* Rasm tagidagi bo'shliqni olib tashlaydi */
+    transition: transform 0.2s;
+}
+
+.social-btns a:hover img {
+    transform: scale(1.1); /* Effekt uchun */
+}
+
+.end-text {
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #fafbfc;
+    width: 100%;
+    display: block;
+    font-family: 'TrajanPro';
 }
 
 .youtube img {
     background-color: #fff;
-}
-
-.end-text {
-    margin: 0 auto 50px;
-    color: #ffffff60;
-    font-family: 'TrajanPro';
-    text-align: center;
 }
 
 .bookmarks-section {
@@ -372,6 +387,279 @@ body::before {
     border-color: #22d3ee;
     box-shadow: 0 0 30px rgba(34, 211, 238, 0.2);
 }
+
+/* top 5 players */
+.top-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    padding: 15px 50px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(65, 65, 65, 0.1), rgba(26, 26, 26, 0.02));
+    backdrop-filter: blur(3px) saturate(120%);
+    border: 0.4px solid rgba(255, 255, 255, 0.25);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 1px rgba(255, 255, 255, 0.04), 0 8px 30px rgba(0, 0, 0, 0.35);
+    transition: 0.35s ease;
+}
+
+.top-btn{
+    text-decoration: none;
+}
+
+.top-card {
+    
+    text-align: center;
+    position: relative;
+    color: white;
+}
+
+.rank {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: translateX(-50%);
+    font-weight: bold;
+    color: gold;
+}
+
+.top-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid gold;
+    background: linear-gradient(135deg, #7c3aed, #22d3ee);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.name {
+    margin-top: 10px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: #ddd;
+}
+
+.score {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-wrapper {
+    margin-top: 20px;
+}
+
+.view-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #444, #222);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.view-btn:hover {
+    background: linear-gradient(145deg, #666, #333);
+}
+
+/* shox mediya write start */
+@media (max-width: 376px ) {
+    .home-title {
+        font-size: 25px;
+    }
+    .wrapper_card {
+        padding: 0;
+    }
+    .top-container {
+        width: 100%;
+        gap: 0px;
+        padding: 15px 5px;
+    }
+    .matches-row {
+        display: flex;
+        gap: 5px;
+    }
+    .top-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid gold;
+        margin: 7px;
+    }
+    .name {
+        margin-top: 10px;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+    .rank{
+        top: 0;
+        left: 7px;
+        font-size: 10px;
+    }
+    .name {
+        margin-top: 5px;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+    .score {
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    }
+    .matches-row {
+    overflow-x: auto;   /* gorizontal scroll */
+    overflow-y: hidden;      /* cardlar orasidagi masofa */
+    scroll-behavior: smooth;
+
+    /* scrollbarni yashirish */
+    -ms-overflow-style: none;  /* IE va Edge */
+    scrollbar-width: none;     /* Firefox */
+    }
+
+    .matches-row::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+    }
+}
+
+@media (max-width: 426px ) {
+    .home-title {
+        font-size: 30px;
+    }
+    .wrapper_card {
+        padding: 0;
+    }
+    .top-container {
+        width: 100%;
+        gap: 0px;
+        padding: 15px 5px;
+    }
+    .top-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid gold;
+        margin: 7px;
+    }
+    .name {
+        margin-top: 10px;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+    .rank{
+        top: 0;
+        left: 7px;
+        font-size: 10px;
+    }
+    .name {
+        margin-top: 5px;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+    .score {
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    }
+    .matches-row {
+    overflow-x: auto;   /* gorizontal scroll */
+    overflow-y: hidden;  
+    display: flex;
+    gap: 5px;    
+    scroll-behavior: smooth;
+
+    /* scrollbarni yashirish */
+    -ms-overflow-style: none;  /* IE va Edge */
+    scrollbar-width: none;     /* Firefox */
+    }
+
+    .matches-row::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+    }
+}
+/* shox mediya write end */
+
+/* top matches */
+
+.matches-container {
+  padding: 20px;
+}
+
+.title {
+  color: #FFC400;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.matches-row {
+  display: flex;
+  gap: 20px;
+}
+
+.wrapper_card{
+    padding: 16px 16px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(65, 65, 65, 0.1), rgba(26, 26, 26, 0.02));
+    backdrop-filter: blur(3px) saturate(120%);
+    border: 0.4px solid rgba(255, 255, 255, 0.25);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 1px rgba(255, 255, 255, 0.04), 0 8px 30px rgba(0, 0, 0, 0.35);
+    transition: 0.35s ease;
+}
+
+.match-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px 8px;
+}
+
+.info-match {
+    text-align: center;
+}
+
+.info-match p{
+    color: #e2e2e2;
+    font-size: 12px;
+}
+
+.player {
+    width: 100%;
+    height: 100%;
+
+    text-align: center;
+}
+
+.m-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid gold;
+  object-fit: cover;
+}
+
+.lastname {
+  margin-top: 5px;
+  font-size: 10px;
+  color: #ffffff;
+  max-width: 60px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.score {
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
+  min-width: 60px;
+  text-align: center;
+}
+
 
 /* ============= TOURNAMENTS PAGE ============= */
 
@@ -424,9 +712,6 @@ body::before {
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.9);
     background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    background-clip: unset;
     text-align: center;
     width: 100%;
 }
@@ -462,9 +747,6 @@ body::before {
 .liga-tab.active .liga-tab-text {
     color: #FFC400;
     font-weight: 700;
-    background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
 }
 
 .liga-tab.active .liga-line {
@@ -1011,7 +1293,7 @@ body::before {
 
 /* ============= MODAL ============= */
 .modal {
-    position: fixed;
+    position: fixed; 
     inset: 0;
     z-index: 9999;
     pointer-events: none;
@@ -1541,7 +1823,7 @@ body.modal-open {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    /* width: 100%; */
     height: 50px;
     padding: 0 16px;
     backdrop-filter: blur(3px);
@@ -1570,7 +1852,7 @@ body.modal-open {
 
 .r-pos,
 .rating-pos {
-    width: 50px;
+    width: 10px;
     font-size: 15px;
     font-weight: 600;
     color: #fff;
@@ -1627,8 +1909,8 @@ body.modal-open {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 10px;
+    height: 10px;
     border-radius: 12px;
     font-weight: 700;
     font-size: 14px;
@@ -1872,7 +2154,9 @@ body.modal-open {
 }
 
 .rating-input[type=number] {
-    -moz-appearance: textfield;
+    -webkit-appearance: none;  /* WebKit uchun */
+    -moz-appearance: textfield; /* Firefox uchun */
+    appearance: textfield;     /* Standart */
 }
 
 .save-single-btn {
@@ -1902,7 +2186,7 @@ body.modal-open {
 }
 
 /* Column Widths */
-.r-pos { width: 50px; }
+.r-pos { width: 0px; }
 .r-avatar { width: 50px; }
 .r-name { flex: 1; }
 .r-nation { width: 60px; }
@@ -2537,7 +2821,7 @@ body.modal-open {
 
 /* Panel items - consistent with row items */
 .rating-panel .r-pos {
-    width: 50px;
+    width: 10px;
     font-size: 13px;
     font-weight: 700;
     font-family: Arial, sans-serif;
@@ -2623,7 +2907,7 @@ body.modal-open {
 
 /* Position element */
 .rating-pos {
-    width: 50px;
+    width: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -3129,6 +3413,8 @@ body.modal-open {
         width: 12px;
         height: 12px;
     }
+
+
 }
 
 @media (max-width: 360px) {
@@ -3232,7 +3518,7 @@ body.modal-open {
 .lang-buttons {
     display: flex;
     gap: 10px;
-    margin-right: 50px;
+    margin-right: 0px;
 }
 
 .lang-btn {
@@ -3430,7 +3716,7 @@ body.modal-open {
 /* Column widths */
 .rating-panel .r-pos,
 .rating-pos {
-    width: 50px;
+    width: 10px;
     flex-shrink: 0;
 }
 
@@ -3449,21 +3735,21 @@ body.modal-open {
 
 .rating-panel .r-nation,
 .rating-nation {
-    width: 60px;
+    width: 40px;
     flex-shrink: 0;
     text-align: center;
 }
 
 .rating-panel .r-games,
 .rating-games {
-    width: 70px;
+    width: 40px;
     flex-shrink: 0;
     text-align: center;
 }
 
 .rating-panel .r-points,
 .rating-points {
-    width: 80px;
+    width: 40px;
     flex-shrink: 0;
     text-align: center;
 }
@@ -3502,5 +3788,3 @@ body.modal-open {
         width: 100px;
     }
 }
-
-
