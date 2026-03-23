@@ -372,9 +372,11 @@
             Foydalanuvchi #{{ r.user.id }}
           {% endif %}
         </span>
-        <span class="player-username">
-          {{ r.user.username }}
-        </span>
+        {% if r.user.username %}
+            <span class="player-username">
+            @{{ r.user.username }}
+            </span>
+        {% endif %}
       </div>
       
       <!-- MILLAT (FLAG) -->
