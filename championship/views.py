@@ -96,10 +96,12 @@ def index(request):
             }
         user_champions[user_id]['champions'].append(champ)
     
-    # Sort qilish
     for user_data in user_champions.values():
         user_data['champions'].sort(key=lambda x: (-x.year, x.position))
     
+    sorted_user_champions = sorted(user_champions.values(), 
+                                  key=lambda x: len(x['champions']), 
+                                  reverse=True)
 
     context = {
         'championships': championships,
@@ -110,6 +112,7 @@ def index(request):
         'available_users': available_users,
         'matches': matches,
         'user_champions': user_champions.values(),
+        'user_champions': sorted_user_champions,
         'total_champions': champion_halls.count(),
         'is_admin': request.user.is_authenticated and request.user.role == 'ADMIN',
     }
