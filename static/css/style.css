@@ -37,8 +37,6 @@ html, body {
     z-index: 0;
 }
 
-
-
 /* ============= FONTS ============= */
 @font-face {
     font-family: 'Altron';
@@ -58,6 +56,20 @@ html, body {
 @font-face {
     font-family: 'Geosans';
     src: url("{% static 'css/fonts/GeosansLight.ttf' %}") format('truetype');
+}
+
+@font-face {
+        font-family: 'Impact';
+        src: url("{% static 'css/fonts/IMPACT.TTF' %}") format('truetype');
+        font-weight: normal;
+        font-style: normal;
+}
+
+@font-face {
+        font-family: 'Cocogoose';
+        src: url("{% static 'css/fonts/COCOGOOSE PRO THIN-TRIAL.TTF' %}") format('truetype');
+        font-weight: normal;
+        font-style: normal;
 }
 
 /* ============= BACKGROUND STACK ============= */
@@ -232,7 +244,7 @@ html, body {
 
 /* ============= HOME PAGE ============= */
 #home {
-    padding-top: 110px;
+    padding-top: 70px;
 }
 
 .home-hero {
@@ -244,20 +256,33 @@ html, body {
 
 .home-badge {
     margin-bottom: 5px;
-    color: #fff;
-    font-family: 'Geosans', serif;
-    letter-spacing: 2px;
-    font-size: 16px;
+    color: #E6D28A;
+    font-family: 'Impact', 'Arial Black', sans-serif; 
+    letter-spacing: 1px;
+    font-size: 20px;
     text-align: center;
 }
 
 .home-title {
     margin: 0;
-    color: #E6D28A;
-    font-family: 'Futura', serif;
-    font-size: 50px;
-    font-weight: 200;
+    color: #e0e0e0;
+    letter-spacing: 1px;
+    font-size: 18px;
+    font-weight: 100;
     text-align: center;
+    opacity: 0.9;
+    text-shadow: 0 0 0.5px rgba(255,255,255,0.2);
+    
+    /* 1-usul: ultra thin font family */
+    font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+    font-weight: 100;
+    
+    /* 2-usul: transform orqali */
+    transform: scaleX(0.95);
+    transform-origin: center;
+    
+    /* 3-usul: letter-spacing bilan */
+    letter-spacing: 1.5px;
 }
 
 .home-text {
@@ -315,8 +340,6 @@ html, body {
     align-items: center;
     color: #ffffff;
     text-decoration: none;
-    font-family: 'Futura', serif;
-    font-weight: bold;
     transition: transform 0.35s ease, box-shadow 0.5s ease;
 }
 
@@ -480,7 +503,12 @@ html, body {
 /* shox mediya write start */
 @media (max-width: 376px ) {
     .home-title {
-        font-size: 25px;
+        font-size: 10px;
+        font-weight: 200;
+    }
+    .home-btn {
+        font-weight: 200;
+        font-size: 10px;
     }
     .wrapper_card {
         padding: 0;
@@ -537,8 +565,13 @@ html, body {
 }
 
 @media (max-width: 426px ) {
+    .home-btn {
+        font-weight: 300;
+        font-size: 12px;
+    }
     .home-title {
-        font-size: 30px;
+        font-size: 12;
+        font-weight: 200;
     }
     .wrapper_card {
         padding: 0;
@@ -593,8 +626,13 @@ html, body {
 }
 
 @media (max-width: 768px) {
+    .home-btn {
+        font-weight: 300;
+        font-size: 14px;
+    }
      .home-title {
-        font-size: 30px;
+        font-size: 14px;
+        font-weight: 100;
     }
     .wrapper_card {
         padding: 0;
@@ -1262,13 +1300,20 @@ html, body {
         flex-wrap: wrap !important;
     }
 }
-
 /* ============= CHAMPIONS PAGE ============= */
 .champions-header,
 .ratings-header {
-    margin: 0 25px 15px;
-    width: calc(100% - 50px);
+    margin: 0 15px 15px;
+    width: calc(100% - 30px);
     max-width: 1400px;
+}
+
+@media (min-width: 768px) {
+    .champions-header,
+    .ratings-header {
+        margin: 0 25px 15px;
+        width: calc(100% - 50px);
+    }
 }
 
 .champions-title,
@@ -1288,40 +1333,88 @@ html, body {
 }
 
 .champions-list {
-    width: calc(100% - 50px);
+    width: calc(100% - 30px);
     max-width: 1400px;
-    margin: 25px auto;
+    margin: 20px auto;
     border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
+@media (min-width: 768px) {
+    .champions-list {
+        width: calc(100% - 50px);
+        margin: 25px auto;
+        gap: 20px;
+    }
+}
+
+/* Champion Card - Mobile optimized */
 .champion-card {
-    padding: 8px;
-    margin-bottom: 20px;
+    padding: 6px 10px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
     backdrop-filter: blur(3px);
     background: linear-gradient(135deg, #1b1b1b80, #0e0e0e80);
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
-    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px; /* Rounded edges for oval/circular card shape */
     width: 100%;
     box-sizing: border-box;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
+@media (min-width: 768px) {
+    .champion-card {
+        padding: 8px 20px 8px 12px;
+        gap: 20px;
+        border-radius: 8px;
+        border: 1.5px solid rgba(255, 255, 255, 0.15);
+    }
+}
+
+/* Oval / Circular Image Container */
 .champion-poster {
     position: relative;
-    width: clamp(100px, 20vw, 130px);
-    height: clamp(130px, 25vw, 170px);
-    margin-left: 5px;
-    border-radius: 14px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%; /* Fully circular for mobile */
     overflow: hidden;
     flex-shrink: 0;
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 480px) {
+    .champion-poster {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (min-width: 768px) {
+    .champion-poster {
+        width: 70px;
+        height: 70px;
+        margin-left: 5px;
+        border-radius: 50%; /* Keep circular on desktop as well */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+}
+
+@media (min-width: 1024px) {
+    .champion-poster {
+        width: 85px;
+        height: 85px;
+    }
 }
 
 .champion-poster img {
     width: 100%;
     height: 100%;
-    border-radius: 14px;
+    border-radius: 50%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
@@ -1329,7 +1422,7 @@ html, body {
 .champion-poster-mask {
     position: absolute;
     inset: 0;
-    border-radius: 14px;
+    border-radius: 50%;
     background-color: #00000061;
     opacity: 0;
     transition: opacity 0.25s ease;
@@ -1340,22 +1433,115 @@ html, body {
 }
 
 .champion-poster:hover img {
-    transform: scale(1.04);
+    transform: scale(1.05);
 }
 
+/* Champion Content - Compact on mobile */
 .champion-content {
     display: flex;
     flex-direction: column;
-    gap: clamp(8px, 1.5vw, 12px);
+    gap: 4px;
     flex: 1;
+    min-width: 0; /* Allows text truncation */
+}
+
+@media (min-width: 768px) {
+    .champion-content {
+        gap: 8px;
+    }
 }
 
 .champion-content h2 {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: clamp(18px, 3.5vw, 23px);
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+@media (min-width: 480px) {
+    .champion-content h2 {
+        font-size: 17px;
+    }
+}
+
+@media (min-width: 768px) {
+    .champion-content h2 {
+        font-size: 20px;
+        white-space: normal;
+    }
+}
+
+@media (min-width: 1024px) {
+    .champion-content h2 {
+        font-size: 23px;
+    }
+}
+
+.champion-content p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 480px) {
+    .champion-content p {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .champion-content p {
+        font-size: 14px;
+        white-space: normal;
+        margin: 5px 0 0 0;
+    }
+}
+
+/* Empty state styling */
+.champions-list > div[style*="text-align: center"] {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+}
+
+.champions-list > div[style*="text-align: center"] div {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+    .champions-list > div[style*="text-align: center"] {
+        padding: 60px;
+    }
+    .champions-list > div[style*="text-align: center"] div {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+    .champions-list > div[style*="text-align: center"] p {
+        font-size: 18px;
+    }
+}
+
+/* Optional: Add hover effect for cards */
+.champion-card:hover {
+    background: linear-gradient(135deg, #2a2a2a80, #18181880);
+    border-color: rgba(255, 153, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+    .champion-card:hover {
+        transform: translateY(-3px);
+    }
+}
 /* ============= MODAL ============= */
 .modal {
     position: fixed; 
@@ -3175,6 +3361,13 @@ body.modal-open {
         height: 38px;
         font-size: 14px;
     }
+
+    .avatar-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 50% !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    }
 }
 @media (max-width: 768px) {
     .rating-panel {
@@ -3275,8 +3468,8 @@ body.modal-open {
     }
     
     .avatar-wrapper {
-        width: 30px;
-        height: 30px;
+        width: 36px;
+        height: 36px;
         border-radius: 50% !important;
         border: 1px solid rgba(255, 255, 255, 0.5) !important;
     }
@@ -3376,8 +3569,8 @@ body.modal-open {
     .rating-action { width: 32px; }
     
     .avatar-wrapper {
-        width: 28px;
-        height: 28px;
+        width: 34px;
+        height: 34px;
     }
     
     .avatar-placeholder {
@@ -3434,8 +3627,8 @@ body.modal-open {
     }
     
     .avatar-wrapper {
-        width: 25px;
-        height: 25px;
+        width: 32px;
+        height: 32px;
         border-width: 1px;
     }
     
@@ -3852,4 +4045,39 @@ body.modal-open {
     .rating-points {
         width: 100px;
     }
+}
+
+/* Menyu elementlari uchun */
+.mobile-menu a {
+    display: flex;
+    align-items: center;
+    margin: -10px;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: white;
+    font-family: sans-serif;
+}
+
+/* Ikonkalar stili */
+.mobile-menu a i {
+    width: 30px; /* Ikonkalar bir xil tekislikda turishi uchun */
+    font-size: 1.2rem;
+    margin-right: 15px;
+    color: #ccc; /* Ikonka rangi */
+}
+
+/* Tanlangan (active) holat yoki hover uchun */
+.mobile-menu a:hover i, 
+.mobile-menu a[data-page="home"] i {
+    color: #fff;
+}
+
+/* Admin qismini pastga tushirish (rasmdagidek) */
+.menu-bottom {
+    margin-top: auto; /* Agar flex-direction: column bo'lsa pastga suradi */
+    padding-top: 20px;
+}
+
+.admin-link {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }

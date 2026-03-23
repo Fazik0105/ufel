@@ -11,7 +11,7 @@
     <title>UFEL</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/dash_style.css' %}">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="{% static 'js/app.js' %}"></script>
     <script src="{% static 'JavaScripts/tournaments.js' %}"></script>
 </head>
@@ -19,7 +19,7 @@
 <body class="{% if user.is_authenticated and user.is_admin %}user-admin{% endif %}">
 
   <div class="background-stack">
-        <img src="{% static 'images/bg-image.png' %}" alt="UFEL background">
+        <img src="{% static 'images/backround1.jpg' %}" alt="UFEL background">
     </div>
     
 <div class="panel">
@@ -53,89 +53,95 @@
 </div>
 
 <div class="mobile-menu" id="mobileMenu">
-        <a href="#" data-page="home">{% trans "HOME" %}</a>
-        <a href="#" data-page="tournaments">{% trans "TOURNAMENTS" %}</a>
-        <a href="#" data-page="champions" onclick="switchPage('champions')">{% trans "UFEL CHAMPIONS" %}</a>
-        <a href="#" data-page="ratings">{% trans "RATINGS" %}</a>
-        <a href="{% url 'reglament' %}">{% trans "REGLAMENT" %}</a>
+    <a href="#" data-page="home"><i class="fas fa-home"></i> {% trans "HOME" %}</a>
+    <a href="#" data-page="ratings"><i class="fas fa-chart-bar"></i> {% trans "RATINGS" %}</a>
+    <a href="#" data-page="tournaments"><i class="fas fa-trophy"></i> {% trans "TOURNAMENTS" %}</a>
+    <a href="#" data-page="champions" onclick="switchPage('champions')"><i class="fas fa-award"></i> {% trans "UFEL CHAMPIONS" %}</a>
+    <a href="{% url 'reglament' %}"><i class="fas fa-file-alt"></i> {% trans "REGLAMENT" %}</a>
+
+    <div class="menu-bottom">
         {% if user.is_authenticated %}
             {% if user.role == 'ADMIN' %}
-                <a href="{% url 'admin_dashboard' %}" style="color: gold;">{% trans "ADMIN PANEL" %}</a>
+                <a href="{% url 'admin_dashboard' %}" class="admin-link">
+                    <i class="fas fa-user-circle"></i> {% trans "ADMIN" %}
+                </a>
             {% endif %}
-            <a href="{% url 'logout' %}" class="login-link">{% trans "LOGOUT" %} ({{ user.username }})</a>
+            <a href="{% url 'logout' %}" class="login-link">
+                <i class="fas fa-sign-out-alt"></i> {% trans "LOGOUT" %} ({{ user.username }})
+            </a>
         {% else %}
-            <a href="{% url 'login' %}" class="login-link">{% trans "LOGIN" %}</a>
+            <a href="{% url 'login' %}" class="login-link">
+                <i class="fas fa-sign-in-alt"></i> {% trans "LOGIN" %}
+            </a>
         {% endif %}
     </div>
+</div>
 
 
 <!-- HOME PAGE -->
 <section id="home" class="page active">
   <div class="home-hero">
-    <p class="home-badge">{% trans "Uzbekistan Football e-League" %}</p>
-    <h1 class="home-title">{% trans "OFFICIAL UFEL" %} {% trans "PLATFORM" %}</h1>
-    <p class="home-text">
-    {% trans "The Only professional eFootball" %}<br>{% trans "League in Uzbekistan" %}
-    </p>
-
+    <p class="home-badge">THE OFFICIAL UFEL PLATFORM</p>
+    <h1 class="home-title">UZBEKISTAN FOOTBALL E-LEAGUE</h1>
+    
     <!-- ============= TOP 5 RATINGS SECTION ============= -->
-<a href="#" class="top-btn" data-page="ratings">
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;margin-top: 20px;">
-        <h3 style="color: #FFC400; font-family: 'Futura', serif; font-size: 24px; margin: 0;">{% trans "TOP 5 RATINGS" %}</h3>
-    </div>
-    <div class="top-container">
+    <a href="#" class="top-btn" data-page="ratings">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;margin-top: 20px;">
+            <h3 style="color: #FFffff; font-family: 'Impact', 'Arial Black', sans-serif; font-size: 16px; margin: 0; letter-spacing: 1px;">{% trans "TOP 5 RATINGS" %}</h3>
+        </div>
+        <div class="top-container">
 
-        {% for rating in ratings|slice:":5" %}
-        <div class="top-card">
+            {% for rating in ratings|slice:":5" %}
+            <div class="top-card">
 
-            <!-- Rank -->
-            <span class="rank">#{{ forloop.counter }}</span>
+                <!-- Rank -->
+                <span class="rank">#{{ forloop.counter }}</span>
 
-            <!-- Avatar -->
-            {% if rating.user.avatar %}
-                <img src="{{ rating.user.avatar.url }}" class="top-avatar">
-            {% else %}
-                <div class="top-avatar default-avatar">
-                    {% if rating.user.first_name %}
-                        {{ rating.user.first_name|first|upper }}
-                    {% elif rating.user.last_name %}
-                        {{ rating.user.last_name|first|upper }}
-                    {% elif rating.user.username %}
-                        {{ rating.user.username|first|upper }}
-                    {% else %}
-                        ?
-                    {% endif %}
-                </div>
-            {% endif %}
-
-            <!-- Name -->
-           <p class="name">
-                {% if rating.user.first_name and rating.user.last_name %}
-                    <span>{{ rating.user.first_name }}</span>
-                    <span>{{ rating.user.last_name }}</span>
-                {% elif rating.user.first_name %}
-                    <span>{{ rating.user.first_name }}</span>
-                {% elif rating.user.last_name %}
-                    <span>{{ rating.user.last_name }}</span>
-                {% elif rating.user.username %}
-                    <span>{{ rating.user.username }}</span>
+                <!-- Avatar -->
+                {% if rating.user.avatar %}
+                    <img src="{{ rating.user.avatar.url }}" class="top-avatar">
                 {% else %}
-                    <span>User #{{ rating.user.id }}</span>
+                    <div class="top-avatar default-avatar">
+                        {% if rating.user.first_name %}
+                            {{ rating.user.first_name|first|upper }}
+                        {% elif rating.user.last_name %}
+                            {{ rating.user.last_name|first|upper }}
+                        {% elif rating.user.username %}
+                            {{ rating.user.username|first|upper }}
+                        {% else %}
+                            ?
+                        {% endif %}
+                    </div>
                 {% endif %}
-            </p>
 
-            <!-- Score -->
-            <p class="score" style="font-size: 12px !important;">
-                {{ rating.points }} BALL
-            </p>
+                <!-- Name -->
+            <p class="name">
+                    {% if rating.user.first_name and rating.user.last_name %}
+                        <span>{{ rating.user.first_name }}</span>
+                        <span>{{ rating.user.last_name }}</span>
+                    {% elif rating.user.first_name %}
+                        <span>{{ rating.user.first_name }}</span>
+                    {% elif rating.user.last_name %}
+                        <span>{{ rating.user.last_name }}</span>
+                    {% elif rating.user.username %}
+                        <span>{{ rating.user.username }}</span>
+                    {% else %}
+                        <span>User #{{ rating.user.id }}</span>
+                    {% endif %}
+                </p>
+
+                <!-- Score -->
+                <p class="score" style="font-size: 12px !important;">
+                    {{ rating.points }}
+                </p>
+
+            </div>
+            {% empty %}
+            <p style="color: #aaa;">Hali rating yo‘q</p>
+            {% endfor %}
 
         </div>
-        {% empty %}
-        <p style="color: #aaa;">Hali rating yo‘q</p>
-        {% endfor %}
-
-    </div>
-</a>
+    </a>
 
 
     <div class="home-buttons">
@@ -149,7 +155,7 @@
         <span class="home-btn-sub">{% trans "UFEL CHEMPIONLARI" %}</span>
     </a>
 
-    <a href="https://t.me/ufel_uz" class="join-group">{% trans "JOIN GROUP" %}</a>
+    <a href="https://t.me/ufel_uz" class="join-group" style="font-weight: 200; font-size: 14px;">{% trans "JOIN GROUP" %}</a>
     </div>
     
      <div id="bookmarks-list" style="display: flex; flex-direction: column; gap: 12px;  min-height: 100px;">
@@ -210,7 +216,6 @@
     <div class="ratings-header">
         <h2 class="champions-title">{% trans "UFEL CHAMPIONS" %}</h2>
         <div class="champions-line"></div>
-        <p style="color: #94a3b8; margin-top: 5px; font-size: 14px;">{% trans "Jami:" %} {{ total_champions }} {% trans "ta champion" %}</p>
     </div>
 
     <div class="champions-list">
@@ -223,7 +228,19 @@
                 {% if user_data.user.avatar %}
                     <img src="{{ user_data.user.avatar.url }}" alt="{{ user_data.user.username }}">
                 {% else %}
-                    <img src="{% static 'images/default-avatar.jpg' %}" alt="avatar">
+                    <div class="avatar-placeholder champion-placeholder">
+                        <span>
+                            {% if user_data.user.first_name %}
+                                {{ user_data.user.first_name|first|upper }}
+                            {% elif user_data.user.last_name %}
+                                {{ user_data.user.last_name|first|upper }}
+                            {% elif user_data.user.username %}
+                                {{ user_data.user.username|first|upper }}
+                            {% else %}
+                                ?
+                            {% endif %}
+                        </span>
+                    </div>
                 {% endif %}
                 <div class="champion-poster-mask"></div>
             </div>
@@ -241,7 +258,7 @@
                 </h2>
                 <p style="margin: 5px; color: #94a3b8; font-size: 14px;">
                     {{ user_data.user.username|default:"username" }} • 
-                    {% trans "Jami:" %} {{ user_data.champions|length }} {% trans "ta champion" %}
+                    {{ user_data.champions|length }} {% trans "ta champion" %}
                 </p>
                 <!-- UFEL CHAMPION tugmasi olib tashlandi -->
             </div>
@@ -666,13 +683,12 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
     }
     
     let html = `
-        <div class="matches-container">
-            <h2 class="title">TOP O'yinlar</h2>
-            <div class="matches-row">
+        <div class="matches-container" style="margin-bottom: 0; padding-bottom: 0;">
+            <h2 class="title" style="font-family: 'Impact', 'Arial Black', sans-serif; font-size: 16px; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">TOP O'yinlar</h2>
+            <div class="matches-row" style="margin-bottom: 0;">
     `;
     
     bookmarks.forEach(bm => {
-        // Siz so'ragan o'zgaruvchilar
         const homeName = bm.home_user?.name || 'TBD';
         const awayName = bm.away_user?.name || 'TBD';
         const homeInitial = homeName.charAt(0).toUpperCase();
@@ -682,10 +698,8 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
         const infoText = `${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}`;
         const score = bm.score || '0 : 0';
         
-        // Asosiy CSS klassingiz (.m-avatar) o'lchamlarini buzmasligi uchun inline flex uslublari
         const defaultAvatarStyle = "display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #7c3aed, #22d3ee); color: #fff; font-weight: bold; font-size: 20px; border-radius: 50%;";
         
-        // Rasm bor bo'lsa rasmni, yo'q bo'lsa ismning birinchi harfini ko'rsatamiz
         const homeAvatarHTML = bm.home_user?.avatar 
             ? `<img src="${bm.home_user.avatar}" class="m-avatar" alt="${homeName}">`
             : `<div class="m-avatar" style="${defaultAvatarStyle}">${homeInitial}</div>`;
@@ -695,7 +709,7 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
             : `<div class="m-avatar" style="${defaultAvatarStyle}">${awayInitial}</div>`;
 
         html += `
-            <div class="wrapper_card" style="cursor: pointer;" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'">
+            <div class="wrapper_card" style="cursor: pointer; margin-bottom: 0;" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'">
                 <div class="info-match">
                     <p>${infoText}</p>
                 </div>

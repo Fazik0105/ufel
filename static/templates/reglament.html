@@ -101,28 +101,26 @@
             border-bottom: none;
         }
         
-        /* Ikonli qatorlar (default) */
-        .reglament-points.icon li,
-        .reglament-points:not(.no-icon) li {
-            padding-left: 25px;
-        }
-        
-        .reglament-points.icon li::before,
-        .reglament-points:not(.no-icon) li::before {
-            content: "⚽";
-            position: absolute;
-            left: 0;
-            color: #FFC400;
-            font-size: 12px;
-        }
-        
-        /* Iconsiz qatorlar */
+        /* REGLAMENT SECTION - Iconsiz (⚽ olib tashlandi) */
         .reglament-points.no-icon li {
             padding-left: 0;
         }
         
         .reglament-points.no-icon li::before {
             display: none;
+        }
+        
+        /* REYTING SECTION - 1-3 section iconsiz, 4-section icon bilan (o'zgarishsiz) */
+        .reglament-points.icon li {
+            padding-left: 25px;
+        }
+        
+        .reglament-points.icon li::before {
+            content: "⚽";
+            position: absolute;
+            left: 0;
+            color: #FFC400;
+            font-size: 12px;
         }
         
         .rating-highlight {
@@ -345,7 +343,7 @@
                         html += `
                             <div class="reglament-section">
                                 <h2>${section.title}</h2>
-                                <ul class="reglament-points icon">
+                                <ul class="reglament-points no-icon">
                                     ${section.points.map(point => `<li>${point}</li>`).join('')}
                                 </ul>
                             </div>
@@ -376,12 +374,13 @@
                             html += `<h3>${section.title}</h3>`;
                         }
                         
-                        // Birinchi 3 section iconsiz, 4-section (GOLLAR VIDEOSI) icon bilan
+                        // Reyting bo'limi o'zgarishsiz qoladi
+                        // 1-3 section iconsiz, 4-section icon bilan
                         let listClass = 'reglament-points';
                         if (index < 3) {
-                            listClass += ' no-icon';  // Birinchi 3 section iconsiz
+                            listClass += ' no-icon';
                         } else {
-                            listClass += ' icon';     // 4-section icon bilan
+                            listClass += ' icon';
                         }
                         
                         html += `<ul class="${listClass}">`;
@@ -422,9 +421,8 @@
         });
 
         function setLanguage(lang) {
-    // /app/ prefiksini qo'shish
-    window.location.href = `/app/set-language/?lang=${lang}&next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-}
+            window.location.href = `/app/set-language/?lang=${lang}&next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        }
     </script>
 
     <div class="mobile-menu" id="mobileMenu">

@@ -1399,7 +1399,6 @@ def tournament_public_view(request, pk):
             from championship.services import get_standings
             table_data = get_standings(championship.id)
         except Exception as e:
-            print(f"Error in get_standings: {e}")
             table_data = []
     
     group_data = []
@@ -1687,9 +1686,7 @@ def update_ratings(request):
         user_ids = request.POST.getlist('user_ids') or request.POST.getlist('user_ids[]')
         games_played = request.POST.getlist('games_played') or request.POST.getlist('games_played[]')
         points = request.POST.getlist('points') or request.POST.getlist('points[]')
-        
-        print(f"Received - user_ids: {user_ids}, games: {games_played}, points: {points}")
-        
+                
         updated_count = 0
         for i in range(len(user_ids)):
             if user_ids[i]:
@@ -1697,7 +1694,6 @@ def update_ratings(request):
                 points_value = points[i] if i < len(points) else None
                 
                 if (games_value is None or games_value == '') and (points_value is None or points_value == ''):
-                    print(f"Skipping user {user_ids[i]} - both values are empty")
                     continue
                 
                 try:
@@ -1725,7 +1721,6 @@ def update_ratings(request):
                         pass
                 
                 if not update_data:
-                    print(f"No valid data to update for user {user_ids[i]}")
                     continue
                 
                 rating, created = UserRating.objects.update_or_create(
@@ -1733,7 +1728,6 @@ def update_ratings(request):
                     defaults=update_data
                 )
                 updated_count += 1
-                print(f"Updated user {user_ids[i]}: {update_data}")
         
         return JsonResponse({
             'success': True,
@@ -2354,7 +2348,6 @@ def undo_match(request, match_id):
             'status': 'error',
             'message': f'Xatolik: {str(e)}'
         }, status=500)
-    
 
 def reglament_view(request):
     """Reglament page view"""
@@ -2624,7 +2617,6 @@ def get_reglament_content(request):
     
     return JsonResponse(content)
 
-
 def set_language(request):
     lang = request.GET.get('lang', 'uz')
     next_url = request.GET.get('next')
@@ -2633,9 +2625,6 @@ def set_language(request):
     if not next_url:
         next_url = request.META.get('HTTP_REFERER', reverse('index'))
     
-    print(f"Setting language to: {lang}")
-    print(f"Next URL: {next_url}")
-    print(f"Available languages: {dict(settings.LANGUAGES)}")
     
     # Til mavjudligini tekshirish
     if lang in dict(settings.LANGUAGES).keys():
@@ -2657,10 +2646,6 @@ def set_language(request):
             path='/'
         )
         
-        print(f"Language set successfully: {lang}")
-        print(f"Session: {request.session.get('django_language')}")
-        
         return response
     
-    print(f"Language {lang} not available")
     return HttpResponseRedirect(next_url)
