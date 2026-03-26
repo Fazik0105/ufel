@@ -1865,6 +1865,9 @@ msgid "Top o'yinlar qo'shilmagan"
 msgstr "Top o'yinlar qo'shilmagan"
 # championship/locale/uz/LC_MESSAGES/django.po
 
+msgid "TOP O'yinlar"
+msgstr "TOP O'yinlar"
+
 msgid "davra"
 msgstr "davra"
 
