@@ -2810,44 +2810,136 @@ body.modal-open {
     }
 }
 
-/* ============= BOOKMARK MOBILE OPTIMIZATION ============= */
-@media (max-width: 768px) {
+/* ==================== 426px VA UNDAN YUQORI (GORIZONTAL RO'YXAT) ==================== */
+@media (min-width: 426px) {
+    .matches-row {
+        display: flex !important;
+        flex-direction: row !important; /* Itemlar gorizontal joylashadi */
+        gap: 16px !important;
+        overflow-x: auto !important; /* Ko'p bo'lsa yon tomonga surilish (scroll) uchun */
+        padding-bottom: 10px !important; /* Scrollbar uchun ozgina joy */
+    }
+
+    .wrapper_card {
+        min-width: 260px !important; /* Gorizontal holatda kartalar qisilib qolmasligi uchun */
+        flex-shrink: 0 !important;
+    }
+
+    .player {
+        display: flex !important;
+        flex-direction: column !important; /* Katta ekranda ham rasm va ism ustma-ust turishi uchun */
+        align-items: center !important;
+    }
+}
+
+/* ==================== 425px GACHA (VERTIKAL RO'YXAT) ==================== */
+@media (max-width: 425px) {
     .bookmarks-section {
         width: 100% !important;
-        max-width: 100% !important;
         margin: 20px 0 0 !important;
         padding: 16px !important;
         border-radius: 16px !important;
+        box-sizing: border-box;
     }
 
-    .bookmarks-section:hover {
-        box-shadow: none !important;
-        border-color: rgba(34, 211, 238, 0.2) !important;
+    #bookmarks-list {
+        width: 100% !important;
     }
 
-    .bookmark-item {
-        flex-direction: column !important;
-        align-items: stretch !important;
+    .matches-row {
+        display: flex !important;
+        flex-direction: column !important; /* Itemlar vertikal ustun bo'ladi */
+        gap: 12px !important;
+        width: 100% !important;
+    }
+
+    .wrapper_card {
+        box-sizing: border-box;
+        margin-bottom: 0 !important;
+        padding: 12px !important;
+    }
+
+    .match-card {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
         gap: 10px !important;
-        padding: 14px !important;
-        transform: none !important;
+        width: 100% !important;
+    }
+
+    .player {
+        display: flex !important;
+        flex-direction: column !important; /* Rasm va ism doim ustma-ust bo'ladi */
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+
+    .player .m-avatar {
+        width: 45px !important;
+        height: 45px !important;
+        margin: 0 auto !important;
+    }
+
+    .player .lastname {
+        font-size: 12px !important;
+        margin-top: 6px !important; /* Rasm va ism orasidagi masofa */
+        max-width: 85px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+    }
+
+    .score, .match-vs {
+        font-size: 18px !important;
+        font-weight: bold !important;
+        min-width: 55px !important;
         text-align: center !important;
     }
 
-    .bookmark-item:hover {
-        transform: none !important;
+    .info-match {
+        width: 100% !important;
+        text-align: center !important;
+        margin-bottom: 8px !important;
     }
 
-    .bookmark-item > div {
-        width: 100% !important;
+    .info-match p {
+        font-size: 11px !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
-    .bookmark-item > div:last-child {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        margin-top: 8px !important;
+    .title {
+        font-size: 14px !important;
+        margin-bottom: 12px !important;
+        text-align: center !important;
+    }
+}
+
+/* ==================== 375px GACHA (KICHIK EKRANLAR) ==================== */
+@media (max-width: 375px) {
+    .player .m-avatar {
+        width: 35px !important;
+        height: 35px !important;
+    }
+
+    .player .lastname {
+        font-size: 10px !important;
+        max-width: 60px !important;
+    }
+
+    .score, .match-vs {
+        font-size: 14px !important;
+        min-width: 40px !important;
+    }
+
+    .info-match p {
+        font-size: 9px !important;
     }
 }
 

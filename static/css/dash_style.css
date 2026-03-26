@@ -1646,7 +1646,7 @@
 
 #matches-content h2 {
     font-size: 20px;
-    color: #22d3ee;
+    color: #fff;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1812,7 +1812,7 @@
 .match-score div {
     font-size: 18px;
     font-weight: 700;
-    color: #22d3ee;
+    color: #fff;
     line-height: 1;
 }
 

@@ -5,7 +5,6 @@
 #
 #: championship/views.py:2593 championship/views.py:2598
 #: championship/views.py:2600
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -627,7 +626,7 @@ msgstr "Групповой этап"
 
 #: static/templates/tournament_content_partial.html:543
 msgid "davra"
-msgstr "тур"
+msgstr "круг"
 
 #: static/templates/tournament_content_partial.html:548
 msgid "Guruh"
@@ -1878,4 +1877,29 @@ msgstr "Общайтесь, получайте помощь или вносит�
 
 msgid "Top o'yinlar qo'shilmagan"
 msgstr "Топовые игры не добавлены"
+msgid "tur"
+msgstr "тур"
 
+msgid "Final"
+msgstr "Финал"
+
+msgid "1/2 Final"
+msgstr "1/2 финала"
+
+msgid "1/4 Final"
+msgstr "1/4 финала"
+
+msgid "1/8 Final"
+msgstr "1/8 финала"
+
+msgid "1/16 Final"
+msgstr "1/16 финала"
+
+msgid "Round 1 (Play-in)"
+msgstr "Раунд 1 (Плей-ин)"
+
+msgid "%(d)s-davra, %(t)s-tur"
+msgstr "%(d)s-й круг, %(t)s-й тур"
+
+msgid "%(t)s-tur"
+msgstr "%(t)s-й тур"

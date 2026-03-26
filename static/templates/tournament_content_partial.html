@@ -1,4 +1,5 @@
 {% load static %}
+{% load tournament_filters %}
 {% load i18n %}
 
 <!-- ===== DUAL TAB BAR - CENTERED ===== -->
@@ -441,7 +442,7 @@
                             {% for round in bracket_data %}
                                 {% if not forloop.last %}
                                 <div class="round" style="display: flex; flex-direction: column; width: 200px; margin: 0 20px;">
-                                    <div style="text-align: center; color: #94a3b8; font-size: 12px; margin-bottom: 10px;">{{ round.name }}</div>
+                                    <div style="text-align: center; color: #94a3b8; font-size: 12px; margin-bottom: 10px;">{{ round.name|translate_round_name }}</div>
                                     {% for match in round.matches %}
                                     <div class="match" style="display: flex; flex-direction: column; justify-content: space-around; flex: 1; position: relative; min-height: 100px;">
                                         <div class="team-container" style="height: 40px;">
@@ -481,7 +482,7 @@
                         <div class="center-column" style="display: flex; flex-direction: column; justify-content: center; margin: 0 20px; width: 220px;">
                             {% with final_round=bracket_data|last %}
                                 <div class="round" style="display: flex; flex-direction: column; width: 100%;">
-                                    <div style="text-align: center; color: #94a3b8; font-size: 12px; margin-bottom: 10px;">{{ final_round.name }}</div>
+                                    <div style="text-align: center; color: #94a3b8; font-size: 12px; margin-bottom: 10px;">{{ final_round.name|translate_round_name }}</div>
                                     {% for match in final_round.matches %}
                                     <div class="match" style="display: flex; flex-direction: column; justify-content: space-around; flex: 1; position: relative; min-height: 100px; margin-bottom: 10px;">
                                         <div class="team-container" style="height: 40px;">
@@ -535,22 +536,24 @@
         {% if matches %}
             <div style="margin-top: 12px">
                 {% for match in matches %}
-                    <div class="badge" style="font-size: 13px;">
-                        <span class="round-name">{{ match.round_name|default:_("Guruh bosqichi") }}</span>
+                   <div class="badge" style="font-size: 13px;">
+                        <span class="round-name">
+                            {{ match.round_name|translate_round_name }}
+                        </span>
                         
                         {% if match.leg %}
-                        <span class="leg-badge">
-                            {{ match.leg }}-{% trans "davra" %}
-                        </span>
+                            <span class="leg-badge">
+                                {{ match.leg }}-{% trans "davra" %}
+                            </span>
                         {% endif %}
-
+                        
                         {% if match.group_name %}
-                            <span class="group-name">{% trans "Guruh" %} {{ match.group_name }}</span>
+                            <span class="group-name">
+                                {% trans "Guruh" %} {{ match.group_name }}
+                            </span>
                         {% endif %}
-                    </div>
-                <div id="match-{{ match.id }}" class="match-item {% if match.is_finished %}match-finished{% endif %}">                
-                    
-                    
+                </div>
+                <div id="match-{{ match.id }}" class="match-item {% if match.is_finished %}match-finished{% endif %}">
                     <div class="match-main-content">
                         <div class="home-side">
                             <div class="team-name home-name">
@@ -571,7 +574,11 @@
                         </div>
                         
                         <div class="match-score">
-                            <div>{{ match.home_score|default:"0" }}:{{ match.away_score|default:"0" }}</div>
+                            {% if match.is_finished %}
+                                <div>{{ match.home_score|default:"0" }}:{{ match.away_score|default:"0" }}</div>
+                            {% else %}
+                                <div class="match-vs">vs</div>
+                            {% endif %}
                         </div>
                         
                         <div class="away-side">

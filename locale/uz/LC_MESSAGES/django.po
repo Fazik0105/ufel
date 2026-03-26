@@ -5,7 +5,6 @@
 #
 #: championship/views.py:2593 championship/views.py:2598
 #: championship/views.py:2600
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -1864,3 +1863,37 @@ msgstr "Bog'laning, yordam oling yoki hissa qo'shing"
 #: championship/views.py:2616
 msgid "Top o'yinlar qo'shilmagan"
 msgstr "Top o'yinlar qo'shilmagan"
+# championship/locale/uz/LC_MESSAGES/django.po
+
+msgid "davra"
+msgstr "davra"
+
+msgid "tur"
+msgstr "tur"
+
+msgid "Guruh"
+msgstr "Guruh"
+
+msgid "Final"
+msgstr "Final"
+
+msgid "1/2 Final"
+msgstr "1/2 Final"
+
+msgid "1/4 Final"
+msgstr "1/4 Final"
+
+msgid "1/8 Final"
+msgstr "1/8 Final"
+
+msgid "1/16 Final"
+msgstr "1/16 Final"
+
+msgid "Round 1 (Play-in)"
+msgstr "1-bosqich (Play-in)"
+
+msgid "%(d)s-davra, %(t)s-tur"
+msgstr "%(d)s-davra, %(t)s-tur"
+
+msgid "%(t)s-tur"
+msgstr "%(t)s-tur"

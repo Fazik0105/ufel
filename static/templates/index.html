@@ -1,5 +1,6 @@
-{% load static %}
+{% load tournament_filters %}
 {% load i18n %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -645,34 +646,34 @@ function getCookie(name) {
     }
 
     // ==================== BOOKMARK FUNCTIONS ====================
-async function loadUserBookmarks() {
-    if (!elements.bookmarksList) return;
-    
-    try {
-        elements.bookmarksList.innerHTML = `
-            <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
-                {% trans "Yuklanmoqda..." %}
-            </div>
-        `;
+    async function loadUserBookmarks() {
+        if (!elements.bookmarksList) return;
         
-        const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const data = await response.json();
-        updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
-    } catch (error) {
-        console.error('Error loading bookmarks:', error);
-        elements.bookmarksList.innerHTML = `
-            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
-                <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
-                    Qayta urinish
-                </button>
-            </div>
-        `;
+        try {
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                    <div class="tournament-loading-spinner" style="width: 30px; height: 30px; margin-bottom: 10px;"></div>
+                    {% trans "Yuklanmoqda..." %}
+                </div>
+            `;
+            
+            const response = await fetch(CONFIG.API_ENDPOINTS.BOOKMARKS);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            updateBookmarksList(data.bookmarks || [], data.is_authenticated || false);
+        } catch (error) {
+            console.error('Error loading bookmarks:', error);
+            elements.bookmarksList.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                    <span style="color: #ef4444;">❌ Xatolik yuz berdi</span>
+                    <button onclick="loadUserBookmarks()" style="margin-top: 10px; padding: 5px 15px; background: #22d3ee; color: #0f172a; border: none; border-radius: 5px; cursor: pointer;">
+                        Qayta urinish
+                    </button>
+                </div>
+            `;
+        }
     }
-}
 
 function updateBookmarksList(bookmarks, isAuthenticated = false) {
     if (!elements.bookmarksList || !bookmarks?.length) {
@@ -685,9 +686,9 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
     }
     
     let html = `
-        <div class="matches-container" style="margin-bottom: 0; padding-bottom: 0;">
+        <div class="matches-container">
             <h2 class="title" style="font-family: 'Impact', 'Arial Black', sans-serif; font-size: 16px; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">TOP O'yinlar</h2>
-            <div class="matches-row" style="margin-bottom: 0;">
+            <div class="matches-row">
     `;
     
     bookmarks.forEach(bm => {
@@ -710,8 +711,12 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
             ? `<img src="${bm.away_user.avatar}" class="m-avatar" alt="${awayName}">`
             : `<div class="m-avatar" style="${defaultAvatarStyle}">${awayInitial}</div>`;
 
+        const matchScoreDisplay = isFinished 
+            ? `<div class="score">${score}</div>`
+            : `<div class="match-vs">vs</div>`;
+
         html += `
-            <div class="wrapper_card" style="cursor: pointer; margin-bottom: 0;" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'">
+            <div class="wrapper_card" onclick="window.location.href='/?page=tournaments&champ=${bm.championship_id}#match-${bm.match_id}'">
                 <div class="info-match">
                     <p>${infoText}</p>
                 </div>
@@ -721,7 +726,7 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
                         <p class="lastname">${homeName}</p>
                     </div>
 
-                    <div class="score">${score}</div>
+                    ${matchScoreDisplay}
 
                     <div class="player">
                         ${awayAvatarHTML}
