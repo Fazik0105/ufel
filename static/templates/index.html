@@ -673,7 +673,62 @@ function getCookie(name) {
                 </div>
             `;
         }
+}
+
+function translateBookmarkRoundName(roundName) {
+    const currentLanguage = "{{ request.LANGUAGE_CODE|default:'uz'|escapejs }}";
+    const isRussian = currentLanguage.startsWith('ru');
+
+    if (!roundName) {
+        return isRussian ? 'Групповой этап' : 'Guruh bosqichi';
     }
+
+    const value = String(roundName).trim();
+    const normalized = value.toLowerCase();
+
+    const directTranslations = {
+        'guruh bosqichi': isRussian ? 'Групповой этап' : 'Guruh bosqichi',
+        'groups': isRussian ? 'Групповой этап' : 'Guruh bosqichi',
+        'liga': isRussian ? 'Лига' : 'Liga',
+        'playoff': isRussian ? 'Плей-офф' : 'Playoff',
+        'final': isRussian ? 'Финал' : 'Final',
+        '1/2 final': isRussian ? '1/2 финала' : '1/2 Final',
+        '1/4 final': isRussian ? '1/4 финала' : '1/4 Final',
+        '1/8 final': isRussian ? '1/8 финала' : '1/8 Final',
+        '1/16 final': isRussian ? '1/16 финала' : '1/16 Final',
+        '1/32 final': isRussian ? '1/32 финала' : '1/32 Final',
+        'round 1 (play-in)': isRussian ? 'Раунд 1 (Плей-ин)' : 'Round 1 (Play-in)',
+        'round 1': isRussian ? 'Раунд 1' : 'Round 1',
+        'round 2': isRussian ? 'Раунд 2' : 'Round 2',
+        'round 3': isRussian ? 'Раунд 3' : 'Round 3'
+    };
+
+    if (directTranslations[normalized]) {
+        return directTranslations[normalized];
+    }
+
+    const groupMatch = value.match(/^(guruh|group)\s+(.+)$/i);
+    if (groupMatch) {
+        return `${isRussian ? 'Группа' : 'Guruh'} ${groupMatch[2]}`;
+    }
+
+    const leagueRoundMatch = value.match(/(\d+)\s*[- ]?\s*(?:davra|круг|round)\s*,\s*(\d+)\s*[- ]?\s*(?:tur|тур|tour|round)/i);
+    if (leagueRoundMatch) {
+        const davraNum = leagueRoundMatch[1];
+        const turNum = leagueRoundMatch[2];
+        return isRussian
+            ? `${davraNum}-й круг, ${turNum}-й тур`
+            : `${davraNum}-davra, ${turNum}-tur`;
+    }
+
+    const singleTurMatch = value.match(/(\d+)\s*[- ]?\s*(?:tur|тур|tour|round)/i);
+    if (singleTurMatch) {
+        const turNum = singleTurMatch[1];
+        return isRussian ? `${turNum}-й тур` : `${turNum}-tur`;
+    }
+
+    return value;
+}
 
 function updateBookmarksList(bookmarks, isAuthenticated = false) {
     if (!elements.bookmarksList || !bookmarks?.length) {
@@ -698,7 +753,7 @@ function updateBookmarksList(bookmarks, isAuthenticated = false) {
         const awayInitial = awayName.charAt(0).toUpperCase();
         const isFinished = bm.is_finished || false; 
         
-        const infoText = `${bm.championship_name || 'Turnir'} • ${bm.round_name || 'Guruh'}`;
+        const infoText = `${bm.championship_name || 'Turnir'} • ${translateBookmarkRoundName(bm.round_name)}`;
         const score = bm.score || '0 : 0';
         
         const defaultAvatarStyle = "display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #7c3aed, #22d3ee); color: #fff; font-weight: bold; font-size: 20px; border-radius: 50%;";
