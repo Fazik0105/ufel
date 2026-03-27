@@ -1905,3 +1905,9 @@ msgstr "%(d)s-й круг, %(t)s-й тур"
 
 msgid "%(t)s-tur"
 msgstr "%(t)s-й тур"
+
+msgid "Turnir platformasiga xush kelibsiz"
+msgstr "Добро пожаловать на турнирную платформу"
+
+msgid "Saytga Kirish"
+msgstr "Войти на сайт"
