@@ -418,6 +418,26 @@
   </div>
 </section>
 
+<div id="welcome-overlay" class="welcome-screen">
+    <div class="welcome-content">
+        <h2>Uzbekistan Football e-League</h2>
+        <p>{% trans "Turnir platformasiga xush kelibsiz" %}</p>
+        <button id="enter-btn" class="enter-button">
+            <i class="fas fa-play-circle"></i> {% trans "Saytga Kirish" %}
+        </button>
+    </div>
+</div>
+
+<!-- Audio Player -->
+<audio id="background-audio" preload="auto" autoplay muted loop>
+    <source src="{% static 'music/Glass Animals - Heat Waves.mp3' %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<div id="music-control" class="music-fab">
+    <i class="fas fa-play"></i> 
+</div>
+
 </body>
 
 <script>
@@ -1655,6 +1675,230 @@ function setLanguage(lang) {
     // /app/ prefiksini qo'shish
     window.location.href = `/app/set-language/?lang=${lang}&next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
 }
+
+(function() {
+    'use strict';
+    
+    let audioPlayer = null;
+    let isPlaying = false;
+    let musicControlBtn = null;
+    let musicIcon = null;
+    
+    // DOM elementlarini olish
+    function getElements() {
+        audioPlayer = document.getElementById('background-audio');
+        musicControlBtn = document.getElementById('music-control');
+        if (musicControlBtn) {
+            musicIcon = musicControlBtn.querySelector('i');
+        }
+    }
+    
+    // Tugma holatini yangilash
+    function updateButtonState(playing) {
+        if (!musicControlBtn || !musicIcon) return;
+        
+        if (playing) {
+            musicControlBtn.classList.add('playing');
+            musicControlBtn.classList.remove('paused');
+            musicIcon.className = 'fas fa-pause';
+        } else {
+            musicControlBtn.classList.remove('playing');
+            musicIcon.className = 'fas fa-play';
+            musicControlBtn.classList.add('paused');
+        }
+    }
+    
+    // Musiqani to'xtatish/yoqish
+    function togglePlay() {
+        if (!audioPlayer) return;
+        
+        if (isPlaying) {
+            // PAUSE: to'xtatish
+            audioPlayer.pause();
+            isPlaying = false;
+            updateButtonState(false);
+        } else {
+            // PLAY: yoqish
+            audioPlayer.muted = false;
+            audioPlayer.play().then(() => {
+                isPlaying = true;
+                updateButtonState(true);
+            }).catch((error) => {
+                console.log('Play failed:', error);
+                isPlaying = false;
+                updateButtonState(false);
+            });
+        }
+    }
+    
+    // Welcome overlay orqali boshlash
+    function initWelcomeMusic() {
+        const overlay = document.getElementById('welcome-overlay');
+        const enterBtn = document.getElementById('enter-btn');
+        
+        if (!overlay || !enterBtn) return;
+        
+        // "Saytga kirish" tugmasi bosilganda
+        enterBtn.addEventListener('click', () => {
+            // Overlay ni yopish
+            overlay.classList.add('hidden');
+            
+            // Musiqani boshlash
+            if (audioPlayer && !isPlaying) {
+                audioPlayer.muted = false;
+                audioPlayer.play().then(() => {
+                    isPlaying = true;
+                    updateButtonState(true);
+                }).catch((error) => {
+                    console.log('Audio play failed:', error);
+                    isPlaying = false;
+                    updateButtonState(false);
+                });
+            }
+        });
+    }
+    
+    // Event listenerlarni o'rnatish
+    function setupEventListeners() {
+        if (musicControlBtn) {
+            musicControlBtn.removeEventListener('click', togglePlay);
+            musicControlBtn.addEventListener('click', togglePlay);
+        }
+    }
+    
+    // CSS animatsiyalarni qo'shish
+    function addStyles() {
+        if (document.getElementById('music-custom-styles')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'music-custom-styles';
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 196, 0, 0.7); }
+                70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 196, 0, 0); }
+                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 196, 0, 0); }
+            }
+            
+            .music-fab {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #1e293b, #0f172a);
+                border: 2px solid rgba(255, 196, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 9999;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            }
+            
+            .music-fab:hover {
+                transform: scale(1.05);
+                border-color: #FFC400;
+            }
+            
+            .music-fab.playing {
+                background: linear-gradient(135deg, #FFC400, #FF8C00);
+                animation: pulse 1.5s infinite;
+                border-color: #fff;
+            }
+            
+            .music-fab.playing i {
+                color: #0f172a;
+            }
+            
+            .music-fab i {
+                font-size: 24px;
+                color: #FFC400;
+                transition: all 0.3s ease;
+            }
+            
+            .music-fab.playing i {
+                color: #0f172a;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Initializatsiya
+    function init() {
+        getElements();
+        addStyles();
+        
+        if (audioPlayer) {
+            audioPlayer.volume = 0.5;
+            audioPlayer.muted = false;
+        }
+        
+        initWelcomeMusic();
+        setupEventListeners();
+        
+        // Boshlang'ich holat
+        updateButtonState(false);
+    }
+    
+    // DOM ready bo'lganda ishga tushirish
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('welcome-overlay');
+    const enterBtn = document.getElementById('enter-btn');
+    const audioPlayer = document.getElementById('background-audio');
+    const musicControlBtn = document.getElementById('music-control');
+    const musicIcon = musicControlBtn.querySelector('i');
+    
+    let isPlaying = false;
+    audioPlayer.volume = 0.5; // Ovoz balandligi
+
+    // 1. Foydalanuvchi "Saytga kirish" ni bosganda
+    enterBtn.addEventListener('click', () => {
+        // Ekranni yo'qotish
+        overlay.classList.add('hidden');
+        
+        // Musiqani boshlash (Bu 100% ishlaydi, chunki click bo'ldi)
+        audioPlayer.play().then(() => {
+            isPlaying = true;
+            updateFABState(true);
+        }).catch(err => console.log("Xatolik:", err));
+    });
+
+    // 2. O'ng pastki burchakdagi tugmani boshqarish
+    musicControlBtn.addEventListener('click', () => {
+        if (isPlaying) {
+            audioPlayer.pause();
+            isPlaying = false;
+            updateFABState(false);
+        } else {
+            audioPlayer.play();
+            isPlaying = true;
+            updateFABState(true);
+        }
+    });
+
+    // Tugma holatini o'zgartiruvchi yordamchi funksiya
+    function updateFABState(playing) {
+        if (playing) {
+            musicControlBtn.classList.add('playing');
+            musicControlBtn.classList.remove('paused');
+            musicIcon.className = 'fas fa-pause';
+        } else {
+            musicControlBtn.classList.remove('playing');
+            musicControlBtn.classList.add('paused');
+            musicIcon.className = 'fas fa-play';
+        }
+    }
+});
+
 </script>
 
 </html>
