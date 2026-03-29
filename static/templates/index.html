@@ -1073,7 +1073,7 @@ async function loadTournamentContent(champId, search = '', status = 'all', skipC
         
         const url = new URL(`${CONFIG.API_ENDPOINTS.TOURNAMENT_PARTIAL}${champId}/partial/`, window.location.origin);
         if (search || status !== 'all') {
-            url.searchParams.append('player', player);
+            url.searchParams.append('player', search);
             url.searchParams.append('status', status);
         }
         
@@ -1147,7 +1147,7 @@ async function loadTournamentContent(champId, search = '', status = 'all', skipC
         
         state.filterFormHandler = function(e) {
             e.preventDefault();
-            const search = this.querySelector('input[name="search"]')?.value.trim() || '';
+            const search = this.querySelector('input[name="player"]')?.value.trim() || '';
             const status = this.querySelector('select[name="status"]')?.value || 'all';
             loadTournamentContent(champId, search, status, false);
         };
