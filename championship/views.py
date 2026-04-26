@@ -34,7 +34,27 @@ def index(request):
             status__in=['STARTED','FINISHED',]
         ).order_by('-created_at')
 
-    # RATING USERLAR - faqat ratingda ko'rinadigan userlar
+    # ========== YANGI: TOP 5 CHAMPIONS - eng ko'p chempionlikka ega userlar ==========
+    champion_halls = ChampionHall.objects.select_related('user').all()
+    
+    user_champion_count = {}
+    for champ in champion_halls:
+        user_id = champ.user.id
+        if user_id not in user_champion_count:
+            user_champion_count[user_id] = {
+                'user': champ.user,
+                'count': 0,
+                'latest_champions': []
+            }
+        user_champion_count[user_id]['count'] += 1
+        user_champion_count[user_id]['latest_champions'].append(champ)
+    
+    top_champions = sorted(user_champion_count.values(), key=lambda x: -x['count'])[:5]
+    
+    for champ_data in top_champions:
+        champ_data['latest_champions'].sort(key=lambda x: x.tournament_date, reverse=True)
+        champ_data['latest'] = champ_data['latest_champions'][0] if champ_data['latest_champions'] else None
+
     rating_users = User.objects.filter(
         role='USER',
         type_settings__in_rating=True
@@ -70,24 +90,22 @@ def index(request):
         table_data = get_standings(latest_champ.id)
         matches = Match.objects.filter(championship=latest_champ).order_by('id')
 
-        # TURNIR ISHTIROKCHILARI - faqat tournament userlari
         participants = ChampionshipParticipant.objects.filter(
             championship=latest_champ
         ).select_related('user')
 
         participant_ids = participants.values_list('user_id', flat=True)
 
-        # TURNIRGA QO'SHISH UCHUN USERLAR - faqat tournament userlari
         available_users = User.objects.filter(
             role='USER',
             type_settings__in_tournament=True
         ).exclude(id__in=participant_ids)
 
-    champion_halls = ChampionHall.objects.select_related('user').order_by('-tournament_date')
+    champion_halls_all = ChampionHall.objects.select_related('user').order_by('-tournament_date')
     
     # User bo'yicha guruhlash
     user_champions = {}
-    for champ in champion_halls:
+    for champ in champion_halls_all:
         user_id = champ.user.id
         if user_id not in user_champions:
             user_champions[user_id] = {
@@ -106,14 +124,14 @@ def index(request):
     context = {
         'championships': championships,
         'ratings': ratings,
+        'top_champions': top_champions,
         'table': table_data,
         'latest_champ': latest_champ,
         'participants': participants,
         'available_users': available_users,
         'matches': matches,
-        'user_champions': user_champions.values(),
         'user_champions': sorted_user_champions,
-        'total_champions': champion_halls.count(),
+        'total_champions': champion_halls_all.count(),
         'is_admin': request.user.is_authenticated and request.user.role == 'ADMIN',
     }
 

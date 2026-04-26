@@ -251,7 +251,7 @@
             <a href="{% url 'index' %}">{% trans "HOME" %}</a>
             <a href="{% url 'index' %}?page=tournaments">{% trans "TOURNAMENTS" %}</a>
             <a href="{% url 'index' %}?page=champions">{% trans "UFEL CHAMPIONS" %}</a>
-            <a href="{% url 'index' %}?page=ratings">{% trans "RATINGS" %}</a>
+            <!-- <a href="{% url 'index' %}?page=ratings">{% trans "RATINGS" %}</a> -->
             <a href="{% url 'reglament' %}" class="active">{% trans "REGLAMENT" %}</a>
             {% if user.is_authenticated %}
                 {% if user.is_admin %}
@@ -267,7 +267,7 @@
     <a href="{% url 'index' %}">{% trans "HOME" %}</a>
     <a href="{% url 'index' %}?page=tournaments">{% trans "TOURNAMENTS" %}</a>
     <a href="{% url 'index' %}?page=champions">{% trans "UFEL CHAMPIONS" %}</a>
-    <a href="{% url 'index' %}?page=ratings">{% trans "RATINGS" %}</a>
+    <!-- <a href="{% url 'index' %}?page=ratings">{% trans "RATINGS" %}</a> -->
     <a href="{% url 'reglament' %}" class="active">{% trans "REGLAMENT" %}</a>
     {% if user.is_authenticated %}
         {% if user.is_admin %}
@@ -285,10 +285,10 @@
     </div>
 
     <div class="reglament-container">        
-        <div class="reglament-tabs">
-            <button class="reglament-tab active" onclick="switchReglamentTab('reglament')">{% trans "REGLAMENT" %}</button>
-            <button class="reglament-tab" onclick="switchReglamentTab('rating')">{% trans "REYTING TIZIMI" %}</button>
-        </div>
+        <!-- <div class="reglament-tabs"> -->
+            <!-- <button class="reglament-tab active" onclick="switchReglamentTab('reglament')">{% trans "REGLAMENT" %}</button> -->
+            <!-- <button class="reglament-tab" onclick="switchReglamentTab('rating')">{% trans "REYTING TIZIMI" %}</button> -->
+        <!-- </div> -->
 
         <div id="reglament-content" class="reglament-content active">
             <div class="loading-spinner"></div>

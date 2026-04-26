@@ -210,7 +210,7 @@ class UserRating(models.Model):
 
 class ChampionHall(models.Model):
     POSITION_CHOICES = (
-        (1, '1-o`rin'),
+        (1, 'CHAMPION'),
         (2, '2-o`rin'),
         (3, '3-o`rin'),
     )

@@ -540,7 +540,7 @@ repeat(auto-fit,minmax(240px,1fr));
     <div class="tabs">
         <div class="tab-btn active" onclick="showTab('tournaments')">TOURNAMENTS</div>
         <div class="tab-btn" onclick="showTab('users')">USERS</div>
-        <div class="tab-btn" onclick="showTab('ratings')">RATINGS</div>
+        <!-- <div class="tab-btn" onclick="showTab('ratings')">RATINGS</div> -->
         <div class="tab-btn" onclick="showTab('champions')">CHAMPIONS</div>
     </div>
 
@@ -612,10 +612,10 @@ repeat(auto-fit,minmax(240px,1fr));
                                 <input type="checkbox" name="in_tournament" id="in_tournament_tournament" checked>
                                 <label for="in_tournament_tournament">Turnirlarda 🏆</label>
                             </div>
-                            <div class="checkbox-item">
+                            <!-- <div class="checkbox-item">
                                 <input type="checkbox" name="in_rating" id="in_rating_tournament" checked>
                                 <label for="in_rating_tournament">Reytingda 📊</label>
-                            </div>
+                            </div> -->
                             <div class="checkbox-item">
                                 <input type="checkbox" name="in_champions" id="in_champions_tournament" checked>
                                 <label for="in_champions_tournament">Chempionlar ro'yxatida 👑</label>
@@ -899,10 +899,10 @@ repeat(auto-fit,minmax(240px,1fr));
                         <input type="checkbox" name="in_tournament" id="in_tournament_users" checked>
                         <label for="in_tournament_users">Turnirlarda 🏆</label>
                     </div>
-                    <div class="checkbox-item">
+                    <!-- <div class="checkbox-item">
                         <input type="checkbox" name="in_rating" id="in_rating_users" checked>
                         <label for="in_rating_users">Reytingda 📊</label>
-                    </div>
+                    </div> -->
                     <div class="checkbox-item">
                         <input type="checkbox" name="in_champions" id="in_champions_users" checked>
                         <label for="in_champions_users">Chempionlar ro'yxatida 👑</label>
@@ -974,8 +974,8 @@ repeat(auto-fit,minmax(240px,1fr));
     </div>
 
     <!-- RATINGS SECTION -->
-    <div id="ratings" class="admin-section">
-        <div class="card">
+    <!-- <div id="ratings" class="admin-section"> -->
+        <!-- <div class="card">
             <h2 class="section-subtitle" style="color: #22d3ee; margin-bottom: 20px;">YANGI O'YINCHI QO'SHISH (REYTING UCHUN)</h2>
 
             {% if messages %}
@@ -986,8 +986,7 @@ repeat(auto-fit,minmax(240px,1fr));
                 {% endfor %}
             {% endif %}
 
-            <!-- YANGI O'YINCHI QO'SHISH COLLAPSIBLE -->
-            <div class="card collapsible" style="margin-bottom: 25px;">
+            <!-- <div class="card collapsible" style="margin-bottom: 25px;">
                 <div class="collapsible-header" onclick="toggleCollapse(this)">
                     <h2 style="font-size: 18px; color: #22d3ee;">Yangi o'yinchi qo'shish</h2>
                     <span class="arrow">▼</span>
@@ -1057,11 +1056,11 @@ repeat(auto-fit,minmax(240px,1fr));
                         <button type="submit" class="submit-btn" style="margin-top: 10px;">REYTING UCHUN O'YINCHINI YARATISH</button>
                     </form>
                 </div>
-            </div>
+            </div> -->
 
-            <h2 class="section-subtitle" style="color: #22d3ee; margin-bottom: 20px;">REYTINGLARNI BOSHQARISH</h2>
+            <!-- <h2 class="section-subtitle" style="color: #22d3ee; margin-bottom: 20px;">REYTINGLARNI BOSHQARISH</h2> -->
             
-            <div style="overflow-x: auto;">
+            <!-- <div style="overflow-x: auto;">
                 <form id="ratingForm">
                     {% csrf_token %}
                     <table class="rating-table">
@@ -1140,9 +1139,9 @@ repeat(auto-fit,minmax(240px,1fr));
                 </button>
                 
                 <div id="ratingSaveMessage" style="margin-top: 15px; padding: 10px; border-radius: 8px; display: none;"></div>
-            </div>
-        </div>
-    </div>
+            </div> -->
+        <!-- </div> --> 
+    <!-- </div> -->
 
     <!-- CHAMPIONS SECTION -->
     <div id="champions" class="admin-section">

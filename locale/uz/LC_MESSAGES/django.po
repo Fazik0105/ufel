@@ -432,8 +432,8 @@ msgid "Yuklanmoqda..."
 msgstr "Yuklanmoqda..."
 
 #: static/templates/index.html:111
-msgid "TOP 5 RATINGS"
-msgstr "TOP 5 REYTING"
+msgid "TOP 5 CHAMPIONS"
+msgstr "TOP-5 CHEMPIONLAR"
 
 #: static/templates/index.html:177
 msgid "BALL"
@@ -1868,14 +1868,8 @@ msgstr "Top o'yinlar qo'shilmagan"
 msgid "TOP O'yinlar"
 msgstr "TOP O'yinlar"
 
-msgid "davra"
-msgstr "davra"
-
 msgid "tur"
 msgstr "tur"
-
-msgid "Guruh"
-msgstr "Guruh"
 
 msgid "Final"
 msgstr "Final"

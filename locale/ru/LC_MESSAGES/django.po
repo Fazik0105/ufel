@@ -432,8 +432,8 @@ msgid "Yuklanmoqda..."
 msgstr "Загрузка..."
 
 #: static/templates/index.html:111
-msgid "TOP 5 RATINGS"
-msgstr "ТОП-5 РЕЙТИНГА"
+msgid "TOP 5 CHAMPIONS"
+msgstr "ТОП-5 ЧЕМПИОНОВ"
 
 #: static/templates/index.html:177
 msgid "BALL"
