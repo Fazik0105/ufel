@@ -655,7 +655,7 @@
             
             <!-- FILTER SECTION -->
             <div style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(34,211,238,0.2);">
-                <form method="GET" action="" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                <form method="GET" action="" id="filter-form" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                     <!-- Qidiruv inputi -->
                     <div style="flex: 2; min-width: 200px;">
                         <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">O'yinchi nomi:</label>
@@ -673,17 +673,17 @@
                     
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button type="submit" class="btn-primary">FILTERLASH</button>
-                        <a href="?search=&status=all" class="btn-secondary" style="margin-top: 8px;">FILTRLARNI TOZALASH</a>
+                        <button type="button" id="clear-filters" class="btn-secondary" style="margin-top: 8px; background: none; border: none; color: #22d3ee; cursor: pointer;">FILTRLARNI TOZALASH</button>
                     </div>
                 </form>
             </div>
             
             <!-- Natijalar soni -->
-            <div style="margin-bottom: 15px; color: #94a3b8; font-size: 14px;">
+            <div id="matches-count" style="margin-bottom: 15px; color: #94a3b8; font-size: 14px;">
                 Jami: <strong>{{ matches_count }}</strong> ta o'yin topildi
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+            <div id="matches-list" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
                 {% for match in matches %}
                     <form method="POST" action="{% url 'update_single_match' match.id %}" id="match-{{ match.id }}" class="match-item ajax-match-form"
                         style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.04); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease;
@@ -812,6 +812,9 @@
     {% endif %}
 </div>
 <script>
+
+const UPDATE_SINGLE_MATCH_URL = "{% url 'update_single_match' 0 %}";
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all forms
     initMatchForms();
@@ -1918,6 +1921,182 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+// ---------- AJAX FILTER ----------
+const filterForm = document.getElementById('filter-form');
+const clearBtn = document.getElementById('clear-filters');
+const matchesCountDiv = document.getElementById('matches-count');
+const matchesListDiv = document.getElementById('matches-list');
+
+function applyFilter() {
+    // Form ma'lumotlarini yig'ish
+    const formData = new FormData(filterForm);
+    const params = new URLSearchParams(formData);
+
+    // AJAX so'rov
+    fetch(`${window.location.pathname}?${params.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hisoblagichni yangilash
+        matchesCountDiv.innerHTML = `Jami: <strong>${data.matches_count}</strong> ta o'yin topildi`;
+
+        // Match ro'yxatini yangilash
+        updateMatchesList(data.matches);
+
+        // URL history yangilash (ortga qaytish to'g'ri ishlashi uchun)
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+    })
+    .catch(error => {
+        console.error('Filter xatosi:', error);
+        alert('Filterlashda xatolik yuz berdi!');
+    });
+}
+
+function updateMatchesList(matches) {
+    // Ro'yxatni tozalash
+    matchesListDiv.innerHTML = '';
+
+    if (matches.length === 0) {
+        matchesListDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                <p style="color: #94a3b8; font-size: 16px;">🔍 Hech qanday o'yin topilmadi</p>
+            </div>`;
+        return;
+    }
+
+    // Har bir match uchun HTML yasash (avvalgi shablon asosida)
+    matches.forEach(match => {
+        const home = match.home_user;
+        const away = match.away_user;
+        const homeFirstName = home ? (home.first_name || home.username) : null;
+        const awayFirstName = away ? (away.first_name || away.username) : null;
+        const homeDisplayName = homeFirstName || (home ? home.username : '');
+        const awayDisplayName = awayFirstName || (away ? away.username : '');
+        const homeAvatar = home ? (home.avatar_url ? `<img src="${home.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : `<span>${(homeFirstName || home.username).charAt(0).toUpperCase()}</span>`) : '?';
+        const awayAvatar = away ? (away.avatar_url ? `<img src="${away.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : `<span>${(awayFirstName || away.username).charAt(0).toUpperCase()}</span>`) : '?';
+
+        const homeIsWinner = match.is_finished && match.home_score > match.away_score;
+        const awayIsWinner = match.is_finished && match.away_score > match.home_score;
+
+        const borderLeft = match.is_finished ? '5px solid #10b981' : '5px solid #f59e0b';
+        const statusText = match.is_finished ? 'TUGAGAN' : 'KUTILMOQDA';
+        const statusColor = match.is_finished ? '#10b981' : '#f59e0b';
+
+        const matchHTML = `
+            <form method="POST" action="${UPDATE_SINGLE_MATCH_URL.replace('0', match.id)}" id="match-${match.id}" class="match-item ajax-match-form"
+                style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.04); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease; border-left: ${borderLeft};">
+                <input type="hidden" name="csrfmiddlewaretoken" value="${getCsrfToken()}">
+                
+                <div style="width: 90px;">
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; display: block;">Raund</span>
+                    <span style="font-size: 13px; color: #fff; font-weight: 600;">${match.round_name}</span>
+                </div>
+
+                <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+                    <div style="text-align: right;">
+                        ${home ? `
+                            <span style="display: block; font-size: 15px; font-weight: 600; color: ${homeIsWinner ? '#22d3ee' : '#f8fafc'};">${homeDisplayName}</span>
+                            <span style="font-size: 11px; color: #64748b;">${home.username}</span>
+                        ` : '<span style="color: #64748b; font-weight: 600;">TBD</span>'}
+                    </div>
+                    <div class="user-select-avatar" style="border: 2px solid ${homeIsWinner ? '#22d3ee' : 'rgba(255,255,255,0.1)'};">${homeAvatar}</div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; padding: 0 20px; min-width: 140px; justify-content: center;">
+                    <input type="number" name="home_score" value="${match.home_score}" min="0" class="score-input"
+                        style="width: 45px; height: 40px; font-size: 18px; font-weight: bold; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; text-align: center;"
+                        ${!home || !away ? 'disabled style="opacity:0.3;"' : ''}>
+                    <span style="color: #94a3b8; font-weight: bold; font-size: 20px;">:</span>
+                    <input type="number" name="away_score" value="${match.away_score}" min="0" class="score-input"
+                        style="width: 45px; height: 40px; font-size: 18px; font-weight: bold; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; text-align: center;"
+                        ${!home || !away ? 'disabled style="opacity:0.3;"' : ''}>
+                </div>
+
+                <div style="flex: 2; display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
+                    <div class="user-select-avatar" style="border: 2px solid ${awayIsWinner ? '#22d3ee' : 'rgba(255,255,255,0.1)'};">${awayAvatar}</div>
+                    <div style="text-align: left;">
+                        ${away ? `
+                            <span style="display: block; font-size: 15px; font-weight: 600; color: ${awayIsWinner ? '#22d3ee' : '#f8fafc'};">${awayDisplayName}</span>
+                            <span style="font-size: 11px; color: #64748b;">${away.username}</span>
+                        ` : '<span style="color: #64748b; font-weight: 600;">TBD</span>'}
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; width: 180px; justify-content: flex-end;">
+                    ${match.is_finished && home && away ? `
+                    <button type="button" class="undo-btn" data-match-id="${match.id}"
+                        style="background: #f59e0b; border: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; color: white; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 5px;"
+                        onclick="undoMatchScore(${match.id})" title="Natijani qaytarish (0:0 va tugamagan holatga)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10"></path>
+                            <path d="M20.49 15a9 9 0 0 1-14.13 3.36L1 14"></path>
+                        </svg>
+                    </button>` : ''}
+                    <button type="button" class="bookmark-btn" data-match-id="${match.id}"
+                        style="background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;"
+                        onclick="toggleBookmark(this, ${match.id})">
+                        <svg class="bookmark-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: all 0.2s;">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </button>
+                    <div style="text-align: center;">
+                        <span style="color: ${statusColor}; font-size: 11px; display: block; font-weight: bold;">${statusText}</span>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 80px; height: 35px; font-size: 11px;"
+                        ${!home || !away ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+                        SAQLASH
+                    </button>
+                </div>
+            </form>
+        `;
+        matchesListDiv.insertAdjacentHTML('beforeend', matchHTML);
+    });
+
+    // Yangi yaratilgan formalarga AJAX event biriktirish
+    initMatchForms();
+    // Bookmark holatlarini qayta tekshirish (ixtiyoriy)
+    if (typeof checkAllBookmarks === 'function') {
+        checkAllBookmarks();
+    }
+}
+
+// CSRF token olish (mavjud getCookie funksiyasi ishlatiladi)
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+}
+
+// Filter formni eshitish
+if (filterForm) {
+    filterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        applyFilter();
+    });
+}
+
+// Tozalash tugmasi
+if (clearBtn) {
+    clearBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        filterForm.querySelector('input[name="search"]').value = '';
+        filterForm.querySelector('select[name="status"]').value = 'all';
+        applyFilter();
+    });
+}
+
+// Ortga/oldinga tugmalari uchun
+window.addEventListener('popstate', function(event) {
+    const urlParams = new URLSearchParams(window.location.search);
+    document.querySelector('input[name="search"]').value = urlParams.get('search') || '';
+    document.querySelector('select[name="status"]').value = urlParams.get('status') || 'all';
+    applyFilter();
+});
 </script>
 </body>
 </html>

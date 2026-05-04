@@ -2810,45 +2810,33 @@ body.modal-open {
     }
 }
 
-/* ==================== 426px VA UNDAN YUQORI (GORIZONTAL RO'YXAT) ==================== */
-@media (min-width: 426px) {
+/* ==================== 500px VA UNDAN KATTA (GORIZONTAL SCROLL) ==================== */
+@media (min-width: 500px) {
     .matches-row {
         display: flex !important;
-        flex-direction: row !important; /* Itemlar gorizontal joylashadi */
+        flex-direction: row !important;        /* gorizontal joylashuv */
         gap: 16px !important;
-        overflow-x: auto !important; /* Ko'p bo'lsa yon tomonga surilish (scroll) uchun */
-        padding-bottom: 10px !important; /* Scrollbar uchun ozgina joy */
+        overflow-x: auto !important;           /* yon tomonga surish */
+        padding-bottom: 10px !important;       /* scrollbar uchun joy */
     }
 
     .wrapper_card {
-        min-width: 260px !important; /* Gorizontal holatda kartalar qisilib qolmasligi uchun */
+        min-width: 260px !important;           /* kartalar siqilmasligi uchun */
         flex-shrink: 0 !important;
     }
 
     .player {
         display: flex !important;
-        flex-direction: column !important; /* Katta ekranda ham rasm va ism ustma-ust turishi uchun */
+        flex-direction: column !important;     /* avatar va ism ustma-ust */
         align-items: center !important;
     }
 }
 
-/* ==================== 425px GACHA (VERTIKAL RO'YXAT) ==================== */
-@media (max-width: 425px) {
-    .bookmarks-section {
-        width: 100% !important;
-        margin: 20px 0 0 !important;
-        padding: 16px !important;
-        border-radius: 16px !important;
-        box-sizing: border-box;
-    }
-
-    #bookmarks-list {
-        width: 100% !important;
-    }
-
+/* ==================== 499px VA UNDAN KICHIK (VERTIKAL HOLAT) ==================== */
+@media (max-width: 499px) {
     .matches-row {
         display: flex !important;
-        flex-direction: column !important; /* Itemlar vertikal ustun bo'ladi */
+        flex-direction: column !important;     /* vertikal joylashuv */
         gap: 12px !important;
         width: 100% !important;
     }
@@ -2869,7 +2857,7 @@ body.modal-open {
 
     .player {
         display: flex !important;
-        flex-direction: column !important; /* Rasm va ism doim ustma-ust bo'ladi */
+        flex-direction: column !important;     /* avatar va ism ustma-ust */
         align-items: center !important;
         justify-content: center !important;
         flex: 1 !important;
@@ -2884,7 +2872,7 @@ body.modal-open {
 
     .player .lastname {
         font-size: 12px !important;
-        margin-top: 6px !important; /* Rasm va ism orasidagi masofa */
+        margin-top: 6px !important;
         max-width: 85px !important;
         text-align: center !important;
         white-space: nowrap !important;

@@ -560,6 +560,34 @@ def admin_championship_detail(request, pk):
     matches_count = len(matches_list)
     matches_exist = all_matches.exists()
 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # filtered_matches allaqachon yuqorida tayyorlangan
+        matches_json = []
+        for match in filtered_matches:
+            home_u = match.home_user
+            away_u = match.away_user
+            matches_json.append({
+                'id': match.id,
+                'round_name': match.round_name or 'Guruh bosqichi',
+                'home_user': {
+                    'username': home_u.username if home_u else None,
+                    'first_name': home_u.first_name if home_u else None,
+                    'avatar_url': home_u.avatar.url if home_u and home_u.avatar else None,
+                } if home_u else None,
+                'away_user': {
+                    'username': away_u.username if away_u else None,
+                    'first_name': away_u.first_name if away_u else None,
+                    'avatar_url': away_u.avatar.url if away_u and away_u.avatar else None,
+                } if away_u else None,
+                'home_score': match.home_score,
+                'away_score': match.away_score,
+                'is_finished': match.is_finished,
+            })
+        return JsonResponse({
+            'matches': matches_json,
+            'matches_count': len(matches_json),
+        })
+
     context = {
         'championship': championship,
         'participants': participants,

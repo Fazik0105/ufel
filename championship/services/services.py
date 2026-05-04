@@ -225,102 +225,112 @@ def generate_group_playoff(championship, users, group_size=4):
                     round_order=1
                 )
 
+
+
 def generate_playoff_matches(championship, users):
     """
-    Playoff bracket yaratish - istalgan juft sonli jamoalar uchun (2, 4, 6, 8, 10, ...)
+    Playoff bracket yaratish - istalgan sondagi jamoalar uchun mukammal (Byes) mantiqi bilan.
     """
     Match.objects.filter(championship=championship).delete()
     
-    # Jamoalarni random tartiblash
-    random.shuffle(users)
+    users_list = list(users)
+    random.shuffle(users_list)
+    total_teams = len(users_list)
     
-    total_teams = len(users)
-    
-    # Raundlar haqida ma'lumot
-    rounds_info = get_playoff_rounds_info(total_teams)
-    
-    # Barcha matchlarni yaratish
-    all_matches = create_playoff_structure(championship, users, rounds_info)
-    
-    return all_matches
-
-
-def get_playoff_rounds_info(total_teams):
-    """
-    Har qanday juft sonli jamoalar uchun raundlar strukturasini hisoblaydi.
-    """
-    if total_teams < 2: 
+    if total_teams < 2:
         return []
         
-    # Eng yaqin kichik 2 ning darajasini topamiz
-    next_power_of_2 = 2 ** int(math.log2(total_teams))
+    # 1. Eng yaqin 2 ning darajasini topamiz (Masalan, 10 jamoa bo'lsa -> 16 bo'ladi)
+    next_power = 2 ** math.ceil(math.log2(total_teams))
     
-    # 1-raunddagi o'yinlar soni (Play-in)
-    first_round_matches = total_teams - next_power_of_2
+    # 2. Raundlar ma'lumotini olish
+    rounds_info = get_playoff_rounds_info(next_power)
     
-    rounds = []
+    # 3. Zanjirdek bog'langan bo'sh bracket yaratish
+    round_matches, all_matches = create_playoff_structure(championship, rounds_info)
     
-    # 1. PLAY-IN ROUND
-    if first_round_matches > 0:
-        rounds.append({
-            'name': "Round 1 (Play-in)",
-            'order': 1,
-            'matches_count': first_round_matches,
-            'is_preliminary': True
-        })
-        current_round_teams = next_power_of_2
-        start_order = 2
-    else:
-        current_round_teams = total_teams
-        start_order = 1
-
-    # 2. ASOSIY TO'R
-    temp_teams = current_round_teams
-    order = start_order
+    # 4. Jamoalarni 1-raundga joylashtirish
+    r1_matches = round_matches[1]
+    byes_count = next_power - total_teams
     
-    # Round nomlarini to'g'ri belgilash
-    round_number = 1
-    while temp_teams > 1:
-        m_count = temp_teams // 2
+    # Jamoalarni 2 ga bo'lamiz: Bye oladiganlar va Raund 1 da o'ynaydiganlar
+    bye_teams = users_list[:byes_count]
+    playing_teams = users_list[byes_count:]
+    
+    # Byelar (bo'sh o'rinlar) bracketning bir joyiga to'planib qolmasligi uchun
+    # ularni simmetrik ravishda (tepa va pastga) taqsimlaymiz
+    bye_match_indices = set()
+    if byes_count > 0:
+        step = len(r1_matches) / byes_count
+        for i in range(byes_count):
+            bye_match_indices.add(int(i * step))
+            
+    bye_idx = 0
+    play_idx = 0
+    
+    for i, match in enumerate(r1_matches):
+        if i in bye_match_indices and bye_idx < len(bye_teams):
+            # Bu o'yinga Bye tushdi (1 ta jamoa bor, raqib yo'q)
+            match.home_user = bye_teams[bye_idx]
+            match.away_user = None
+            match.is_finished = True # Avtomatik g'alaba hisoblanadi
+            bye_idx += 1
+        else:
+            # Standart 2 ta jamoa o'ynaydigan o'yin
+            if play_idx < len(playing_teams):
+                match.home_user = playing_teams[play_idx]
+                match.away_user = playing_teams[play_idx + 1]
+                play_idx += 2
+        match.save()
         
-        if temp_teams == 2:
+        # Bye olgan jamoalarni darhol keyingi raundga yuborish
+        if match.is_finished:
+            from .services import update_playoff_bracket # Yo'lini o'zingizga moslang
+            update_playoff_bracket(match)
+            
+    return all_matches
+
+def get_playoff_rounds_info(next_power):
+    """
+    Mukammal 2 ning darajasi asosida raundlar tarmog'ini tuzadi
+    """
+    rounds = []
+    matches_count = next_power // 2
+    order = 1
+    
+    while matches_count >= 1:
+        if matches_count == 1:
             name = "Final"
-        elif temp_teams == 4:
+        elif matches_count == 2:
             name = "1/2 Final"
-        elif temp_teams == 8:
+        elif matches_count == 4:
             name = "1/4 Final"
-        elif temp_teams == 16:
+        elif matches_count == 8:
             name = "1/8 Final"
-        elif temp_teams == 32:
+        elif matches_count == 16:
             name = "1/16 Final"
-        elif temp_teams == 64:
+        elif matches_count == 32:
             name = "1/32 Final"
         else:
             name = f"Round {order}"
-        
+            
         rounds.append({
             'name': name,
             'order': order,
-            'matches_count': m_count,
-            'is_preliminary': False
+            'matches_count': matches_count
         })
-        
-        temp_teams //= 2
+        matches_count //= 2
         order += 1
-        round_number += 1
-    
+        
     return rounds
 
-def create_playoff_structure(championship, users, rounds_info):
+def create_playoff_structure(championship, rounds_info):
     """
-    Playoff bracket yaratish - istalgan juft sonli jamoalar uchun
+    Faqat mukammal zanjir (2->1) bog'laydi. Qandaydir maxsus shartlarsiz.
     """
-    random.shuffle(users)
-    total_teams = len(users)
     round_matches = {}
     all_matches = []
-
-    # 1. Barcha bo'sh matchlarni yaratib olamiz
+    
     for r_info in rounds_info:
         matches = []
         for i in range(r_info['matches_count']):
@@ -333,134 +343,19 @@ def create_playoff_structure(championship, users, rounds_info):
             matches.append(match)
             all_matches.append(match)
         round_matches[r_info['order']] = matches
-
-    # 2. Matchlarni zanjirdek bog'laymiz
-    for i in range(len(rounds_info) - 1):
-        curr_r = rounds_info[i]
-        next_r = rounds_info[i+1]
         
-        curr_matches = round_matches[curr_r['order']]
-        next_matches = round_matches[next_r['order']]
+    # Zanjirni ulash qismi (Home: 0, Away: 1)
+    for i in range(len(rounds_info) - 1):
+        curr_matches = round_matches[rounds_info[i]['order']]
+        next_matches = round_matches[rounds_info[i+1]['order']]
         
         for j, match in enumerate(curr_matches):
-            # Play-in rounddan keyingi roundga ulanish
-            if curr_r.get('is_preliminary', False):
-                # Play-in rounddagi har bir match keyingi rounddagi mos matchga ulanadi
-                # Play-in g'oliblari keyingi roundda AWAY pozitsiyasiga tushadi
-                target_match = next_matches[j]
-                match.next_match = target_match
-                match.next_match_position = 1  # Away pozitsiyasiga
-            else:
-                # Standart 2->1 ulanish
-                target_index = j // 2
-                target_match = next_matches[target_index]
-                match.next_match = target_match
-                match.next_match_position = j % 2  # 0-home, 1-away
+            match.next_match = next_matches[j // 2]
+            match.next_match_position = j % 2 
             match.save()
-
-    # 3. Jamoalarni taqsimlash - TO'G'RILANGAN QISM
-    user_idx = 0
-    
-    # Play-in round mavjudligini tekshirish
-    has_play_in = rounds_info[0].get('is_preliminary', False)
-    
-    if has_play_in:
-        # PLAY-IN ROUND - 1-round
-        first_round = rounds_info[0]
-        first_round_matches = round_matches[first_round['order']]
-        
-        # Play-in matchlarini to'ldirish
-        play_in_matches_count = len(first_round_matches)
-        play_in_players_count = play_in_matches_count * 2
-        
-        for m in first_round_matches:
-            if user_idx < total_teams:
-                m.home_user = users[user_idx]
-                user_idx += 1
-            if user_idx < total_teams:
-                m.away_user = users[user_idx]
-                user_idx += 1
-            m.save()
-        
-        seed_teams_count = total_teams - play_in_players_count
-        
-        if seed_teams_count > 0 and len(rounds_info) > 1:
-            second_round = rounds_info[1]  # 1/4 Final
-            second_round_matches = round_matches[second_round['order']]
             
-            for i in range(seed_teams_count):
-                if i < len(second_round_matches):
-                    m = second_round_matches[i % len(second_round_matches)]
-                    
-                    # Birinchi seed jamoalar HOME ga, keyingilari AWAY ga
-                    if i < len(second_round_matches):
-                        # Birinchi 4 ta seed HOME ga
-                        m.home_user = users[user_idx]
-                    else:
-                        # Qolgan seed jamoalar AWAY ga
-                        m.away_user = users[user_idx]
-                    
-                    user_idx += 1
-                    m.save()
-            
-            # Play-in g'oliblari keyingi roundda AWAY ga tushadi (allaqachon next_match_position=1)
-            
-    else:
-        # STANDART PLAYOFF (2,4,8,16...)
-        first_round = rounds_info[0]
-        first_round_matches = round_matches[first_round['order']]
-        
-        for m in first_round_matches:
-            if user_idx < total_teams:
-                m.home_user = users[user_idx]
-                user_idx += 1
-            if user_idx < total_teams:
-                m.away_user = users[user_idx]
-                user_idx += 1
-            m.save()
-
-    return all_matches
-
-def get_rounds_info(total_teams):
-    """
-    Raundlar haqida ma'lumot qaytaradi
-    """
-    # Eng yaqin 2 ning darajasini topamiz (next power of 2)
-    next_power = 2 ** math.ceil(math.log2(total_teams))
-    rounds = []
+    return round_matches, all_matches
     
-    round_names = {
-        64: "1/64 final",
-        32: "1/32 final", 
-        16: "1/16 final",
-        8: "1/8 final",
-        4: "1/4 final",
-        2: "1/2 final",
-        1: "Final"
-    }
-    
-    matches_count = next_power // 2
-    round_order = 1  # 1 - birinchi raund
-        
-    while matches_count >= 1:
-        teams_in_round = matches_count * 2
-        
-        if teams_in_round in round_names:
-            round_name = round_names[teams_in_round]
-        else:
-            round_name = f"1/{teams_in_round} final"
-                
-        rounds.append({
-            'name': round_name,
-            'order': round_order,
-            'matches_count': matches_count,
-            'teams_count': teams_in_round
-        })
-        
-        matches_count //= 2
-        round_order += 1
-    
-    return rounds
 
 def create_first_round_matches(championship, users, round_info):
     """
@@ -554,6 +449,47 @@ def link_all_matches(championship, rounds_info):
                 match.next_match_position = j % 2  # 0-home, 1-away
                 match.save()
     
+def get_rounds_info(total_teams):
+    """
+    Raundlar haqida ma'lumot qaytaradi
+    """
+    # Eng yaqin 2 ning darajasini topamiz (next power of 2)
+    next_power = 2 ** math.ceil(math.log2(total_teams))
+    rounds = []
+    
+    round_names = {
+        64: "1/64 final",
+        32: "1/32 final", 
+        16: "1/16 final",
+        8: "1/8 final",
+        4: "1/4 final",
+        2: "1/2 final",
+        1: "Final"
+    }
+    
+    matches_count = next_power // 2
+    round_order = 1  # 1 - birinchi raund
+        
+    while matches_count >= 1:
+        teams_in_round = matches_count * 2
+        
+        if teams_in_round in round_names:
+            round_name = round_names[teams_in_round]
+        else:
+            round_name = f"1/{teams_in_round} final"
+                
+        rounds.append({
+            'name': round_name,
+            'order': round_order,
+            'matches_count': matches_count,
+            'teams_count': teams_in_round
+        })
+        
+        matches_count //= 2
+        round_order += 1
+    
+    return rounds
+
 def update_playoff_bracket(match):
     """
     O'yin tugagach, g'olibni keyingi bosqichga o'tkazish
