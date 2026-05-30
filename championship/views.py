@@ -49,7 +49,10 @@ def index(request):
         user_champion_count[user_id]['count'] += 1
         user_champion_count[user_id]['latest_champions'].append(champ)
     
-    top_champions = sorted(user_champion_count.values(), key=lambda x: -x['count'])[:5]
+    top_champions = sorted(
+        user_champion_count.values(),
+        key=lambda x: (-x['count'], x['user'].username)
+    )[:5]
     
     for champ_data in top_champions:
         champ_data['latest_champions'].sort(key=lambda x: x.tournament_date, reverse=True)
@@ -103,7 +106,6 @@ def index(request):
 
     champion_halls_all = ChampionHall.objects.select_related('user').order_by('-tournament_date')
     
-    # User bo'yicha guruhlash
     user_champions = {}
     for champ in champion_halls_all:
         user_id = champ.user.id
@@ -113,13 +115,15 @@ def index(request):
                 'champions': []
             }
         user_champions[user_id]['champions'].append(champ)
-    
+
     for user_data in user_champions.values():
         user_data['champions'].sort(key=lambda x: (-x.year, x.position))
-    
+
     sorted_user_champions = sorted(user_champions.values(), 
-                                  key=lambda x: len(x['champions']), 
-                                  reverse=True)
+                                key=lambda x: len(x['champions']), 
+                                reverse=True)
+
+    top_champions = sorted_user_champions[:5]
 
     context = {
         'championships': championships,
