@@ -23,60 +23,72 @@ from django.utils import translation
 
 # INDEX PAGE
 def index(request):
-    championships = Championship.objects.filter(
-        status__in=['STARTED','FINISHED']
-    ).order_by('-created_at')
-
     if request.user.is_authenticated and request.user.role == 'ADMIN':
         championships = Championship.objects.all().order_by('-created_at')
     else:
         championships = Championship.objects.filter(
-            status__in=['STARTED','FINISHED',]
+            status__in=['STARTED', 'FINISHED']
         ).order_by('-created_at')
 
-    # ========== YANGI: TOP 5 CHAMPIONS - eng ko'p chempionlikka ega userlar ==========
-    champion_halls = ChampionHall.objects.select_related('user').all()
-    
-    user_champion_count = {}
-    for champ in champion_halls:
-        user_id = champ.user.id
-        if user_id not in user_champion_count:
-            user_champion_count[user_id] = {
-                'user': champ.user,
-                'count': 0,
-                'latest_champions': []
-            }
-        user_champion_count[user_id]['count'] += 1
-        user_champion_count[user_id]['latest_champions'].append(champ)
-    
-    top_champions = sorted(
-        user_champion_count.values(),
-        key=lambda x: (-x['count'], x['user'].username)
-    )[:5]
-    
-    for champ_data in top_champions:
-        champ_data['latest_champions'].sort(key=lambda x: x.tournament_date, reverse=True)
-        champ_data['latest'] = champ_data['latest_champions'][0] if champ_data['latest_champions'] else None
+    # ===== CHAMPIONS =====
+    champion_halls_all = ChampionHall.objects.select_related('user').order_by('-tournament_date')
 
+    user_champions = {}
+    for champ in champion_halls_all:
+        user_id = champ.user.id
+        if user_id not in user_champions:
+            user_champions[user_id] = {
+                'user': champ.user,
+                'champions': [],
+                'first_place_count': 0,
+                'second_place_count': 0,
+                'third_place_count': 0,
+            }
+        user_champions[user_id]['champions'].append(champ)
+        if champ.position == 1:
+            user_champions[user_id]['first_place_count'] += 1
+        elif champ.position == 2:
+            user_champions[user_id]['second_place_count'] += 1
+        elif champ.position == 3:
+            user_champions[user_id]['third_place_count'] += 1
+
+    for user_data in user_champions.values():
+        user_data['champions'].sort(key=lambda x: (-x.tournament_date.year, x.position))
+
+    # Olympic sort: 1-o'rin → 2-o'rin → 3-o'rin → username
+    def olympic_sort_key(u):
+        return (
+            -u['first_place_count'],
+            -u['second_place_count'],
+            -u['third_place_count'],
+            u['user'].username
+        )
+
+    sorted_user_champions = sorted(user_champions.values(), key=olympic_sort_key)
+
+    # Top 5: faqat kamida bitta o'rni borlar
+    top_champions = sorted(
+        [u for u in user_champions.values() if u['first_place_count'] > 0],
+        key=olympic_sort_key
+    )[:5]
+
+    # ===== RATINGS =====
     rating_users = User.objects.filter(
         role='USER',
         type_settings__in_rating=True
     )
-    
+
     ratings = []
     for user in rating_users:
         rating, created = UserRating.objects.get_or_create(
             user=user,
-            defaults={
-                'games_played': 0,
-                'points': 0
-            }
+            defaults={'games_played': 0, 'points': 0}
         )
         ratings.append(rating)
-    
+
     ratings = sorted(ratings, key=lambda x: (-x.points, -x.games_played))
 
-    # Turnir tanlash
+    # ===== TURNIR =====
     selected_id = request.GET.get("champ")
 
     if selected_id:
@@ -104,38 +116,17 @@ def index(request):
             type_settings__in_tournament=True
         ).exclude(id__in=participant_ids)
 
-    champion_halls_all = ChampionHall.objects.select_related('user').order_by('-tournament_date')
-    
-    user_champions = {}
-    for champ in champion_halls_all:
-        user_id = champ.user.id
-        if user_id not in user_champions:
-            user_champions[user_id] = {
-                'user': champ.user,
-                'champions': []
-            }
-        user_champions[user_id]['champions'].append(champ)
-
-    for user_data in user_champions.values():
-        user_data['champions'].sort(key=lambda x: (-x.year, x.position))
-
-    sorted_user_champions = sorted(user_champions.values(), 
-                                key=lambda x: len(x['champions']), 
-                                reverse=True)
-
-    top_champions = sorted_user_champions[:5]
-
     context = {
         'championships': championships,
         'ratings': ratings,
         'top_champions': top_champions,
+        'user_champions': sorted_user_champions,
+        'total_champions': champion_halls_all.count(),
         'table': table_data,
         'latest_champ': latest_champ,
         'participants': participants,
         'available_users': available_users,
         'matches': matches,
-        'user_champions': sorted_user_champions,
-        'total_champions': champion_halls_all.count(),
         'is_admin': request.user.is_authenticated and request.user.role == 'ADMIN',
     }
 
